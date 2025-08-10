@@ -50,7 +50,7 @@ Nota Mínima is a free, fast calculator to:
 - **/eximicion**: Calculadora para eximirse
 - **/escala-60**: Plantilla rápida “exigencia 60%”
 - **/faq**: Preguntas frecuentes
-- **/privacidad**, **/terminos**, **/acerca**
+- **/privacidad**, **/terminos**
 
 ## SEO: Titles & Metas
 - **Home (/)**
