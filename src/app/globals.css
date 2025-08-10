@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/* Global design tokens (inspired by README goals and branding) */
+:root {
+  /* Surfaces */
+  --color-bg: #f8fafc; /* slate-50 */
+  --color-surface: #ffffff; /* white */
+  --color-muted: #f1f5f9; /* slate-100 */
+  --color-border: #e2e8f0; /* slate-200 */
+
+  /* Text */
+  --color-text: #0f172a; /* slate-900 */
+  --color-text-muted: #475569; /* slate-600 for better contrast on light */
+
+  /* Brand & status */
+  --color-primary: #16a34a; /* emerald-600 */
+  --color-primary-contrast: #ffffff;
+  --color-primary-hover: #15803d; /* emerald-700 */
+  --color-success: #16a34a; /* emerald-600 */
+  --color-warning: #f59e0b; /* amber-500 */
+  --color-danger: #ef4444; /* red-500 */
+  --color-ring: rgba(22, 163, 74, 0.28);
+
+  /* Radii & shadows */
+  --radius-xl: 18px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 12px 32px -12px rgba(2, 6, 23, 0.16);
+}
+
+/* Force light theme even when system is dark */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: light; }
+}
+
+/* Base resets */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { min-height: 100%; }
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+/* Minimal primitives (usable with Tailwind utilities) */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 72rem; /* 1152px */
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 0.625rem 0.9rem;
+  line-height: 1.2;
+  transition: transform 120ms ease, background-color 120ms ease,
+    color 120ms ease, box-shadow 120ms ease;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--color-ring);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+.btn-primary:hover { background: var(--color-primary-hover); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.btn-ghost:hover { background: var(--color-muted); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-muted);
+  color: var(--color-text-muted);
+}
+
+/* Modern landing accents */
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #065f46; /* emerald-800 */
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.hero-bg {
+  background:
+    radial-gradient(800px 280px at 85% -10%, rgba(34, 197, 94, 0.14), transparent),
+    radial-gradient(680px 240px at -10% 0%, rgba(16, 185, 129, 0.10), transparent);
+}
+
+.list-checks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.list-checks li::before {
+  content: "✓";
+  display: inline-block;
+  margin-right: 0.5rem;
+  color: var(--color-success);
+  font-weight: 800;
+}
