@@ -11,6 +11,13 @@ export default function RootLayout({ children }) {
   const currentYear = new Date().getFullYear();
   return (
     <html lang="es-CL">
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3504234733980898"
+          crossOrigin="anonymous"
+        ></script>
+      </head>
       <body>
         <header style={{
           background: "rgba(255, 255, 255, 0.75)",
