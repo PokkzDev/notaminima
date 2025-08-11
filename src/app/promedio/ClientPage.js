@@ -13,6 +13,19 @@ function formatNumber(value, fractionDigits = 1) {
   });
 }
 
+function sanitizeIntegerInput(value) {
+  return String(value ?? '').replace(/[^0-9]/g, '');
+}
+
+function sanitizeDecimalInput(value) {
+  let v = String(value ?? '').replace(',', '.').replace(/[^0-9.]/g, '');
+  const firstDot = v.indexOf('.');
+  if (firstDot !== -1) {
+    v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+  }
+  return v;
+}
+
 function createEmptyEvaluation() {
   return {
     id: (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function")
@@ -46,6 +59,43 @@ export default function ClientAverageCalculatorPage() {
   const [passGradeThreshold, setPassGradeThreshold] = useState(4.0);
   const [exemptionThreshold, setExemptionThreshold] = useState(5.5);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  
+  // New onboarding and UX states
+  const [isFirstTime, setIsFirstTime] = useState(true);
+  const [showCourseManagement, setShowCourseManagement] = useState(false);
+  const [showBackupSection, setShowBackupSection] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0); // For onboarding steps
+
+  // Quick start with example data
+  const createExampleData = () => {
+    const exampleEvaluations = [
+      { ...createEmptyEvaluation(), name: "Prueba 1", weightPercent: 25, grade: 5.8 },
+      { ...createEmptyEvaluation(), name: "Tarea", weightPercent: 15, grade: 6.2 },
+      { ...createEmptyEvaluation(), name: "Prueba 2", weightPercent: 30, grade: "" },
+      { ...createEmptyEvaluation(), name: "Proyecto", weightPercent: 30, grade: "" },
+    ];
+    return exampleEvaluations;
+  };
+
+  const startWithExample = () => {
+    const exampleEvaluations = createExampleData();
+    setEvaluations(exampleEvaluations);
+    setIsFirstTime(false);
+    setCurrentStep(0);
+    
+    // Update the current course with example data
+    setCourses((prev) => prev.map((c) => (
+      c.id === selectedCourseId
+        ? { ...c, evaluations: exampleEvaluations }
+        : c
+    )));
+  };
+
+  const startFromScratch = () => {
+    setIsFirstTime(false);
+    setCurrentStep(0);
+  };
 
   // Hydrate multi-course storage with migration from single-course storage
   useEffect(() => {
@@ -66,6 +116,8 @@ export default function ClientAverageCalculatorPage() {
           setPassGradeThreshold(current.passGradeThreshold ?? 4.0);
           setExemptionThreshold(current.exemptionThreshold ?? 5.5);
         }
+        // If user has data, they're not first-time
+        setIsFirstTime(loadedCourses.length === 0 || (loadedCourses.length === 1 && loadedCourses[0].evaluations.length === 0));
         setIsHydrated(true);
         return;
       }
@@ -92,6 +144,7 @@ export default function ClientAverageCalculatorPage() {
         setExigenciaPercent(migratedCourse.exigenciaPercent);
         setPassGradeThreshold(migratedCourse.passGradeThreshold);
         setExemptionThreshold(migratedCourse.exemptionThreshold);
+        setIsFirstTime(migratedCourse.evaluations.length === 0);
         setIsHydrated(true);
         return;
       }
@@ -101,7 +154,7 @@ export default function ClientAverageCalculatorPage() {
         id: (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function")
           ? globalThis.crypto.randomUUID()
           : String(Date.now() + Math.random()),
-        name: "Curso 1",
+        name: "Mi Curso",
         ...createDefaultCourseData(),
       };
       const payload = { courses: [defaultCourse], selectedCourseId: defaultCourse.id };
@@ -112,6 +165,7 @@ export default function ClientAverageCalculatorPage() {
       setExigenciaPercent(defaultCourse.exigenciaPercent);
       setPassGradeThreshold(defaultCourse.passGradeThreshold);
       setExemptionThreshold(defaultCourse.exemptionThreshold);
+      setIsFirstTime(true); // Fresh start means first time
       setIsHydrated(true);
     } catch {}
   }, []);
@@ -283,7 +337,6 @@ export default function ClientAverageCalculatorPage() {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [importError, setImportError] = useState("");
   const [importData, setImportData] = useState(null);
-  const [isBackupInfoOpen, setIsBackupInfoOpen] = useState(false);
 
   const handleOpenImport = () => {
     setImportError("");
@@ -520,6 +573,12 @@ export default function ClientAverageCalculatorPage() {
   }, [totals, exemptionThreshold]);
 
   // Removed cumulative estimated average to reduce cognitive load
+  const examEvaluation = useMemo(() => {
+    return normalizedEvaluations.find((ev) => String(ev.name || "").trim().toLowerCase() === "examen") || null;
+  }, [normalizedEvaluations]);
+  const nonExamEvaluations = useMemo(() => {
+    return normalizedEvaluations.filter((ev) => String(ev.name || "").trim().toLowerCase() !== "examen");
+  }, [normalizedEvaluations]);
 
   const updateEvaluation = (id, patch) => {
     setEvaluations((prev) => prev.map((ev) => (ev.id === id ? { ...ev, ...patch } : ev)));
@@ -533,392 +592,717 @@ export default function ClientAverageCalculatorPage() {
     setEvaluations((prev) => prev.filter((ev) => ev.id !== id));
   };
 
-  return (
-    <main>
-      <section className="container py-12 sm:py-16">
-        <div className="mb-3">
-          <span className="kicker">Calculadora de promedio</span>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+  // First-time onboarding screen
+  if (!isHydrated) {
+    return (
+      <main>
+        <section className="container py-12 sm:py-16">
+          <div className="mb-3"><span className="kicker">Calculadora de promedio</span></div>
           <div>
             <h1 className="text-3xl/[1.15] sm:text-4xl/[1.1] font-semibold tracking-tight">Promedio ponderado y nota mínima</h1>
             <p className="mt-3 max-w-[60ch] text-base" style={{ color: "var(--color-text-muted)" }}>
-              Ingresa tus evaluaciones, ajusta exigencia y mira tu promedio, estado y lo que necesitas para aprobar.
+              Cargando...
             </p>
           </div>
-          <div className="relative flex flex-wrap gap-2 sm:mt-1">
-            <button type="button" className="btn btn-ghost" onClick={handleExport}>Descargar</button>
-            <button type="button" className="btn btn-primary" onClick={handleOpenImport}>Cargar</button>
-            <button
-              type="button"
-              aria-label="Información sobre descargar y cargar"
-              className="btn btn-ghost"
-              onClick={() => setIsBackupInfoOpen(true)}
-            >
-              i
-            </button>
+        </section>
+      </main>
+    );
+  }
 
-            {isBackupInfoOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsBackupInfoOpen(false)} />
-                <div className="absolute right-0 top-full z-50 mt-2 card p-4 w-[min(92vw,360px)]">
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    <strong>Descargar</strong>: guarda un archivo JSON con tus cursos y evaluaciones para respaldo.
+  if (isFirstTime) {
+    return (
+      <main>
+        <section className="container py-12 sm:py-16">
+          <div className="mb-3"><span className="kicker">Calculadora de promedio</span></div>
+          <div>
+            <h1 className="text-3xl/[1.15] sm:text-4xl/[1.1] font-semibold tracking-tight">Promedio ponderado y nota mínima</h1>
+            <p className="mt-3 max-w-[60ch] text-base" style={{ color: "var(--color-text-muted)" }}>
+              Completa tus evaluaciones y mira tu promedio y lo que necesitas para aprobar.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-2 max-w-4xl">
+            {/* Quick Start with Example */}
+            <div className="card p-6 sm:p-8">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-xl">⚡</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">Comenzar con ejemplo</h3>
+                  <p className="mt-2 text-sm" style={{ color: "var(--color-text-muted)" }}>
+                    Prueba la calculadora con datos de ejemplo para ver cómo funciona. Incluye evaluaciones ya completadas y pendientes.
                   </p>
-                  <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    <strong>Cargar</strong>: selecciona un archivo JSON exportado para restaurar tus datos. Reemplaza los datos actuales.
-                  </p>
-                  <div className="mt-3 flex justify-end">
-                    <button type="button" className="btn btn-primary" onClick={() => setIsBackupInfoOpen(false)}>Entendido</button>
+                  <div className="mt-4">
+                    <button 
+                      type="button" 
+                      className="btn btn-primary"
+                      onClick={startWithExample}
+                    >
+                      Ver ejemplo
+                    </button>
                   </div>
                 </div>
-              </>
-            )}
+              </div>
+            </div>
+
+            {/* Start from Scratch */}
+            <div className="card p-6 sm:p-8">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-xl">📝</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">Empezar desde cero</h3>
+                  <p className="mt-2 text-sm" style={{ color: "var(--color-text-muted)" }}>
+                    Configura tu curso paso a paso. Agrega tus evaluaciones, porcentajes y notas para calcular tu promedio.
+                  </p>
+                  <div className="mt-4">
+                    <button 
+                      type="button" 
+                      className="btn btn-ghost"
+                      onClick={startFromScratch}
+                    >
+                      Comenzar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* Features preview */}
+          <div className="mt-12 grid gap-4 sm:grid-cols-3 max-w-4xl">
+            <div className="text-center">
+              <div className="inline-flex w-10 h-10 bg-gray-100 rounded-full items-center justify-center mb-3">
+                <span className="text-lg">📊</span>
+              </div>
+              <h4 className="font-medium">Promedio automático</h4>
+              <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
+                Calcula tu promedio ponderado al instante
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="inline-flex w-10 h-10 bg-gray-100 rounded-full items-center justify-center mb-3">
+                <span className="text-lg">🎯</span>
+              </div>
+              <h4 className="font-medium">Nota mínima</h4>
+              <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
+                Sabe qué nota necesitas para aprobar
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="inline-flex w-10 h-10 bg-gray-100 rounded-full items-center justify-center mb-3">
+                <span className="text-lg">💾</span>
+              </div>
+              <h4 className="font-medium">Se guarda automático</h4>
+              <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
+                Tus datos se guardan en tu navegador
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main>
+      <section className="container py-12 sm:py-16">
+        <div className="mb-3"><span className="kicker">Calculadora de promedio</span></div>
+        <div>
+          <h1 className="text-3xl/[1.15] sm:text-4xl/[1.1] font-semibold tracking-tight">Promedio ponderado y nota mínima</h1>
+          <p className="mt-3 max-w-[60ch] text-base" style={{ color: "var(--color-text-muted)" }}>
+            Completa tus evaluaciones y mira tu promedio y lo que necesitas para aprobar.
+          </p>
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
           {/* Form */}
           <div className="order-2 lg:order-1 lg:col-span-2 card p-5 sm:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-base font-semibold">Evaluaciones</h2>
-              <div className="flex flex-wrap items-center gap-2">
-                <label className="text-sm font-medium" htmlFor="course-select">Curso</label>
-                <select
-                  id="course-select"
-                  className="border rounded-md px-3 py-2"
-                  value={selectedCourseId || (courses[0]?.id || "")}
-                  onChange={(e) => handleSelectCourse(e.target.value)}
-                >
-                  {courses.length === 0 && <option value="">—</option>}
-                  {courses.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name || "Curso"}</option>
-                  ))}
-                </select>
-                <button type="button" className="btn btn-ghost" onClick={handleAddCourse}>Agregar curso</button>
-                <button type="button" className="btn btn-ghost" onClick={handleRenameCourse}>Renombrar</button>
-                <button type="button" className="btn btn-ghost" onClick={handleDeleteCourse}>Eliminar</button>
-              </div>
-            </div>
-            {(() => {
-              // Recomendar completar pesos si no hay examen; con examen, el 100% efectivo se controla por la lógica de redistribución.
-              if (totals.hasExam) return null;
-              const rawTotal = totals.warningWeight || 0;
-              if (rawTotal === 100) return null;
-              return (
-                <div className="mt-3 card p-3" style={{ borderColor: rawTotal > 100 ? 'var(--color-danger)' : 'var(--color-warning)' }}>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    Los pesos suman {formatNumber(rawTotal, 0)}%. {rawTotal > 100 ? 'Reduce' : 'Completa'} hasta 100%.
-                  </p>
+            <div className="flex flex-col gap-3">
+              {/* Simplified header - course management is now optional */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-base font-semibold">
+                  {courses.find(c => c.id === selectedCourseId)?.name || "Mi Curso"}
+                </h2>
+                <div className="flex flex-wrap items-center gap-2">
+                  {!showCourseManagement ? (
+                    <button type="button" className="btn btn-ghost" onClick={() => setShowCourseManagement(true)}>
+                      <span className="mr-1">⚙️</span>
+                      Gestionar cursos
+                    </button>
+                  ) : (
+                    <>
+                      <label className="text-sm font-medium" htmlFor="course-select">Curso actual:</label>
+                      <select
+                        id="course-select"
+                        className="border rounded-md px-3 py-2"
+                        value={selectedCourseId || (courses[0]?.id || "")}
+                        onChange={(e) => handleSelectCourse(e.target.value)}
+                      >
+                        {courses.length === 0 && <option value="">—</option>}
+                        {courses.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name || "Curso"}</option>
+                        ))}
+                      </select>
+                      <div className="flex items-center gap-1">
+                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={handleAddCourse}>
+                          <span className="mr-1">➕</span>Nuevo
+                        </button>
+                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={handleRenameCourse}>
+                          <span className="mr-1">✏️</span>Renombrar
+                        </button>
+                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={handleDeleteCourse}>
+                          <span className="mr-1">🗑️</span>Eliminar
+                        </button>
+                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={() => setShowCourseManagement(false)} title="Cerrar">
+                          ✕
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
-              );
-            })()}
-            <div className="mt-4 grid gap-4">
+              </div>
+
               {!isHydrated && (
                 <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   Cargando datos…
                 </div>
               )}
-              {isHydrated && courses.length === 1 && (evaluations?.length || 0) === 0 && (
-                <div className="card p-4">
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    Agrega tus evaluaciones y pesos. Puedes crear más cursos con el botón “Agregar curso”.
+
+              {(() => {
+                if (!totals.hasExam) {
+                  const rawTotal = totals.warningWeight || 0;
+                  return (
+                    <div className="card p-3" style={{ borderColor: rawTotal === 100 ? 'var(--color-border)' : (rawTotal > 100 ? 'var(--color-danger)' : 'var(--color-warning)') }}>
+                      <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                        Porcentajes: {formatNumber(rawTotal, 0)}% de 100%.
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
+              {/* Enhanced empty state */}
+              {nonExamEvaluations.length === 0 && !examEvaluation ? (
+                <div className="mt-4 text-center py-12">
+                  <div className="inline-flex w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-4">
+                    <span className="text-2xl">📝</span>
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">¡Comencemos con tus evaluaciones!</h3>
+                  <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+                    Comienza agregando las evaluaciones de tu semestre (pruebas, tareas, proyectos) para calcular tu promedio y saber qué necesitas para aprobar.
+                  </p>
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    <button type="button" className="btn btn-primary" onClick={addEvaluation}>
+                      Agregar primera evaluación
+                    </button>
+                    <button type="button" className="btn btn-ghost" onClick={startWithExample}>
+                      Ver ejemplo
+                    </button>
+                  </div>
+                  <p className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                    💡 Tip: Agrega primero las evaluaciones del semestre. El examen final se puede agregar después.
                   </p>
                 </div>
+              ) : (
+                <div className="mt-2 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ color: 'var(--color-text-muted)' }}>
+                        <th className="text-left font-medium py-2">Evaluación</th>
+                        <th className="text-left font-medium py-2">Porcentaje (%)</th>
+                        <th className="text-left font-medium py-2">Nota (1.0–7.0)</th>
+                        <th className="text-right font-medium py-2">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {nonExamEvaluations.map((ev) => {
+                      const isInvalid = ev.grade !== "" && Number(ev.grade) > 0 && (Number(ev.grade) < 1 || Number(ev.grade) > 7);
+                      return (
+                        <tr key={ev.id} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
+                          <td className="py-3 pr-3 min-w-[200px]">
+                            <input
+                              type="text"
+                              className="w-full border rounded-md px-3 py-2"
+                              value={ev.name}
+                              onChange={(e) => updateEvaluation(ev.id, { name: e.target.value })}
+                            />
+                          </td>
+                          <td className="py-3 pr-3 w-[140px]">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              className="w-full border rounded-md px-3 py-2"
+                              value={String(ev.weightPercent ?? '')}
+                              onChange={(e) => {
+                                const v = sanitizeIntegerInput(e.target.value);
+                                updateEvaluation(ev.id, { weightPercent: v });
+                              }}
+                              onBlur={(e) => {
+                                const raw = e.target.value;
+                                const num = Number(sanitizeIntegerInput(raw));
+                                const clamped = clamp(isNaN(num) ? 0 : num, 0, 100);
+                                updateEvaluation(ev.id, { weightPercent: clamped });
+                              }}
+                            />
+                          </td>
+                          <td className="py-3 pr-3 w-[160px]">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              className="w-full border rounded-md px-3 py-2"
+                              value={String(ev.grade ?? '')}
+                              onChange={(e) => {
+                                const v = sanitizeDecimalInput(e.target.value);
+                                updateEvaluation(ev.id, { grade: v });
+                              }}
+                              onBlur={(e) => {
+                                const raw = sanitizeDecimalInput(e.target.value);
+                                if (raw === '' || Number(raw) === 0) return;
+                                const num = Number(raw);
+                                const fixed = clamp(isNaN(num) ? 0 : num, 1.0, 7.0);
+                                updateEvaluation(ev.id, { grade: fixed });
+                              }}
+                              style={isInvalid ? { borderColor: 'var(--color-danger)' } : undefined}
+                            />
+                          </td>
+                          <td className="py-3 text-right">
+                            <button type="button" className="btn btn-ghost" onClick={() => removeEvaluation(ev.id)}>Eliminar</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                                      </tbody>
+                  </table>
+                </div>
               )}
-              {normalizedEvaluations.map((ev) => (
-                <div key={ev.id} className="card p-4">
-                  <div className="grid gap-3 md:grid-cols-4 items-start">
-                    <div className="min-w-0 md:col-span-3 grid gap-1">
-                      <label className="text-sm font-medium">Nombre</label>
-                      <input
-                        type="text"
-                        className="w-full border rounded-md px-3 py-2"
-                        value={ev.name}
-                        onChange={(e) => updateEvaluation(ev.id, { name: e.target.value })}
-                      />
-                    </div>
-                    <div className="min-w-0 md:col-span-1 grid gap-1">
-                      <label className="text-sm font-medium">Peso (%)</label>
-                      <input
-                        type="number"
-                        className="w-full border rounded-md px-3 py-2"
-                        min={0}
-                        max={100}
-                        value={ev.weightPercent}
-                        onChange={(e) => updateEvaluation(ev.id, { weightPercent: e.target.value })}
-                      />
-                    </div>
-                    {/* Modo fijo: Nota. Badge eliminada para simplificar el layout */}
-                  </div>
 
-                  {true ? (
-                    <div className="mt-3 grid gap-3 md:grid-cols-3">
-                      <div className="min-w-0 grid gap-1">
-                        <label className="text-sm font-medium">Nota (1.0–7.0)</label>
+              {/* Action buttons for when evaluations exist */}
+              {(nonExamEvaluations.length > 0 || examEvaluation) && (
+                <div className="flex flex-wrap items-center gap-3">
+                  <button type="button" className="btn btn-primary" onClick={addEvaluation}>
+                    Agregar evaluación
+                  </button>
+                  {!hasExam && nonExamEvaluations.length > 0 && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>o</span>
+                        <button type="button" className="btn btn-ghost" onClick={handleAddExam}>
+                          <span className="mr-1">📝</span>
+                          Agregar examen final (opcional)
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Exam section - moved to the bottom as it happens at the end of semester */}
+              {examEvaluation && (
+                <div className="mt-6 border-t pt-6">
+                  <div className="card p-5 sm:p-6" style={{ borderColor: 'var(--color-warning)', backgroundColor: '#fefbf3' }}>
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-base font-semibold flex items-center gap-2">
+                        <span className="text-lg">📝</span>
+                        Examen Final
+                        <span className="badge" style={{ backgroundColor: '#f59e0b20', color: '#f59e0b', border: '1px solid #f59e0b40' }}>
+                          Final del semestre
+                        </span>
+                      </h3>
+                      <button type="button" className="btn btn-ghost text-sm" onClick={() => removeEvaluation(examEvaluation.id)}>
+                        Eliminar examen
+                      </button>
+                    </div>
+                    <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      El examen final representa el {examEvaluation.weightPercent}% de la nota final. 
+                      Las demás evaluaciones se distribuyen en el {formatNumber(100 - (totals.examWeight || 0), 0)}% restante.
+                    </p>
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      <div className="grid gap-2">
+                        <label className="text-sm font-medium">Porcentaje del examen (%)</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          className="w-full border rounded-md px-3 py-2"
+                          value={String(examEvaluation.weightPercent ?? '')}
+                          onChange={(e) => {
+                            const v = sanitizeIntegerInput(e.target.value);
+                            updateEvaluation(examEvaluation.id, { weightPercent: v });
+                          }}
+                          onBlur={(e) => {
+                            const num = Number(sanitizeIntegerInput(e.target.value));
+                            const clamped = clamp(isNaN(num) ? 0 : num, 0, 100);
+                            updateEvaluation(examEvaluation.id, { weightPercent: clamped });
+                          }}
+                          placeholder="ej: 40"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <label className="text-sm font-medium">Nota obtenida (1.0–7.0)</label>
                         {(() => {
-                          const isInvalid = ev.grade !== "" && Number(ev.grade) > 0 && (Number(ev.grade) < 1 || Number(ev.grade) > 7);
+                          const isInvalid = examEvaluation.grade !== "" && Number(examEvaluation.grade) > 0 && (Number(examEvaluation.grade) < 1 || Number(examEvaluation.grade) > 7);
                           return (
-                            <>
-                              <input
-                                type="number"
-                                className="w-full border rounded-md px-3 py-2"
-                                min={1}
-                                max={7}
-                                step={0.1}
-                                value={ev.grade ?? ""}
-                                onChange={(e) => updateEvaluation(ev.id, { grade: e.target.value })}
-                                onBlur={(e) => {
-                                  const raw = e.target.value;
-                                  if (raw === "" || Number(raw) === 0) return; // pendiente
-                                  const num = Number(raw);
-                                  const fixed = clamp(isNaN(num) ? 0 : num, 1.0, 7.0);
-                                  if (fixed !== num) updateEvaluation(ev.id, { grade: fixed });
-                                }}
-                                style={isInvalid ? { borderColor: 'var(--color-danger)' } : undefined}
-                              />
-                              {isInvalid && (
-                                <p className="text-xs mt-1" style={{ color: 'var(--color-danger)' }}>
-                                  Ingresa una nota entre 1,0 y 7,0. Deja 0 si está pendiente.
-                                </p>
-                              )}
-                            </>
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              className="w-full border rounded-md px-3 py-2"
+                              value={String(examEvaluation.grade ?? '')}
+                              onChange={(e) => {
+                                const v = sanitizeDecimalInput(e.target.value);
+                                updateEvaluation(examEvaluation.id, { grade: v });
+                              }}
+                              onBlur={(e) => {
+                                const raw = sanitizeDecimalInput(e.target.value);
+                                if (raw === '' || Number(raw) === 0) return;
+                                const num = Number(raw);
+                                const fixed = clamp(isNaN(num) ? 0 : num, 1.0, 7.0);
+                                updateEvaluation(examEvaluation.id, { grade: fixed });
+                              }}
+                              style={isInvalid ? { borderColor: 'var(--color-danger)' } : undefined}
+                              placeholder="Deja vacío si no lo has rendido"
+                            />
                           );
                         })()}
                       </div>
                     </div>
-                  ) : null}
-
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-                      {ev.gradeValue != null ? (
-                        (() => {
-                          const w = Number(ev.weightPercent) || 0;
-                          const contrib = (ev.gradeValue * w) / 100;
-                          return (
-                            <>Contribuye con {formatNumber(contrib, 1)} ({formatNumber(w, 0)}%) con nota {formatNumber(ev.gradeValue, 1)}</>
-                          );
-                        })()
-                      ) : (
-                        <>Pendiente: se usará para calcular lo que falta</>
-                      )}
-                    </div>
-                    <button type="button" className="btn btn-ghost" onClick={() => removeEvaluation(ev.id)}>Eliminar</button>
+                    {(() => {
+                      const examPending = !examEvaluation.grade || Number(examEvaluation.grade) < 1;
+                      const rawExamWeight = Number(examEvaluation.weightPercent) || 0;
+                      if (!examPending || rawExamWeight <= 0) return null;
+                      let currentWithoutExam = 0;
+                      normalizedEvaluations.forEach((item) => {
+                        if (String(item.name || '').trim().toLowerCase() === 'examen') return;
+                        if (item.gradeValue == null) return;
+                        const eff = (totals.effectiveWeights?.get(item.id) || 0);
+                        currentWithoutExam += (item.gradeValue * eff) / 100;
+                      });
+                      const examEff = totals.examWeight || 0;
+                      const needed = (passGradeThreshold - currentWithoutExam) / (examEff / 100);
+                      const clampedNeeded = clamp(needed, 1.0, 7.0);
+                      return (
+                        <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                          <p className="text-sm font-medium text-blue-800">💡 Nota necesaria en el examen:</p>
+                          <p className="text-sm text-blue-700 mt-1">
+                            {needed > 7.0
+                              ? 'Con el examen solo no es posible aprobar. Necesitas mejorar otras evaluaciones.'
+                              : `Para aprobar el curso necesitas aproximadamente nota ${formatNumber(clampedNeeded, 1)} en el examen final.`}
+                          </p>
+                        </div>
+                      );
+                    })()}
                   </div>
-
-                  {(() => {
-                    const isExam = String(ev.name || "").trim().toLowerCase() === "examen";
-                    const examPending = ev.inputMode === "grade" && (!ev.grade || Number(ev.grade) < 1);
-                    const rawExamWeight = Number(ev.weightPercent) || 0;
-                    if (!isExam || !examPending || rawExamWeight <= 0) return null;
-
-                    // Con examen presente, los pesos efectivos reescalan no-examen a (100 - examWeight)
-                    const effExamWeight = totals.examWeight || 0;
-                    const nonExamEffTotal = Math.max(0, 100 - effExamWeight);
-
-                    // Suma efectiva actual sin el examen
-                    let currentWithoutExam = 0;
-                    normalizedEvaluations.forEach((item) => {
-                      if (String(item.name || "").trim().toLowerCase() === "examen") return;
-                      if (item.gradeValue == null) return;
-                      const eff = (totals.effectiveWeights?.get(item.id) || 0);
-                      currentWithoutExam += (item.gradeValue * eff) / 100;
-                    });
-
-                    // Necesario en examen para alcanzar aprobación: current + x*(examEff/100) >= pass
-                    const examEff = effExamWeight;
-                    const needed = (passGradeThreshold - currentWithoutExam) / (examEff / 100);
-                    const clamped = clamp(needed, 1.0, 7.0);
-                    return (
-                      <p className="mt-2 text-sm" style={{ color: needed > 7.0 ? 'var(--color-danger)' : 'var(--color-text-muted)' }}>
-                        {needed > 7.0
-                          ? 'Solo con el examen no es posible aprobar'
-                          : `Para aprobar el ramo necesitas aprox. nota ${formatNumber(clamped, 1)} en el examen`}
-                      </p>
-                    );
-                  })()}
                 </div>
-              ))}
+              )}
 
-              <div>
-                <div className="flex flex-wrap gap-2">
-                  <button type="button" className="btn btn-ghost" onClick={addEvaluation}>Agregar evaluación</button>
-                  {!hasExam && (
-                    <button type="button" className="btn btn-primary" onClick={handleAddExam}>Agregar examen</button>
+              {/* Advanced options - only show if there are evaluations */}
+              {(nonExamEvaluations.length > 0 || examEvaluation) && (
+                <div className="mt-2">
+                  <button type="button" className="btn btn-ghost" onClick={() => setShowAdvanced((v) => !v)}>
+                    {showAdvanced ? 'Ocultar configuración avanzada' : 'Configuración avanzada'}
+                  </button>
+                  {showAdvanced && (
+                    <div className="mt-3 grid gap-4 sm:grid-cols-3">
+                      <div className="card p-4">
+                        <p className="text-sm font-medium flex items-center gap-2">
+                          Exigencia (% para nota 4.0)
+                          <span className="text-xs text-gray-400" title="Porcentaje de puntaje necesario para obtener nota 4.0">ℹ️</span>
+                        </p>
+                        <div className="mt-2 flex items-center gap-3">
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            className="w-28 border rounded-md px-3 py-2"
+                            value={String(exigenciaPercent ?? '')}
+                            onChange={(e) => {
+                              const v = sanitizeIntegerInput(e.target.value);
+                              setExigenciaPercent(v);
+                            }}
+                            onBlur={(e) => {
+                              const num = Number(sanitizeIntegerInput(e.target.value));
+                              const clamped = clamp(isNaN(num) ? 60 : num, 20, 95);
+                              setExigenciaPercent(clamped);
+                            }}
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            {[60, 70].map((preset) => (
+                              <button key={preset} type="button" className="btn btn-ghost" onClick={() => setExigenciaPercent(preset)}>
+                                {preset}%
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="card p-4">
+                        <p className="text-sm font-medium flex items-center gap-2">
+                          Aprobación (nota mínima)
+                          <span className="text-xs text-gray-400" title="Nota mínima necesaria para aprobar el curso">ℹ️</span>
+                        </p>
+                        <div className="mt-2 flex items-center gap-3">
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            className="w-28 border rounded-md px-3 py-2"
+                            value={String(passGradeThreshold ?? '')}
+                            onChange={(e) => {
+                              const v = sanitizeDecimalInput(e.target.value);
+                              setPassGradeThreshold(v);
+                            }}
+                            onBlur={(e) => {
+                              const num = Number(sanitizeDecimalInput(e.target.value));
+                              const clamped = clamp(isNaN(num) ? 4.0 : num, 1.0, 7.0);
+                              setPassGradeThreshold(clamped);
+                            }}
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            {[4.0, 4.5].map((preset) => (
+                              <button key={preset} type="button" className="btn btn-ghost" onClick={() => setPassGradeThreshold(preset)}>
+                                {preset}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="card p-4">
+                        <p className="text-sm font-medium flex items-center gap-2">
+                          Eximición (opcional)
+                          <span className="text-xs text-gray-400" title="Nota para eximirse del examen final">ℹ️</span>
+                        </p>
+                        <div className="mt-2 flex items-center gap-3">
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            className="w-28 border rounded-md px-3 py-2"
+                            value={String(exemptionThreshold ?? '')}
+                            onChange={(e) => {
+                              const v = sanitizeDecimalInput(e.target.value);
+                              setExemptionThreshold(v);
+                            }}
+                            onBlur={(e) => {
+                              const num = Number(sanitizeDecimalInput(e.target.value));
+                              const clamped = clamp(isNaN(num) ? 5.5 : num, 1.0, 7.0);
+                              setExemptionThreshold(clamped);
+                            }}
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            {[5.5, 6.0].map((preset) => (
+                              <button key={preset} type="button" className="btn btn-ghost" onClick={() => setExemptionThreshold(preset)}>
+                                {preset}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="card p-4">
-                  <p className="text-sm font-medium">Exigencia (% para nota 4.0)</p>
-                  <div className="mt-2 flex items-center gap-3">
-                    <input
-                      type="number"
-                      className="w-28 border rounded-md px-3 py-2"
-                      min={20}
-                      max={95}
-                      step={1}
-                      value={exigenciaPercent}
-                      onChange={(e) => setExigenciaPercent(e.target.value)}
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      {[60, 70].map((preset) => (
-                        <button key={preset} type="button" className="btn btn-ghost" onClick={() => setExigenciaPercent(preset)}>
-                          {preset}%
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="card p-4">
-                  <p className="text-sm font-medium">Aprobación (nota mínima)</p>
-                  <div className="mt-2 flex items-center gap-3">
-                    <input
-                      type="number"
-                      className="w-28 border rounded-md px-3 py-2"
-                      min={1}
-                      max={7}
-                      step={0.1}
-                      value={passGradeThreshold}
-                      onChange={(e) => setPassGradeThreshold(e.target.value)}
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      {[4.0, 4.5].map((preset) => (
-                        <button key={preset} type="button" className="btn btn-ghost" onClick={() => setPassGradeThreshold(preset)}>
-                          {preset}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="card p-4">
-                  <p className="text-sm font-medium">Eximición (opcional)</p>
-                  <div className="mt-2 flex items-center gap-3">
-                    <input
-                      type="number"
-                      className="w-28 border rounded-md px-3 py-2"
-                      min={1}
-                      max={7}
-                      step={0.1}
-                      value={exemptionThreshold}
-                      onChange={(e) => setExemptionThreshold(e.target.value)}
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      {[5.5, 6.0].map((preset) => (
-                        <button key={preset} type="button" className="btn btn-ghost" onClick={() => setExemptionThreshold(preset)}>
-                          {preset}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
-          {/* Result */}
+          {/* Enhanced Result Panel */}
           <div className="order-1 lg:order-2 card p-5 sm:p-6 lg:sticky lg:top-6">
-            <h2 className="text-base font-semibold">Resultado</h2>
-            <div className="mt-4 grid gap-3">
-              <div>
-                <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>Progreso</p>
-                <p className="text-lg font-medium">{formatNumber(totals.completedWeight, 0)}% del curso con nota</p>
-              </div>
-              <div>
-                <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>Promedio acumulado</p>
-                <p className="text-4xl font-semibold tracking-tight">{`Nota ${formatNumber(totals.weightedSum || 0, 1)}`}</p>
-                <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>Estado: <span style={{ color: status.color }}>{status.label}</span></p>
-              </div>
-              
-              <div className="card p-4">
-                <p className="text-sm font-medium">¿Qué necesito para aprobar?</p>
-                <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-                  {(() => {
-                    const remainingWeight = Math.max(0, 100 - totals.completedWeight);
-                    const need = neededForPass;
-                    if (remainingWeight === 0) {
-                      if (totals.currentAverage != null && totals.currentAverage >= passGradeThreshold) {
-                        return "Ya aseguras la aprobación";
-                      }
-                      return "No quedan evaluaciones pendientes";
-                    }
-                    if (need == null || isNaN(need)) return "—";
-                    if (need > 7.0) return "No es posible aprobar con lo que queda";
-                    if (need <= 1.0) return "Ya aseguras la aprobación";
-
-                    // Sugerir misma nota para cada pendiente en modo 'Nota'
-                    const pendingGradeItems = evaluations.filter((ev) => ev.inputMode === "grade" && (!ev.grade || Number(ev.grade) < 1)).slice(0, 4);
-                    if (pendingGradeItems.length > 0) {
-                      const gradeStr = formatNumber(need, 1);
-                      const list = pendingGradeItems.map((ev) => `${ev.name || "Evaluación"}: ${gradeStr}`).join(" · ");
-                      return `Para aprobar, promedia ${gradeStr} en los pendientes: ${list}${evaluations.length > 4 ? "…" : ""}.`;
-                    }
-
-                    return `Necesitas promedio ${formatNumber(need, 1)} en el ${formatNumber(remainingWeight, 0)}% restante.`;
-                  })()}
+            <h2 className="text-base font-semibold flex items-center gap-2">
+              Tu promedio actual
+              {totals.currentAverage != null && (
+                <span className="text-xs px-2 py-1 rounded-full" style={{ 
+                  backgroundColor: status.color + '20', 
+                  color: status.color,
+                  border: `1px solid ${status.color}40`
+                }}>
+                  {status.label}
+                </span>
+              )}
+            </h2>
+            
+            <div className="mt-4 grid gap-4">
+              {/* Main average display */}
+              <div className="text-center">
+                <p className="text-4xl font-semibold tracking-tight">
+                  {totals.currentAverage != null ? formatNumber(totals.currentAverage, 1) : '—'}
                 </p>
-                {(() => {
-                  if (totals.currentAverage == null) return null;
-                  if (totals.currentAverage >= exemptionThreshold) {
-                    return (
-                      <p className="mt-2 text-sm" style={{ color: 'var(--color-success)' }}>
-                        Te eximes del examen con el promedio actual
-                      </p>
-                    );
-                  }
-                  if (totals.currentAverage >= passGradeThreshold) {
-                    // Aprobando pero sin eximición. Mostrar cuánto necesitaría para eximirse
-                    const remainingWeight = Math.max(0, 100 - totals.completedWeight);
-                    if (remainingWeight > 0 && neededForExemption != null && !isNaN(neededForExemption)) {
-                      return (
-                        <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                          Aprobando. Para eximirte, promedia {formatNumber(neededForExemption, 1)} en el {formatNumber(remainingWeight, 0)}% restante.
-                        </p>
-                      );
-                    }
-                    return (
-                      <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                        Aprobando, pero no alcanza la eximición.
-                      </p>
-                    );
-                  }
-                  return (
-                    <p className="mt-2 text-sm" style={{ color: 'var(--color-danger)' }}>
-                      No te eximes del examen con el promedio actual
-                    </p>
-                  );
-                })()}
-                  {totals.remainingWeight > 0 ? (
-                    <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                      {`Si te sacas 7.0 en todo lo que queda, llegarías a nota ${formatNumber(totals.finalIfAllSevens, 1)}.`}
-                    </p>
-                  ) : (
-                    totals.currentAverage != null && totals.currentAverage >= exemptionThreshold ? (
-                      <p className="mt-2 text-sm" style={{ color: 'var(--color-success)' }}>
-                        Peso completo. Nota final: {formatNumber(totals.weightedSum, 1)} — Aprobado.
-                      </p>
-                    ) : null
-                  )}
-                {nextEvaluationRequirement && (
-                  <p className="mt-2 text-sm" style={{ color: "var(--color-text-muted)" }}>
-                    Próxima: en {nextEvaluationRequirement.name} necesitas aprox. nota {formatNumber(nextEvaluationRequirement.gradeNeeded, 1)} asumiendo el mejor desempeño posterior.
-                  </p>
+                <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
+                  Progreso: {formatNumber(totals.completedWeight, 0)}% completado
+                </p>
+                {totals.completedWeight > 0 && totals.completedWeight < 100 && (
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(totals.completedWeight, 100)}%` }}
+                    />
+                  </div>
                 )}
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="card p-4">
-                  <p className="text-sm font-medium">Regla de escala</p>
-                  <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>0% → 1.0 · {exigenciaPercent}% → 4.0 · 100% → 7.0</p>
+
+              {/* Requirements card */}
+              {totals.completedWeight < 100 && (
+                <div className="card p-4 border-l-4 border-blue-500">
+                  <p className="text-sm font-medium text-blue-700">🎯 Lo que necesitas</p>
+                  <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
+                    {(() => {
+                      const remainingWeight = Math.max(0, 100 - totals.completedWeight);
+                      const need = neededForPass;
+                      if (remainingWeight === 0) {
+                        if (totals.currentAverage != null && totals.currentAverage >= passGradeThreshold) return 'Ya aseguras la aprobación 🎉';
+                        return 'No quedan evaluaciones pendientes';
+                      }
+                      if (need == null || isNaN(need)) return 'Agrega evaluaciones para ver qué necesitas';
+                      if (need > 7.0) return 'No es posible aprobar con lo que queda ⚠️';
+                      if (need <= 1.0) return 'Ya aseguras la aprobación 🎉';
+                      return `Promedio ${formatNumber(need, 1)} en el ${formatNumber(remainingWeight, 0)}% restante para aprobar`;
+                    })()}
+                  </p>
+                  
+                  {nextEvaluationRequirement && nextEvaluationRequirement.gradeNeeded && (
+                    <div className="mt-3 p-2 bg-yellow-50 rounded border">
+                      <p className="text-xs font-medium text-yellow-800">Próxima evaluación:</p>
+                      <p className="text-sm text-yellow-700">
+                        {nextEvaluationRequirement.name}: necesitas ≈ {formatNumber(nextEvaluationRequirement.gradeNeeded, 1)}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <div className="card p-4">
-                  <p className="text-sm font-medium">Sugerencia</p>
-                  <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>Ajusta exigencia si tu curso usa 70% u otro valor.</p>
+              )}
+
+              {/* Success state */}
+              {totals.completedWeight >= 100 && totals.currentAverage != null && totals.currentAverage >= passGradeThreshold && (
+                <div className="card p-4 border-l-4 border-green-500 bg-green-50">
+                  <p className="text-sm font-medium text-green-700">🎉 ¡Felicitaciones!</p>
+                  <p className="text-sm mt-1 text-green-600">
+                    {totals.currentAverage >= exemptionThreshold 
+                      ? 'Has aprobado el curso y te eximiste del examen'
+                      : 'Has aprobado el curso'
+                    }
+                  </p>
                 </div>
+              )}
+
+              {/* Optimistic scenario */}
+              {totals.remainingWeight > 0 && (
+                <div className="text-center p-3 bg-gray-50 rounded">
+                  <p className="text-xs text-gray-600">
+                    Si te sacas 7.0 en todo lo que queda: <span className="font-medium">{formatNumber(totals.finalIfAllSevens, 1)}</span>
+                  </p>
+                </div>
+              )}
+
+              {/* Scale explanation */}
+              <div className="text-center">
+                <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                  Escala: {exigenciaPercent}% = 4.0 · 100% = 7.0
+                </p>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Backup and Data Management Section */}
+        {isHydrated && !isFirstTime && (
+          <div className="mt-16 pt-8 border-t" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="text-center mb-8">
+              {!showBackupSection ? (
+                <div>
+                  <button 
+                    type="button" 
+                    className="btn btn-ghost text-sm"
+                    onClick={() => setShowBackupSection(true)}
+                  >
+                    <span className="mr-2">💾</span>
+                    Ver opciones de backup y datos
+                  </button>
+                  <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+                    Descarga, importa o gestiona tus datos guardados
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <h3 className="text-lg font-semibold">Backup y gestión de datos</h3>
+                    <button 
+                      type="button" 
+                      className="btn btn-ghost text-sm"
+                      onClick={() => setShowBackupSection(false)}
+                      title="Ocultar esta sección"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <p className="text-sm max-w-2xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
+                    Tus datos se guardan automáticamente en tu navegador. Puedes hacer backup o transferir tus cursos entre dispositivos.
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {showBackupSection && (
+              <>
+                <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+                  {/* Export Section */}
+                  <div className="card p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-xl">💾</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-2">Descargar backup</h4>
+                        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                          Descarga un archivo JSON con todos tus cursos y evaluaciones. Útil para hacer respaldo o transferir a otro dispositivo.
+                        </p>
+                        <button type="button" className="btn btn-primary" onClick={handleExport}>
+                          <span className="mr-2">⬇️</span>
+                          Descargar mis datos
+                        </button>
+                        <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+                          Se descargará un archivo .json con fecha y hora
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Import Section */}
+                  <div className="card p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <span className="text-xl">📂</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-2">Cargar backup</h4>
+                        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                          Restaura tus cursos desde un archivo de backup. Esto <strong>reemplazará</strong> todos tus datos actuales.
+                        </p>
+                        <button type="button" className="btn btn-ghost" onClick={handleOpenImport}>
+                          <span className="mr-2">⬆️</span>
+                          Cargar desde archivo
+                        </button>
+                        <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+                          Acepta archivos .json descargados de esta app
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional info */}
+                <div className="mt-8 max-w-2xl mx-auto">
+                  <div className="card p-4" style={{ backgroundColor: '#f8fafc', borderColor: '#e2e8f0' }}>
+                    <h5 className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <span>ℹ️</span>
+                      ¿Cómo funcionan mis datos?
+                    </h5>
+                    <div className="text-xs space-y-1" style={{ color: 'var(--color-text-muted)' }}>
+                      <p>• Todos tus cursos y evaluaciones se guardan automáticamente en tu navegador</p>
+                      <p>• Los datos solo están en tu dispositivo, no los enviamos a servidores</p>
+                      <p>• Si borras los datos del navegador, perderás la información</p>
+                      <p>• Usa el backup para guardar una copia de seguridad o transferir entre dispositivos</p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Rename Course Modal */}

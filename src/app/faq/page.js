@@ -44,12 +44,12 @@ export default function FAQPage() {
           <div className="grid gap-4">
             <details>
               <summary className="text-base font-semibold cursor-pointer select-none">
-                ¿Cómo calculo mi promedio con evaluaciones que tienen peso distinto?
+                ¿Cómo calculo mi promedio con evaluaciones que tienen porcentaje distinto?
               </summary>
               <div className="mt-2 text-sm" style={{ color: "var(--color-text-muted)" }}>
                 Para un promedio ponderado, multiplica la nota de cada evaluación por su
-                peso relativo, suma los resultados y divide por el total del peso
-                considerado. Puedes hacerlo automáticamente con la calculadora de
+                porcentaje relativo, suma los resultados y divide por la suma de los porcentajes
+                considerados. Puedes hacerlo automáticamente con la calculadora de
                 <Link href="/promedio" className="underline ml-1">promedios</Link>.
               </div>
             </details>
@@ -71,7 +71,7 @@ export default function FAQPage() {
                 ¿Cómo encuentro la nota mínima que necesito en lo que falta del curso?
               </summary>
               <div className="mt-2 text-sm" style={{ color: "var(--color-text-muted)" }}>
-                Ingresa tus evaluaciones ya rendidas y las que faltan con su peso en la
+                Ingresa tus evaluaciones ya rendidas y las que faltan con su porcentaje en la
                 sección <Link href="/promedio" className="underline">promedio</Link>.
                 La herramienta te mostrará cuánto necesitas para alcanzar la aprobación en
                 el porcentaje restante.

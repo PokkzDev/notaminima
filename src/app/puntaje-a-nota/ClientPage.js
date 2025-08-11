@@ -13,11 +13,24 @@ function formatNumber(value, fractionDigits = 1) {
   });
 }
 
+function sanitizeIntegerInput(value) {
+  return String(value ?? '').replace(/[^0-9]/g, '');
+}
+
+function sanitizeDecimalInput(value) {
+  let v = String(value ?? '').replace(',', '.').replace(/[^0-9.]/g, '');
+  const firstDot = v.indexOf('.');
+  if (firstDot !== -1) {
+    v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+  }
+  return v;
+}
+
 export default function ClientPointsToGradePage() {
-  const [achievedPoints, setAchievedPoints] = useState(42);
+  const [achievedPoints, setAchievedPoints] = useState("42");
   const [totalPointsPreset, setTotalPointsPreset] = useState("60"); // "60" | "90" | "100" | "custom"
-  const [totalPointsCustom, setTotalPointsCustom] = useState(60);
-  const [exigenciaPercent, setExigenciaPercent] = useState(60);
+  const [totalPointsCustom, setTotalPointsCustom] = useState("60");
+  const [exigenciaPercent, setExigenciaPercent] = useState("60");
 
   const totalPoints = useMemo(() => {
     return totalPointsPreset === "custom"
@@ -66,13 +79,18 @@ export default function ClientPointsToGradePage() {
                 </label>
                 <input
                   id="achieved"
-                  type="number"
+                  type="text"
                   inputMode="decimal"
                   className="w-full border rounded-md px-3 py-2"
-                  min={0}
-                  max={totalPoints}
-                  value={achievedPoints}
-                  onChange={(e) => setAchievedPoints(e.target.value)}
+                  value={String(achievedPoints ?? '')}
+                  onChange={(e) => {
+                    const v = sanitizeDecimalInput(e.target.value);
+                    setAchievedPoints(v);
+                  }}
+                  onBlur={(e) => {
+                    const num = clamp(Number(sanitizeDecimalInput(e.target.value)) || 0, 0, totalPoints);
+                    setAchievedPoints(String(num));
+                  }}
                 />
               </div>
 
@@ -92,12 +110,18 @@ export default function ClientPointsToGradePage() {
                 </div>
                 {totalPointsPreset === "custom" && (
                   <input
-                    type="number"
+                    type="text"
                     inputMode="numeric"
                     className="w-full border rounded-md px-3 py-2"
-                    min={1}
-                    value={totalPointsCustom}
-                    onChange={(e) => setTotalPointsCustom(e.target.value)}
+                    value={String(totalPointsCustom ?? '')}
+                    onChange={(e) => {
+                      const v = sanitizeIntegerInput(e.target.value);
+                      setTotalPointsCustom(v);
+                    }}
+                    onBlur={(e) => {
+                      const num = Math.max(1, Number(sanitizeIntegerInput(e.target.value)) || 1);
+                      setTotalPointsCustom(String(num));
+                    }}
                   />
                 )}
               </div>
@@ -109,13 +133,18 @@ export default function ClientPointsToGradePage() {
                 <div className="flex items-center gap-3">
                   <input
                     id="exigencia"
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     className="w-28 border rounded-md px-3 py-2"
-                    min={20}
-                    max={95}
-                    step={1}
-                    value={exigenciaPercent}
-                    onChange={(e) => setExigenciaPercent(e.target.value)}
+                    value={String(exigenciaPercent ?? '')}
+                    onChange={(e) => {
+                      const v = sanitizeIntegerInput(e.target.value);
+                      setExigenciaPercent(v);
+                    }}
+                    onBlur={(e) => {
+                      const num = clamp(Number(sanitizeIntegerInput(e.target.value)) || 60, 20, 95);
+                      setExigenciaPercent(String(num));
+                    }}
                   />
                   <div className="flex flex-wrap gap-2">
                     {[60, 70].map((preset) => (

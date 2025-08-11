@@ -55,7 +55,7 @@ Nota Mínima is a free, fast calculator to:
 ## SEO: Titles & Metas
 - **Home (/)**
   - **Title**: Calcula tu Nota Mínima para Aprobar | 1.0–7.0 Chile
-  - **Meta description**: Ingresa tus evaluaciones y peso. Calcula la nota mínima para aprobar o eximir y convierte puntaje a nota con exigencia (60%, 70%). Gratis y sin registro.
+  - **Meta description**: Ingresa tus evaluaciones y porcentaje. Calcula la nota mínima para aprobar o eximir y convierte puntaje a nota con exigencia (60%, 70%). Gratis y sin registro.
 - **/puntaje-a-nota**
   - **Title**: Puntaje a Nota (60/90/100 puntos) | Exigencia 60%
   - **Meta description**: Convierte X/Y puntos a nota chilena 1.0–7.0. Ajusta exigencia y total de preguntas.
