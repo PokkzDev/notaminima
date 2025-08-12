@@ -832,6 +832,176 @@ export default function ClientAverageCalculatorPage() {
     );
   }
 
+  // Function to calculate summary stats for all courses
+  const getCourseSummary = (course) => {
+    const normalizedEvs = course.evaluations?.map((ev) => {
+      const weight = clamp(Number(ev.weightPercent) || 0, 0, 100);
+      const raw = Number(ev.grade);
+      const gradeValue = !raw || raw < 1 ? null : clamp(raw, 1.0, 7.0);
+      return { ...ev, weightPercent: weight, gradeValue };
+    }) || [];
+
+    // Calculate totals using same logic as main component
+    const examIndex = normalizedEvs.findIndex((ev) => String(ev.name || "").trim().toLowerCase() === "examen");
+    const hasExam = examIndex !== -1;
+    const examWeight = hasExam ? (Number(normalizedEvs[examIndex].weightPercent) || 0) : 0;
+    const nonExam = normalizedEvs.filter((_, idx) => idx !== examIndex);
+
+    let completedWeight = 0;
+    let weightedSum = 0;
+    let currentAverage = null;
+
+    if (hasExam) {
+      // Chilean system logic
+      const remainingWeight = Math.max(0, 100 - examWeight);
+      
+      let nonExamSum = 0;
+      let nonExamCount = 0;
+      nonExam.forEach((ev) => {
+        if (ev.gradeValue != null) {
+          nonExamSum += ev.gradeValue;
+          nonExamCount++;
+        }
+      });
+      const nonExamAverage = nonExamCount > 0 ? nonExamSum / nonExamCount : 0;
+      
+      if (nonExamCount > 0) {
+        weightedSum += (nonExamAverage * remainingWeight) / 100;
+        completedWeight += remainingWeight;
+      }
+      
+      const examEv = normalizedEvs[examIndex];
+      if (examEv.gradeValue != null) {
+        weightedSum += (examEv.gradeValue * examWeight) / 100;
+        completedWeight += examWeight;
+      }
+      
+      currentAverage = completedWeight > 0 ? (weightedSum / (completedWeight / 100)) : null;
+    } else {
+      // Without exam logic
+      normalizedEvs.forEach((ev) => {
+        const weight = Number(ev.weightPercent) || 0;
+        if (ev.gradeValue != null) {
+          completedWeight += weight;
+          weightedSum += (ev.gradeValue * weight) / 100;
+        }
+      });
+      
+      currentAverage = completedWeight > 0 ? (weightedSum / (completedWeight / 100)) : null;
+    }
+
+    // Determine status based purely on accumulated score and remaining requirements
+    let status = { label: "Sin evaluar", color: "#64748b" };
+    if (completedWeight > 0 && weightedSum >= 0) {
+      const passThreshold = course.passGradeThreshold ?? 4.0;
+      const exemptionThreshold = course.exemptionThreshold ?? 5.5;
+      
+      const examEval = normalizedEvs.find((ev) => String(ev.name || "").trim().toLowerCase() === "examen");
+      const examIsRendered = examEval && examEval.gradeValue != null;
+      const isFinalState = Math.round(completedWeight) >= 100 || (hasExam && examIsRendered);
+      
+      if (isFinalState) {
+        // Final state: use actual average
+        if (currentAverage >= exemptionThreshold) {
+          status = { label: "Aprobado (eximido)", color: "#16a34a" };
+        } else if (currentAverage >= passThreshold) {
+          if (hasExam && examIsRendered) {
+            status = { label: "Aprobado", color: "#16a34a" };
+          } else if (hasExam && !examIsRendered) {
+            status = { label: "Debe rendir examen", color: "#f59e0b" };
+          } else {
+            status = { label: "Aprobado", color: "#16a34a" };
+          }
+        } else {
+          status = { label: "Reprobado", color: "#ef4444" };
+        }
+      } else {
+        // In progress: calculate what average is needed in remaining evaluations
+        const remainingWeight = Math.max(0, 100 - completedWeight);
+        
+        if (remainingWeight === 0) {
+          status = { label: "Completado", color: "#64748b" };
+        } else {
+          const remainingWeightDecimal = remainingWeight / 100;
+          
+          // Calculate required average for passing
+          const pointsNeededToPass = passThreshold - weightedSum;
+          const avgNeededToPass = pointsNeededToPass / remainingWeightDecimal;
+          
+          // Calculate required average for exemption
+          const pointsNeededToExempt = exemptionThreshold - weightedSum;
+          const avgNeededToExempt = pointsNeededToExempt / remainingWeightDecimal;
+          
+          // Determine status based on what's mathematically possible
+          if (weightedSum >= exemptionThreshold) {
+            status = { label: "Ya eximido", color: "#16a34a" };
+          } else if (weightedSum >= passThreshold) {
+            status = { label: "Ya aprobando", color: "#16a34a" };
+          } else if (avgNeededToExempt <= 6.0) {
+            // Can still exempt with reasonable effort
+            status = { label: "Eximición posible", color: "#0ea5e9" };
+          } else if (avgNeededToPass <= 6.0) {
+            // Can approve with reasonable effort
+            status = { label: "Vas aprobando", color: "#16a34a" };
+          } else if (avgNeededToPass <= 7.0) {
+            // Can approve but needs maximum effort
+            status = { label: "Puedes aprobar", color: "#f59e0b" };
+          } else {
+            // Mathematically impossible to approve
+            status = { label: "Difícil aprobar", color: "#ef4444" };
+          }
+        }
+      }
+    }
+
+    // Calculate what's needed for status info
+    let requiredInfo = null;
+    if (completedWeight > 0 && completedWeight < 100) {
+      const remainingWeight = Math.max(0, 100 - completedWeight);
+      const remainingWeightDecimal = remainingWeight / 100;
+      const passThreshold = course.passGradeThreshold ?? 4.0;
+      
+      // Only show requirements if not already passing
+      if (weightedSum < passThreshold) {
+        const pointsNeededToPass = passThreshold - weightedSum;
+        const avgNeededToPass = pointsNeededToPass / remainingWeightDecimal;
+        
+        if (avgNeededToPass > 0 && avgNeededToPass <= 7.0) {
+          requiredInfo = {
+            avgNeeded: avgNeededToPass,
+            remainingWeight: remainingWeight,
+            purpose: "para aprobar"
+          };
+        }
+      } else {
+        // Already passing, check exemption
+        const exemptionThreshold = course.exemptionThreshold ?? 5.5;
+        if (weightedSum < exemptionThreshold) {
+          const pointsNeededToExempt = exemptionThreshold - weightedSum;
+          const avgNeededToExempt = pointsNeededToExempt / remainingWeightDecimal;
+          
+          if (avgNeededToExempt > 0 && avgNeededToExempt <= 7.0) {
+            requiredInfo = {
+              avgNeeded: avgNeededToExempt,
+              remainingWeight: remainingWeight,
+              purpose: "para eximirse"
+            };
+          }
+        }
+      }
+    }
+
+    return {
+      currentAverage,
+      accumulatedScore: completedWeight > 0 ? weightedSum : null,
+      completedWeight,
+      status,
+      totalEvaluations: normalizedEvs.length,
+      completedEvaluations: normalizedEvs.filter(ev => ev.gradeValue != null).length,
+      requiredInfo
+    };
+  };
+
   return (
     <main>
       <section className="container py-12 sm:py-16">
@@ -842,6 +1012,99 @@ export default function ClientAverageCalculatorPage() {
             Completa tus evaluaciones y mira tu promedio y lo que necesitas para aprobar.
           </p>
         </div>
+
+        {/* Course Summary Cards */}
+        {isHydrated && courses.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold mb-4">Puntaje acumulado por ramo</h2>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {courses.map((course) => {
+                const summary = getCourseSummary(course);
+                const isCurrentCourse = course.id === selectedCourseId;
+                
+                return (
+                  <div 
+                    key={course.id}
+                    className={`card p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                      isCurrentCourse ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                    }`}
+                    onClick={() => handleSelectCourse(course.id)}
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="font-medium text-sm truncate" title={course.name}>
+                        {course.name || "Curso"}
+                      </h3>
+                      {isCurrentCourse && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full whitespace-nowrap">
+                          Seleccionado
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                            Puntaje Acumulado
+                          </span>
+                          <span 
+                            className="text-xs px-2 py-1 rounded-full font-medium"
+                            style={{ 
+                              backgroundColor: summary.status.color + '20', 
+                              color: summary.status.color,
+                              border: `1px solid ${summary.status.color}40`
+                            }}
+                          >
+                            {summary.status.label}
+                          </span>
+                        </div>
+                        <div className="text-3xl font-bold">
+                          {summary.accumulatedScore != null ? formatNumber(summary.accumulatedScore, 2) : '—'}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                        <span>
+                          {summary.completedEvaluations}/{summary.totalEvaluations} evaluaciones
+                        </span>
+                        <span>
+                          {formatNumber(summary.completedWeight, 0)}% completo
+                        </span>
+                      </div>
+                      
+                      {summary.completedWeight > 0 && summary.completedWeight < 100 && (
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div 
+                            className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(summary.completedWeight, 100)}%` }}
+                          />
+                        </div>
+                      )}
+                      
+                      {summary.accumulatedScore != null && (
+                        <div className="text-xs text-center mt-2 space-y-1" style={{ color: 'var(--color-text-muted)' }}>
+                          <div>
+                            Suma de contribuciones ponderadas ({summary.completedEvaluations} evaluacion{summary.completedEvaluations !== 1 ? 'es' : ''})
+                          </div>
+                          {summary.requiredInfo && (
+                            <div className="font-medium" style={{ color: 'var(--color-text)' }}>
+                              Necesitas promedio {formatNumber(summary.requiredInfo.avgNeeded, 1)} en el {formatNumber(summary.requiredInfo.remainingWeight, 0)}% restante {summary.requiredInfo.purpose}
+                            </div>
+                          )}
+                          {summary.currentAverage != null && (
+                            <div className="text-xs opacity-75">
+                              Promedio proyectado: {formatNumber(summary.currentAverage, 1)}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
           {/* Form */}
