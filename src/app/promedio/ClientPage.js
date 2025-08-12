@@ -594,7 +594,7 @@ export default function ClientAverageCalculatorPage() {
     const requiredNext = (target - currentSum - futureContribution) / (nextWeight / 100);
     const gradeNeeded = clamp(requiredNext, 1.0, 7.0);
     return { name: next.name, gradeNeeded };
-  }, [evaluations, passGradeThreshold, exigenciaPercent]);
+  }, [evaluations, passGradeThreshold]);
 
   const status = useMemo(() => {
     if (totals.currentAverage == null) return { label: "Incompleto", color: "#64748b" };

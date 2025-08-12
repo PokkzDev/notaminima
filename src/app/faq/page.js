@@ -94,7 +94,7 @@ const faqCategories = [
             <div className="mt-3 p-3 bg-purple-50 rounded border-l-4 border-purple-200">
               <p className="text-sm font-medium text-purple-800">🎓 Funciones disponibles:</p>
               <ul className="text-sm text-purple-700 mt-1 space-y-1">
-                <li>• <strong>Crear nuevo curso:</strong> Botón "Nuevo curso"</li>
+                <li>• <strong>Crear nuevo curso:</strong> Botón &quot;Nuevo curso&quot;</li>
                 <li>• <strong>Cambiar curso:</strong> Dropdown siempre visible</li>
                 <li>• <strong>Backup/Restaurar:</strong> Exportar e importar todos los cursos</li>
               </ul>
@@ -115,7 +115,7 @@ const faqCategories = [
         a: (
           <>
             La exigencia define qué porcentaje del puntaje máximo equivale a la nota
-            mínima aprobatoria (4.0). Es el "punto de inflexión" de la escala de notas.
+            mínima aprobatoria (4.0). Es el &quot;punto de inflexión&quot; de la escala de notas.
             <div className="mt-3 p-3 bg-blue-50 rounded border-l-4 border-blue-200">
               <p className="text-sm font-medium text-blue-800">📏 Comparación de exigencias:</p>
               <div className="text-sm text-blue-700 mt-1 space-y-1">
@@ -136,7 +136,7 @@ const faqCategories = [
             <div className="mt-3 p-3 bg-green-50 rounded border-l-4 border-green-200">
               <p className="text-sm font-medium text-green-800">🚀 Uso rápido:</p>
               <ul className="text-sm text-green-700 mt-1 space-y-1">
-                <li>• <strong>Ejemplos preset:</strong> "Prueba 60 pts", "Certamen 100 pts"</li>
+                <li>• <strong>Ejemplos preset:</strong> &quot;Prueba 60 pts&quot;, &quot;Certamen 100 pts&quot;</li>
                 <li>• <strong>Totales comunes:</strong> Botones 50, 60, 70, 90, 100, 120</li>
                 <li>• <strong>Exigencias típicas:</strong> 50%, 60%, 70%, 80%</li>
               </ul>
@@ -286,7 +286,7 @@ const faqCategories = [
         q: "¿Cómo puedo planificar mi estrategia de estudio con estas herramientas?",
         a: (
           <>
-            Las herramientas te permiten hacer análisis "qué pasaría si" para optimizar tu rendimiento académico.
+            Las herramientas te permiten hacer análisis &quot;qué pasaría si&quot; para optimizar tu rendimiento académico.
             <div className="mt-3 p-3 bg-blue-50 rounded border-l-4 border-blue-200">
               <p className="text-sm font-medium text-blue-800">📈 Estrategias de planificación:</p>
               <ul className="text-sm text-blue-700 mt-1 space-y-1">
