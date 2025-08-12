@@ -1,24 +1,44 @@
 export const metadata = {
-  title: "Preguntas Frecuentes (FAQ) | Nota Mínima",
+  title: "Preguntas Frecuentes (FAQ) | Nota Mínima - Calculadora Notas Chile",
   description:
-    "Resuelve dudas sobre promedio, nota mínima para aprobar, exigencia 60%/70% y cómo convertir puntaje a nota en escala 1.0–7.0.",
+    "✅ Resuelve todas tus dudas sobre promedio ponderado, nota mínima para aprobar, exigencia 60%/70% y conversión de puntaje a nota en escala chilena 1.0–7.0. Guía completa con ejemplos.",
+  keywords: "FAQ calculadora notas, preguntas promedio ponderado, nota minima aprobar chile, exigencia 60% 70%, dudas sistema notas chileno, ayuda calculadora",
   alternates: {
     canonical: "/faq",
   },
   openGraph: {
-    title: "Preguntas Frecuentes (FAQ) | Nota Mínima",
+    title: "FAQ - Calculadora de Notas Chile | Guía Completa Sistema 1.0-7.0",
     description:
-      "Resuelve dudas sobre promedio, nota mínima, exigencia y conversión de puntaje a nota.",
+      "Guía completa con respuestas a todas las dudas sobre cálculo de promedios, nota mínima y conversión de puntajes en el sistema educativo chileno.",
     type: "article",
     locale: "es_CL",
     url: "https://notaminima.cl/faq",
     siteName: "Nota Mínima",
+    images: [
+      {
+        url: "https://notaminima.cl/logo-256.png",
+        width: 256,
+        height: 256,
+        alt: "FAQ Nota Mínima - Calculadora de notas Chile",
+      },
+    ],
   },
   twitter: {
     card: "summary",
-    title: "Preguntas Frecuentes (FAQ) | Nota Mínima",
+    title: "FAQ - Calculadora de Notas Chile | Guía Completa Sistema 1.0-7.0",
     description:
-      "Resuelve dudas sobre promedio, nota mínima, exigencia y conversión de puntaje a nota.",
+      "Resuelve todas tus dudas sobre el sistema de notas chileno con ejemplos prácticos.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -322,8 +342,28 @@ const faqCategories = [
 ];
 
 export default function FAQPage() {
+  // Preparar datos estructurados para FAQPage
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "name": "Preguntas Frecuentes - Calculadora de Notas Chile",
+    "description": "Respuestas a preguntas frecuentes sobre el cálculo de promedios ponderados, nota mínima para aprobar y conversión de puntajes en el sistema educativo chileno",
+    "inLanguage": "es-CL",
+    "mainEntity": faqCategories.flatMap(category => 
+      category.questions.map(faq => ({
+        "@type": "Question",
+        "name": faq.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": typeof faq.a === 'string' ? faq.a : faq.q // Simplified for structured data
+        }
+      }))
+    )
+  };
+
   return (
-    <main>
+    <>
+      <main>
       {/* Header */}
       <section className="container py-12 sm:py-16">
         <div className="mb-3">
@@ -465,5 +505,14 @@ export default function FAQPage() {
         </div>
       </section>
     </main>
+
+    {/* Structured Data para FAQPage */}
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(faqStructuredData)
+      }}
+    />
+    </>
   );
 }

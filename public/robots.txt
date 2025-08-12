@@ -1,5 +1,32 @@
 User-Agent: *
 Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
 
+# Specific rules for search engines
+User-Agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-Agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+User-Agent: facebookexternalhit
+Allow: /
+
+User-Agent: Twitterbot
+Allow: /
+
+# Host directive
 Host: https://notaminima.cl
+
+# Sitemap location
 Sitemap: https://notaminima.cl/sitemap.xml
+Sitemap: https://notaminima.cl/manifest.json
+
+# Additional SEO directives
+# Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content
+# Clean-param: fbclid&gclid&ref_src&ref_url

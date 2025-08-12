@@ -1,12 +1,13 @@
 export const metadata = {
-  title: "Política de Privacidad | Nota Mínima",
+  title: "🔒 Política de Privacidad | Nota Mínima - Datos Locales Sin Rastreo",
   description:
-    "Cómo tratamos tus datos: almacenamiento local en tu navegador, sin cuentas ni rastreadores. Transparencia y control para ti.",
+    "✅ Tu privacidad es nuestra prioridad. Almacenamiento 100% local en tu navegador, sin cuentas, sin rastreadores, sin cookies de seguimiento. Control total de tus datos académicos.",
+  keywords: "politica privacidad calculadora notas, datos locales navegador, sin rastreo cookies, privacidad estudiantes chile, localStorage seguro",
   alternates: { canonical: "/privacidad" },
   openGraph: {
-    title: "Política de Privacidad | Nota Mínima",
+    title: "🔒 Política de Privacidad - Nota Mínima | Datos 100% Locales",
     description:
-      "La app guarda tus cursos localmente en tu navegador. No usamos cuentas ni rastreadores.",
+      "Garantizamos tu privacidad: datos guardados solo en tu navegador, sin cuentas ni rastreadores. Transparencia total en el manejo de información.",
     type: "article",
     locale: "es_CL",
     url: "https://notaminima.cl/privacidad",
@@ -14,9 +15,13 @@ export const metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Política de Privacidad | Nota Mínima",
+    title: "🔒 Política de Privacidad - Nota Mínima | Datos 100% Locales",
     description:
-      "Tus datos se mantienen en tu navegador. Sin cuentas ni publicidad personalizada.",
+      "Privacidad garantizada: datos en tu navegador, sin cuentas ni rastreo. Control total para estudiantes.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

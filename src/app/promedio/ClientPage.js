@@ -614,16 +614,19 @@ export default function ClientAverageCalculatorPage() {
       }
       // Si alcanza aprobación pero no eximición
       if (totals.currentAverage >= passGradeThreshold) {
-        // If exam is already rendered, student passed
+        // Si alcanza la eximición, se eximió (esto ya se verificó arriba, pero por completitud)
+        if (totals.currentAverage >= exemptionThreshold) {
+          return { label: "Aprobado (eximido)", color: "#16a34a" };
+        }
+        
+        // Si NO alcanza eximición, debe rendir examen
+        // Si el examen ya está rendido, está aprobado
         if (hasExam && examIsRendered) {
           return { label: "Aprobado", color: "#16a34a" };
         }
-        // If exam exists but not rendered yet, must take exam
-        if (hasExam && !examIsRendered) {
-          return { label: "Debe rendir examen", color: "#f59e0b" };
-        }
-        // No exam case - approved
-        return { label: "Aprobado", color: "#16a34a" };
+        
+        // En cualquier otro caso donde no alcance eximición, debe rendir examen
+        return { label: "Debe rendir examen", color: "#f59e0b" };
       }
       // Si no alcanza ni siquiera aprobación → Reprobado
       return { label: "Reprobado", color: "#ef4444" };
@@ -631,7 +634,13 @@ export default function ClientAverageCalculatorPage() {
     
     // Durante el semestre (no 100% completo)
     if (totals.currentAverage >= exemptionThreshold) return { label: "Eximición posible", color: "#0ea5e9" };
-    if (totals.currentAverage >= passGradeThreshold) return { label: "Vas aprobando", color: "#16a34a" };
+    if (totals.currentAverage >= passGradeThreshold) {
+      // Si hay examen y ya está por encima de aprobación pero por debajo de exención, debe rendir examen
+      if (hasExam && totals.currentAverage < exemptionThreshold) {
+        return { label: "Debes rendir examen", color: "#f59e0b" };
+      }
+      return { label: "Vas aprobando", color: "#16a34a" };
+    }
     return { label: "Bajo aprobación", color: "#f59e0b" };
   }, [totals, passGradeThreshold, exemptionThreshold, normalizedEvaluations]);
 
@@ -905,12 +914,17 @@ export default function ClientAverageCalculatorPage() {
         if (currentAverage >= exemptionThreshold) {
           status = { label: "Aprobado (eximido)", color: "#16a34a" };
         } else if (currentAverage >= passThreshold) {
-          if (hasExam && examIsRendered) {
+          // Si alcanza la eximición, se eximió (esto ya se verificó arriba, pero por completitud)
+          if (currentAverage >= exemptionThreshold) {
+            status = { label: "Aprobado (eximido)", color: "#16a34a" };
+          }
+          // Si el examen ya está rendido, está aprobado
+          else if (hasExam && examIsRendered) {
             status = { label: "Aprobado", color: "#16a34a" };
-          } else if (hasExam && !examIsRendered) {
+          }
+          // En cualquier otro caso donde no alcance eximición, debe rendir examen
+          else {
             status = { label: "Debe rendir examen", color: "#f59e0b" };
-          } else {
-            status = { label: "Aprobado", color: "#16a34a" };
           }
         } else {
           status = { label: "Reprobado", color: "#ef4444" };
@@ -936,7 +950,7 @@ export default function ClientAverageCalculatorPage() {
           if (weightedSum >= exemptionThreshold) {
             status = { label: "Ya eximido", color: "#16a34a" };
           } else if (weightedSum >= passThreshold) {
-            status = { label: "Ya aprobando", color: "#16a34a" };
+            status = { label: "Debe rendir examen", color: "#f59e0b" };
           } else if (avgNeededToExempt <= 6.0) {
             // Can still exempt with reasonable effort
             status = { label: "Eximición posible", color: "#0ea5e9" };
@@ -1511,16 +1525,14 @@ export default function ClientAverageCalculatorPage() {
                     </div>
                     {(() => {
                       const examPending = !examEvaluation.grade || Number(examEvaluation.grade) < 1;
-                      const rawExamWeight = Number(examEvaluation.weightPercent) || 0;
-                      if (!examPending || rawExamWeight <= 0) return null;
-                      let currentWithoutExam = 0;
-                      normalizedEvaluations.forEach((item) => {
-                        if (String(item.name || '').trim().toLowerCase() === 'examen') return;
-                        if (item.gradeValue == null) return;
-                        const eff = (totals.effectiveWeights?.get(item.id) || 0);
-                        currentWithoutExam += (item.gradeValue * eff) / 100;
-                      });
-                      const examEff = totals.examWeight || 0;
+                      const examEff = Number(totals.examWeight) || 0;
+                      if (!examPending || examEff <= 0) return null;
+                      // Con examen: la contribución actual de las evaluaciones no-examen es
+                      // promedio(no-examen) × (100 - pesoExamen) / 100
+                      const remainingForNonExam = Math.max(0, 100 - examEff);
+                      const nonExamAvg = Number(totals.nonExamAverage) || 0;
+                      const hasNonExamGraded = Number(totals.nonExamCount) > 0;
+                      const currentWithoutExam = hasNonExamGraded ? (nonExamAvg * remainingForNonExam) / 100 : 0;
                       const needed = (passGradeThreshold - currentWithoutExam) / (examEff / 100);
                       const clampedNeeded = clamp(needed, 1.0, 7.0);
                       return (
@@ -1559,7 +1571,7 @@ export default function ClientAverageCalculatorPage() {
                             value={String(exigenciaPercent ?? '')}
                             onChange={(e) => {
                               const v = sanitizeIntegerInput(e.target.value);
-                              setExigenciaPercent(v === '' ? '' : Number(v));
+                              setExigenciaPercent(v === '' ? '' : v);
                             }}
                             onBlur={(e) => {
                               const num = Number(sanitizeIntegerInput(e.target.value));
@@ -1595,7 +1607,7 @@ export default function ClientAverageCalculatorPage() {
                             value={String(passGradeThreshold ?? '')}
                             onChange={(e) => {
                               const v = sanitizeDecimalInput(e.target.value);
-                              setPassGradeThreshold(v === '' ? '' : Number(v));
+                              setPassGradeThreshold(v === '' ? '' : v);
                             }}
                             onBlur={(e) => {
                               const num = Number(sanitizeDecimalInput(e.target.value));
@@ -1632,7 +1644,7 @@ export default function ClientAverageCalculatorPage() {
                             value={String(exemptionThreshold ?? '')}
                             onChange={(e) => {
                               const v = sanitizeDecimalInput(e.target.value);
-                              setExemptionThreshold(v === '' ? '' : Number(v));
+                              setExemptionThreshold(v === '' ? '' : v);
                             }}
                             onBlur={(e) => {
                               const num = Number(sanitizeDecimalInput(e.target.value));
@@ -1710,9 +1722,17 @@ export default function ClientAverageCalculatorPage() {
                 // Don't show if all evaluations are completed (without exam)
                 if (remainingWeight === 0 && !hasExam) return null;
                 
+                // Determine current status for exemption
+                const currentAvg = totals.currentAverage;
+                const canExempt = currentAvg != null && currentAvg >= exemptionThreshold;
+                const canPass = currentAvg != null && currentAvg >= passGradeThreshold;
+                const mustTakeExam = canPass && !canExempt && hasExam;
+                
                 return (
                   <div className="card p-4 border-l-4 border-blue-500">
-                    <p className="text-sm font-medium text-blue-700">🎯 Para poder rendir examen</p>
+                    <p className="text-sm font-medium text-blue-700">
+                      {mustTakeExam ? '📝 Estado de exención' : '🎯 Para poder rendir examen'}
+                    </p>
                     <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
                       {(() => {
                         const need = neededForPass;
@@ -1729,6 +1749,17 @@ export default function ClientAverageCalculatorPage() {
                           }
                           return 'No quedan evaluaciones pendientes';
                         }
+                        
+                        // Durante el semestre - mostrar explícitamente el estado de exención
+                        if (mustTakeExam) {
+                          const needForExemption = neededForExemption;
+                          if (needForExemption != null && !isNaN(needForExemption) && needForExemption <= 7.0) {
+                            return `Con tu promedio actual (${formatNumber(currentAvg, 1)}) debes rendir examen. Necesitas promedio ${formatNumber(needForExemption, 1)} en el ${formatNumber(remainingWeight, 0)}% restante para eximirte.`;
+                          } else {
+                            return `Con tu promedio actual (${formatNumber(currentAvg, 1)}) debes rendir examen. Ya no es posible eximirse con las evaluaciones restantes.`;
+                          }
+                        }
+                        
                         if (need == null || isNaN(need)) return 'Agrega evaluaciones para ver qué necesitas';
                         if (need > 7.0) return 'No es posible aprobar con lo que queda ⚠️';
                         if (need <= 1.0) return 'Ya aseguras poder rendir examen 🎉';
@@ -1744,6 +1775,28 @@ export default function ClientAverageCalculatorPage() {
                         </p>
                       </div>
                     )}
+
+                    {/* Cuando debe rendir examen y aún no ingresa su nota, mostrar nota mínima requerida en el examen */}
+                    {mustTakeExam && hasExam && !examIsRendered && (() => {
+                      const examEff = Number(totals.examWeight) || 0;
+                      if (examEff <= 0) return null;
+                      const remainingForNonExam = Math.max(0, 100 - examEff);
+                      const nonExamAvg = Number(totals.nonExamAverage) || 0;
+                      const hasNonExamGraded = Number(totals.nonExamCount) > 0;
+                      const currentWithoutExam = hasNonExamGraded ? (nonExamAvg * remainingForNonExam) / 100 : 0;
+                      const needed = (passGradeThreshold - currentWithoutExam) / (examEff / 100);
+                      const clampedNeeded = clamp(needed, 1.0, 7.0);
+                      return (
+                        <div className="mt-3 p-2 bg-blue-50 rounded border">
+                          <p className="text-xs font-medium text-blue-800">Examen:</p>
+                          <p className="text-sm text-blue-700">
+                            {needed > 7.0
+                              ? 'Con el examen solo no es posible aprobar.'
+                              : `Necesitas ≈ nota ${formatNumber(clampedNeeded, 1)} en el examen para aprobar.`}
+                          </p>
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })()}
@@ -1764,16 +1817,38 @@ export default function ClientAverageCalculatorPage() {
                 const examIsRendered = examEval && examEval.gradeValue != null;
                 const hasExam = totals.hasExam;
                 
-                // Only show "must take exam" if exam exists, is not rendered yet, and conditions are met
+                // Show "must take exam" if completed, reaches pass threshold but not exemption, and exam not yet rendered
                 if (totals.completedWeight >= 100 && totals.currentAverage != null && 
                     totals.currentAverage >= passGradeThreshold && totals.currentAverage < exemptionThreshold &&
-                    hasExam && !examIsRendered) {
+                    (!hasExam || !examIsRendered)) {
                   return (
                     <div className="card p-4 border-l-4 border-yellow-500 bg-yellow-50">
                       <p className="text-sm font-medium text-yellow-800">📝 Debes rendir examen</p>
                       <p className="text-sm mt-1 text-yellow-700">
                         Tu promedio de {formatNumber(totals.currentAverage, 1)} te permite rendir examen final para aprobar el curso
                       </p>
+                      {hasExam && !examIsRendered && (() => {
+                        const examEff = Number(totals.examWeight) || 0;
+                        if (examEff <= 0) return null;
+                        const remainingForNonExam = Math.max(0, 100 - examEff);
+                        const nonExamAvg = Number(totals.nonExamAverage) || 0;
+                        const hasNonExamGraded = Number(totals.nonExamCount) > 0;
+                        const currentWithoutExam = hasNonExamGraded ? (nonExamAvg * remainingForNonExam) / 100 : 0;
+                        const needed = (passGradeThreshold - currentWithoutExam) / (examEff / 100);
+                        const clampedNeeded = clamp(needed, 1.0, 7.0);
+                        return (
+                          <p className="text-sm mt-2 text-yellow-700">
+                            {needed > 7.0
+                              ? 'Con el examen solo no es posible aprobar. Necesitas más que un 7.0.'
+                              : `Para aprobar necesitas aproximadamente nota ${formatNumber(clampedNeeded, 1)} en el examen final.`}
+                          </p>
+                        );
+                      })()}
+                      {!hasExam && (
+                        <p className="text-xs mt-2" style={{ color: '#92400e' }}>
+                          Agrega el examen final para calcular la nota mínima necesaria.
+                        </p>
+                      )}
                     </div>
                   );
                 }

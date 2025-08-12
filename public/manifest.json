@@ -1,0 +1,44 @@
+{
+  "name": "Nota Mínima - Calculadora de Notas Chile",
+  "short_name": "Nota Mínima",
+  "description": "Calculadora gratuita de notas para estudiantes chilenos. Promedio ponderado, nota mínima y conversión de puntajes en escala 1.0-7.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es-CL",
+  "categories": ["education", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Calculadora de Notas Chile"
+    }
+  ],
+  "features": [
+    "Calculadora de promedio ponderado",
+    "Conversor de puntaje a nota",
+    "Gestión de múltiples cursos",
+    "Almacenamiento local",
+    "Sin registro requerido"
+  ],
+  "prefer_related_applications": false
+}

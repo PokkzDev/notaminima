@@ -1,12 +1,13 @@
 export const metadata = {
-  title: "Términos y Condiciones | Nota Mínima",
+  title: "📋 Términos y Condiciones | Nota Mínima - Uso Educativo Responsable",
   description:
-    "Condiciones de uso de las herramientas de cálculo. Información educativa, sin garantías y sujeta a mejora continua.",
+    "📖 Condiciones de uso de nuestras herramientas educativas. Información de apoyo académico, uso personal y educativo. Siempre verifica resultados importantes con tus docentes.",
+  keywords: "terminos condiciones calculadora notas, uso educativo responsable, herramientas apoyo academico chile, condiciones uso calculadora",
   alternates: { canonical: "/terminos" },
   openGraph: {
-    title: "Términos y Condiciones | Nota Mínima",
+    title: "📋 Términos y Condiciones - Nota Mínima | Uso Educativo",
     description:
-      "Uso personal y educativo. Verifica resultados importantes con tus docentes.",
+      "Condiciones de uso para herramientas educativas. Apoyo académico responsable para estudiantes chilenos. Consulta siempre con tus docentes.",
     type: "article",
     locale: "es_CL",
     url: "https://notaminima.cl/terminos",
@@ -14,9 +15,13 @@ export const metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Términos y Condiciones | Nota Mínima",
+    title: "📋 Términos y Condiciones - Nota Mínima | Uso Educativo",
     description:
-      "Herramientas sin garantía; úsala como apoyo académico."
+      "Condiciones de uso responsable para herramientas educativas. Apoyo académico para estudiantes."
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
