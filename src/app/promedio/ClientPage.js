@@ -117,7 +117,11 @@ export default function ClientAverageCalculatorPage() {
           setExemptionThreshold(current.exemptionThreshold ?? 5.5);
         }
         // If user has data, they're not first-time
-        setIsFirstTime(loadedCourses.length === 0 || (loadedCourses.length === 1 && loadedCourses[0].evaluations.length === 0));
+        // First time only if: no courses OR all courses are empty
+        const hasAnyData = loadedCourses.some(course => 
+          course.evaluations && course.evaluations.length > 0
+        );
+        setIsFirstTime(!hasAnyData);
         setIsHydrated(true);
         return;
       }
@@ -144,6 +148,7 @@ export default function ClientAverageCalculatorPage() {
         setExigenciaPercent(migratedCourse.exigenciaPercent);
         setPassGradeThreshold(migratedCourse.passGradeThreshold);
         setExemptionThreshold(migratedCourse.exemptionThreshold);
+        // Not first time if migrated course has any evaluations
         setIsFirstTime(migratedCourse.evaluations.length === 0);
         setIsHydrated(true);
         return;
@@ -303,17 +308,17 @@ export default function ClientAverageCalculatorPage() {
   [evaluations]);
 
   const handleAddExam = () => {
-    // Try to use the remaining weight if positive, else fallback to 30
-    const currentTotal = evaluations.reduce((acc, ev) => acc + (Number(ev.weightPercent) || 0), 0);
-    const remaining = 100 - currentTotal;
-    const proposed = remaining > 0 ? remaining : 30;
+    // Default exam weight (can be changed later)
+    const examWeight = 30; // Standard 30% for exam
+    
     const exam = {
       ...createEmptyEvaluation(),
       name: "Examen",
-      weightPercent: clamp(Number(proposed) || 30, 5, 80),
+      weightPercent: examWeight,
       inputMode: "grade",
       grade: "",
     };
+    
     setEvaluations((prev) => [...prev, exam]);
   };
 
@@ -449,39 +454,86 @@ export default function ClientAverageCalculatorPage() {
     const nonExam = normalizedEvaluations.filter((_, idx) => idx !== examIndex);
     const nonExamRawTotal = nonExam.reduce((acc, ev) => acc + (Number(ev.weightPercent) || 0), 0);
 
-    // Effective weights mapping
-    const effectiveWeights = new Map();
     if (hasExam) {
-      // Distribute (100 - examWeight) across non-exam by their raw proportions
-      const base = Math.max(0, 100 - examWeight);
-      const denom = nonExamRawTotal > 0 ? nonExamRawTotal : 1;
+      // Chilean system: Simple average of regular evaluations, then apply remaining weight
+      const remainingWeight = Math.max(0, 100 - examWeight);
+      
+      // Calculate simple average of non-exam evaluations (not weighted)
+      let nonExamSum = 0;
+      let nonExamCount = 0;
       nonExam.forEach((ev) => {
-        const eff = ((Number(ev.weightPercent) || 0) / denom) * base;
-        effectiveWeights.set(ev.id, eff);
+        if (ev.gradeValue != null) {
+          nonExamSum += ev.gradeValue;
+          nonExamCount++;
+        }
       });
-      effectiveWeights.set(normalizedEvaluations[examIndex].id, examWeight);
-    } else {
+      const nonExamAverage = nonExamCount > 0 ? nonExamSum / nonExamCount : 0;
+      
+      // Calculate weighted contributions
+      let weightedSum = 0;
+      let completedWeight = 0;
+      
+      // Contribution from regular evaluations (simple average × remaining weight)
+      if (nonExamCount > 0) {
+        weightedSum += (nonExamAverage * remainingWeight) / 100;
+        completedWeight += remainingWeight;
+      }
+      
+      // Contribution from exam
+      const examEv = normalizedEvaluations[examIndex];
+      if (examEv.gradeValue != null) {
+        weightedSum += (examEv.gradeValue * examWeight) / 100;
+        completedWeight += examWeight;
+      }
+      
+      const currentAverage = completedWeight > 0 ? (weightedSum / (completedWeight / 100)) : null;
+      const remainingWeight_final = Math.max(0, 100 - completedWeight);
+      const finalIfAllSevens = weightedSum + (7.0 * remainingWeight_final) / 100;
+      
+      // For UI display: show original weights (not effective)
+      const effectiveWeights = new Map();
       normalizedEvaluations.forEach((ev) => {
         effectiveWeights.set(ev.id, Number(ev.weightPercent) || 0);
       });
+      
+      return { 
+        effectiveWeights, 
+        warningWeight: nonExamRawTotal, 
+        completedWeight, 
+        weightedSum, 
+        currentAverage, 
+        remainingWeight: remainingWeight_final, 
+        finalIfAllSevens, 
+        hasExam, 
+        examWeight, 
+        nonExamRawTotal,
+        nonExamAverage,
+        nonExamCount 
+      };
+    } else {
+      // Without exam: original weighted logic
+      const effectiveWeights = new Map();
+      normalizedEvaluations.forEach((ev) => {
+        effectiveWeights.set(ev.id, Number(ev.weightPercent) || 0);
+      });
+
+      let completedWeight = 0;
+      let weightedSum = 0;
+      normalizedEvaluations.forEach((ev) => {
+        const weight = Number(ev.weightPercent) || 0;
+        if (ev.gradeValue != null) {
+          completedWeight += weight;
+          weightedSum += (ev.gradeValue * weight) / 100;
+        }
+      });
+      
+      const currentAverage = completedWeight > 0 ? (weightedSum / (completedWeight / 100)) : null;
+      const remainingWeight = Math.max(0, 100 - completedWeight);
+      const finalIfAllSevens = weightedSum + (7.0 * remainingWeight) / 100;
+      const warningWeight = normalizedEvaluations.reduce((acc, ev) => acc + (Number(ev.weightPercent) || 0), 0);
+
+      return { effectiveWeights, warningWeight, completedWeight, weightedSum, currentAverage, remainingWeight, finalIfAllSevens, hasExam, examWeight, nonExamRawTotal };
     }
-
-    // Contributions based on effective weights
-    let completedWeight = 0;
-    let weightedSum = 0;
-    normalizedEvaluations.forEach((ev) => {
-      const eff = effectiveWeights.get(ev.id) || 0;
-      if (ev.gradeValue != null) {
-        completedWeight += eff;
-        weightedSum += (ev.gradeValue * eff) / 100;
-      }
-    });
-    const currentAverage = completedWeight > 0 ? (weightedSum / (completedWeight / 100)) : null;
-    const remainingWeight = Math.max(0, 100 - completedWeight);
-    const finalIfAllSevens = weightedSum + (7.0 * remainingWeight) / 100;
-    const warningWeight = hasExam ? nonExamRawTotal : normalizedEvaluations.reduce((acc, ev) => acc + (Number(ev.weightPercent) || 0), 0);
-
-    return { effectiveWeights, warningWeight, completedWeight, weightedSum, currentAverage, remainingWeight, finalIfAllSevens, hasExam, examWeight, nonExamRawTotal };
   }, [normalizedEvaluations]);
 
   const neededForPass = useMemo(() => {
@@ -546,21 +598,42 @@ export default function ClientAverageCalculatorPage() {
 
   const status = useMemo(() => {
     if (totals.currentAverage == null) return { label: "Incompleto", color: "#64748b" };
-    const needsExamBecauseNotExempt = Math.round(totals.completedWeight) >= 100 && totals.currentAverage < exemptionThreshold;
-    // Si completó 100% pero no alcanza eximición, indicar que falta examen
-    if (needsExamBecauseNotExempt) {
-      return { label: "Debe rendir examen", color: "#f59e0b" };
+    
+    // Check if exam is rendered (has a grade)
+    const examEval = normalizedEvaluations.find((ev) => String(ev.name || "").trim().toLowerCase() === "examen");
+    const examIsRendered = examEval && examEval.gradeValue != null;
+    const hasExam = totals.hasExam;
+    
+    // If exam exists and is rendered, or if 100% weight is completed, determine final status
+    const isFinalState = Math.round(totals.completedWeight) >= 100 || (hasExam && examIsRendered);
+    
+    if (isFinalState) {
+      // Si alcanza eximición → Aprobado (eximido del examen)
+      if (totals.currentAverage >= exemptionThreshold) {
+        return { label: "Aprobado (eximido)", color: "#16a34a" };
+      }
+      // Si alcanza aprobación pero no eximición
+      if (totals.currentAverage >= passGradeThreshold) {
+        // If exam is already rendered, student passed
+        if (hasExam && examIsRendered) {
+          return { label: "Aprobado", color: "#16a34a" };
+        }
+        // If exam exists but not rendered yet, must take exam
+        if (hasExam && !examIsRendered) {
+          return { label: "Debe rendir examen", color: "#f59e0b" };
+        }
+        // No exam case - approved
+        return { label: "Aprobado", color: "#16a34a" };
+      }
+      // Si no alcanza ni siquiera aprobación → Reprobado
+      return { label: "Reprobado", color: "#ef4444" };
     }
-    // Si 100% del peso está rendido (y no requiere examen), mostrar estado final
-    if (Math.round(totals.completedWeight) >= 100) {
-      return totals.currentAverage >= passGradeThreshold
-        ? { label: "Aprobado", color: "#16a34a" }
-        : { label: "Reprobado", color: "#ef4444" };
-    }
+    
+    // Durante el semestre (no 100% completo)
     if (totals.currentAverage >= exemptionThreshold) return { label: "Eximición posible", color: "#0ea5e9" };
     if (totals.currentAverage >= passGradeThreshold) return { label: "Vas aprobando", color: "#16a34a" };
     return { label: "Bajo aprobación", color: "#f59e0b" };
-  }, [totals, passGradeThreshold, exemptionThreshold]);
+  }, [totals, passGradeThreshold, exemptionThreshold, normalizedEvaluations]);
 
   const exemptionStatus = useMemo(() => {
     if (totals.currentAverage == null) return null;
@@ -580,17 +653,70 @@ export default function ClientAverageCalculatorPage() {
     return normalizedEvaluations.filter((ev) => String(ev.name || "").trim().toLowerCase() !== "examen");
   }, [normalizedEvaluations]);
 
+  // Calculate total percentage to prevent exceeding 100%
+  const calculateTotalPercentage = (evaluations, excludeId = null) => {
+    return evaluations.reduce((total, ev) => {
+      if (excludeId && ev.id === excludeId) return total;
+      return total + (Number(ev.weightPercent) || 0);
+    }, 0);
+  };
+
   const updateEvaluation = (id, patch) => {
+    // If updating weightPercent, apply different validation based on exam presence
+    if (patch.weightPercent !== undefined) {
+      const evaluationBeingUpdated = evaluations.find(ev => ev.id === id);
+      const isExam = evaluationBeingUpdated && String(evaluationBeingUpdated.name || "").toLowerCase().trim() === "examen";
+      const hasExamInList = evaluations.some(ev => String(ev.name || "").toLowerCase().trim() === "examen");
+      
+      if (hasExamInList) {
+        // With exam: different validation
+        if (isExam) {
+          // Exam can be 20-80%
+          const newPercent = Number(patch.weightPercent) || 0;
+          patch.weightPercent = clamp(newPercent, 0, 80);
+        } else {
+          // Non-exam evaluations: no strict 100% validation (they get re-scaled)
+          const newPercent = Number(patch.weightPercent) || 0;
+          patch.weightPercent = clamp(newPercent, 0, 100);
+        }
+      } else {
+        // Without exam: original validation (total must be ≤ 100%)
+        const otherEvaluations = evaluations.filter(ev => ev.id !== id);
+        const otherTotal = otherEvaluations.reduce((total, ev) => total + (Number(ev.weightPercent) || 0), 0);
+        
+        const newPercent = Number(patch.weightPercent) || 0;
+        const newTotal = otherTotal + newPercent;
+        
+        // If exceeds 100%, adjust to maximum allowed
+        if (newTotal > 100) {
+          const maxAllowed = Math.max(0, 100 - otherTotal);
+          patch.weightPercent = maxAllowed;
+        }
+      }
+    }
+    
     setEvaluations((prev) => prev.map((ev) => (ev.id === id ? { ...ev, ...patch } : ev)));
   };
 
   const addEvaluation = () => {
-    setEvaluations((prev) => [...prev, createEmptyEvaluation()]);
+    // Calculate remaining percentage for new evaluation
+    const currentTotal = calculateTotalPercentage(evaluations);
+    const remainingPercentage = Math.max(0, 100 - currentTotal);
+    const suggestedPercent = remainingPercentage > 0 ? Math.min(25, remainingPercentage) : 0;
+    
+    const newEvaluation = {
+      ...createEmptyEvaluation(),
+      weightPercent: suggestedPercent
+    };
+    
+    setEvaluations((prev) => [...prev, newEvaluation]);
   };
 
   const removeEvaluation = (id) => {
     setEvaluations((prev) => prev.filter((ev) => ev.id !== id));
   };
+
+
 
   // First-time onboarding screen
   if (!isHydrated) {
@@ -721,48 +847,55 @@ export default function ClientAverageCalculatorPage() {
           {/* Form */}
           <div className="order-2 lg:order-1 lg:col-span-2 card p-5 sm:p-6">
             <div className="flex flex-col gap-3">
-              {/* Simplified header - course management is now optional */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-base font-semibold">
-                  {courses.find(c => c.id === selectedCourseId)?.name || "Mi Curso"}
-                </h2>
-                <div className="flex flex-wrap items-center gap-2">
-                  {!showCourseManagement ? (
-                    <button type="button" className="btn btn-ghost" onClick={() => setShowCourseManagement(true)}>
-                      <span className="mr-1">⚙️</span>
-                      Gestionar cursos
-                    </button>
-                  ) : (
-                    <>
-                      <label className="text-sm font-medium" htmlFor="course-select">Curso actual:</label>
+              {/* Header with course selector always visible */}
+              <div className="flex flex-col gap-3">
+                {/* Course selector row - always visible */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h2 className="text-base font-semibold">
+                    {courses.find(c => c.id === selectedCourseId)?.name || "Mi Curso"}
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium" htmlFor="course-select">Curso:</label>
                       <select
                         id="course-select"
-                        className="border rounded-md px-3 py-2"
+                        className={`border rounded-md px-3 py-2 ${courses.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                         value={selectedCourseId || (courses[0]?.id || "")}
                         onChange={(e) => handleSelectCourse(e.target.value)}
+                        disabled={courses.length === 0}
+                        title={courses.length === 0 ? 'No hay cursos disponibles. Crea uno primero.' : 'Seleccionar curso'}
                       >
-                        {courses.length === 0 && <option value="">—</option>}
+                        {courses.length === 0 && <option value="">Sin cursos disponibles</option>}
                         {courses.map((c) => (
                           <option key={c.id} value={c.id}>{c.name || "Curso"}</option>
                         ))}
                       </select>
-                      <div className="flex items-center gap-1">
-                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={handleAddCourse}>
-                          <span className="mr-1">➕</span>Nuevo
-                        </button>
-                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={handleRenameCourse}>
-                          <span className="mr-1">✏️</span>Renombrar
-                        </button>
-                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={handleDeleteCourse}>
-                          <span className="mr-1">🗑️</span>Eliminar
-                        </button>
-                        <button type="button" className="btn btn-ghost text-sm px-2 py-1" onClick={() => setShowCourseManagement(false)} title="Cerrar">
-                          ✕
-                        </button>
-                      </div>
-                    </>
-                  )}
+                    </div>
+                    <button type="button" className="btn btn-ghost" onClick={() => setShowCourseManagement(!showCourseManagement)}>
+                      <span className="mr-1">⚙️</span>
+                      Gestionar cursos
+                    </button>
+                  </div>
                 </div>
+                
+                {/* Course management buttons - only when expanded */}
+                {showCourseManagement && (
+                  <div className="flex flex-wrap items-center justify-end gap-2 p-3 bg-gray-50 rounded border">
+                    <span className="text-sm text-gray-600 mr-2">Acciones del curso:</span>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={handleAddCourse}>
+                      <span className="mr-1">➕</span>Nuevo curso
+                    </button>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={handleRenameCourse}>
+                      <span className="mr-1">✏️</span>Renombrar
+                    </button>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={handleDeleteCourse}>
+                      <span className="mr-1">🗑️</span>Eliminar
+                    </button>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowCourseManagement(false)} title="Cerrar gestión">
+                      ✕
+                    </button>
+                  </div>
+                )}
               </div>
 
               {!isHydrated && (
@@ -771,42 +904,123 @@ export default function ClientAverageCalculatorPage() {
                 </div>
               )}
 
-              {(() => {
-                if (!totals.hasExam) {
-                  const rawTotal = totals.warningWeight || 0;
+              {/* Percentage validation feedback */}
+              {(nonExamEvaluations.length > 0 || examEvaluation) && (() => {
+                if (examEvaluation) {
+                  // With exam: show different logic
+                  const examWeight = Number(examEvaluation.weightPercent) || 0;
+                  const nonExamTotal = nonExamEvaluations.reduce((sum, ev) => sum + (Number(ev.weightPercent) || 0), 0);
+                  const remainingForNonExam = 100 - examWeight;
+                  
                   return (
-                    <div className="card p-3" style={{ borderColor: rawTotal === 100 ? 'var(--color-border)' : (rawTotal > 100 ? 'var(--color-danger)' : 'var(--color-warning)') }}>
-                      <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                        Porcentajes: {formatNumber(rawTotal, 0)}% de 100%.
+                    <div className="card p-3 border-blue-200 bg-blue-50">
+                      <p className="text-sm text-blue-700 flex items-center gap-2">
+                        <span>📝</span>
+                        Con examen: Examen {formatNumber(examWeight, 0)}% + Evaluaciones {formatNumber(remainingForNonExam, 0)}%
+                      </p>
+                      <p className="text-xs mt-1 text-blue-600">
+                        Las evaluaciones se re-escalan automáticamente al {formatNumber(remainingForNonExam, 0)}% disponible
                       </p>
                     </div>
                   );
+                } else {
+                  // Without exam: original validation logic
+                  const currentTotal = calculateTotalPercentage(evaluations);
+                  const remaining = 100 - currentTotal;
+                  
+                  if (currentTotal === 100) {
+                    return (
+                      <div className="card p-3 border-green-200 bg-green-50">
+                        <p className="text-sm text-green-700 flex items-center gap-2">
+                          <span>✅</span>
+                          Porcentajes: {formatNumber(currentTotal, 0)}% - ¡Perfecto!
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  if (currentTotal > 100) {
+                    return (
+                      <div className="card p-3 border-red-200 bg-red-50">
+                        <p className="text-sm text-red-700 flex items-center gap-2">
+                          <span>⚠️</span>
+                          Porcentajes: {formatNumber(currentTotal, 0)}% - Excede el 100% por {formatNumber(currentTotal - 100, 0)}%
+                        </p>
+                        <p className="text-xs mt-1 text-red-600">
+                          Ajusta los porcentajes para que sumen exactamente 100%
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  if (remaining > 0) {
+                    return (
+                      <div className="card p-3 border-yellow-200 bg-yellow-50">
+                        <p className="text-sm text-yellow-700 flex items-center gap-2">
+                          <span>📊</span>
+                          Porcentajes: {formatNumber(currentTotal, 0)}% - Faltan {formatNumber(remaining, 0)}%
+                        </p>
+                        <p className="text-xs mt-1 text-yellow-600">
+                          Tienes {formatNumber(remaining, 0)}% disponible para distribuir
+                        </p>
+                      </div>
+                    );
+                  }
                 }
+                
                 return null;
               })()}
 
+
+
               {/* Enhanced empty state */}
               {nonExamEvaluations.length === 0 && !examEvaluation ? (
-                <div className="mt-4 text-center py-12">
-                  <div className="inline-flex w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-4">
-                    <span className="text-2xl">📝</span>
+                // Check if we need to create a course first
+                !selectedCourseId || courses.length === 0 ? (
+                  <div className="mt-4 text-center py-12">
+                    <div className="inline-flex w-16 h-16 bg-orange-100 rounded-full items-center justify-center mb-4">
+                      <span className="text-2xl">🎓</span>
+                    </div>
+                    <h3 className="text-lg font-medium mb-2">¡Primero creemos un curso!</h3>
+                    <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+                      Necesitas crear un curso antes de poder agregar evaluaciones. Cada curso mantiene sus evaluaciones independientemente.
+                    </p>
+                    <div className="flex flex-wrap gap-3 justify-center">
+                      <button type="button" className="btn btn-primary" onClick={handleAddCourse}>
+                        <span className="mr-1">➕</span>
+                        Crear mi primer curso
+                      </button>
+                      <button type="button" className="btn btn-ghost" onClick={startWithExample}>
+                        Ver ejemplo
+                      </button>
+                    </div>
+                    <p className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                      💡 Tip: Puedes renombrar el curso después y crear múltiples cursos si los necesitas.
+                    </p>
                   </div>
-                  <h3 className="text-lg font-medium mb-2">¡Comencemos con tus evaluaciones!</h3>
-                  <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
-                    Comienza agregando las evaluaciones de tu semestre (pruebas, tareas, proyectos) para calcular tu promedio y saber qué necesitas para aprobar.
-                  </p>
-                  <div className="flex flex-wrap gap-3 justify-center">
-                    <button type="button" className="btn btn-primary" onClick={addEvaluation}>
-                      Agregar primera evaluación
-                    </button>
-                    <button type="button" className="btn btn-ghost" onClick={startWithExample}>
-                      Ver ejemplo
-                    </button>
+                ) : (
+                  // Normal empty state for when course exists but no evaluations
+                  <div className="mt-4 text-center py-12">
+                    <div className="inline-flex w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-4">
+                      <span className="text-2xl">📝</span>
+                    </div>
+                    <h3 className="text-lg font-medium mb-2">¡Comencemos con tus evaluaciones!</h3>
+                    <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+                      Comienza agregando las evaluaciones de tu semestre (pruebas, tareas, proyectos) para calcular tu promedio y saber qué necesitas para aprobar.
+                    </p>
+                    <div className="flex flex-wrap gap-3 justify-center">
+                      <button type="button" className="btn btn-primary" onClick={addEvaluation}>
+                        Agregar primera evaluación
+                      </button>
+                      <button type="button" className="btn btn-ghost" onClick={startWithExample}>
+                        Ver ejemplo
+                      </button>
+                    </div>
+                    <p className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                      💡 Tip: Agrega primero las evaluaciones del semestre. El examen final se puede agregar después.
+                    </p>
                   </div>
-                  <p className="text-xs mt-4 text-center" style={{ color: 'var(--color-text-muted)' }}>
-                    💡 Tip: Agrega primero las evaluaciones del semestre. El examen final se puede agregar después.
-                  </p>
-                </div>
+                )
               ) : (
                 <div className="mt-2 overflow-x-auto">
                   <table className="w-full text-sm">
@@ -832,22 +1046,70 @@ export default function ClientAverageCalculatorPage() {
                             />
                           </td>
                           <td className="py-3 pr-3 w-[140px]">
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              className="w-full border rounded-md px-3 py-2"
-                              value={String(ev.weightPercent ?? '')}
-                              onChange={(e) => {
-                                const v = sanitizeIntegerInput(e.target.value);
-                                updateEvaluation(ev.id, { weightPercent: v });
-                              }}
-                              onBlur={(e) => {
-                                const raw = e.target.value;
-                                const num = Number(sanitizeIntegerInput(raw));
-                                const clamped = clamp(isNaN(num) ? 0 : num, 0, 100);
-                                updateEvaluation(ev.id, { weightPercent: clamped });
-                              }}
-                            />
+                            {(() => {
+                              const hasExamInList = evaluations.some(e => String(e.name || "").toLowerCase().trim() === "examen");
+                              
+                              if (hasExamInList) {
+                                // With exam: simplified validation (no 100% restriction)
+                                return (
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    className="w-full border rounded-md px-3 py-2"
+                                    value={String(ev.weightPercent ?? '')}
+                                    onChange={(e) => {
+                                      const v = sanitizeIntegerInput(e.target.value);
+                                      updateEvaluation(ev.id, { weightPercent: v });
+                                    }}
+                                    onBlur={(e) => {
+                                      const raw = e.target.value;
+                                      const num = Number(sanitizeIntegerInput(raw));
+                                      const clamped = clamp(isNaN(num) ? 0 : num, 0, 100);
+                                      updateEvaluation(ev.id, { weightPercent: clamped });
+                                    }}
+                                    placeholder="ej: 30"
+                                    title="Se re-escala automáticamente con el examen"
+                                  />
+                                );
+                              } else {
+                                // Without exam: original validation logic
+                                const currentTotal = calculateTotalPercentage(evaluations, ev.id);
+                                const remaining = 100 - currentTotal;
+                                const currentValue = Number(ev.weightPercent) || 0;
+                                const maxPossible = currentValue + remaining;
+                                const isOverLimit = currentTotal + currentValue > 100;
+                                
+                                return (
+                                  <div className="relative">
+                                    <input
+                                      type="text"
+                                      inputMode="numeric"
+                                      className={`w-full border rounded-md px-3 py-2 ${isOverLimit ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
+                                      value={String(ev.weightPercent ?? '')}
+                                      onChange={(e) => {
+                                        const v = sanitizeIntegerInput(e.target.value);
+                                        updateEvaluation(ev.id, { weightPercent: v });
+                                      }}
+                                      onBlur={(e) => {
+                                        const raw = e.target.value;
+                                        const num = Number(sanitizeIntegerInput(raw));
+                                        const clamped = clamp(isNaN(num) ? 0 : num, 0, maxPossible);
+                                        updateEvaluation(ev.id, { weightPercent: clamped });
+                                      }}
+                                      placeholder={remaining > 0 ? `Máx: ${Math.min(25, remaining)}` : '0'}
+                                      title={`Disponible: ${remaining}%`}
+                                    />
+                                    {remaining < 10 && remaining > 0 && (
+                                      <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                                        <span className="text-xs text-orange-500" title={`Solo quedan ${remaining}% disponibles`}>
+                                          {remaining}%
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              }
+                            })()}
                           </td>
                           <td className="py-3 pr-3 w-[160px]">
                             <input
@@ -883,19 +1145,29 @@ export default function ClientAverageCalculatorPage() {
               {/* Action buttons for when evaluations exist */}
               {(nonExamEvaluations.length > 0 || examEvaluation) && (
                 <div className="flex flex-wrap items-center gap-3">
-                  <button type="button" className="btn btn-primary" onClick={addEvaluation}>
+                  <button 
+                    type="button" 
+                    className={`btn btn-primary ${!selectedCourseId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={selectedCourseId ? addEvaluation : undefined}
+                    disabled={!selectedCourseId}
+                    title={!selectedCourseId ? 'Primero debes seleccionar o crear un curso' : 'Agregar nueva evaluación'}
+                  >
                     Agregar evaluación
                   </button>
                   {!hasExam && nonExamEvaluations.length > 0 && (
-                    <>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>o</span>
-                        <button type="button" className="btn btn-ghost" onClick={handleAddExam}>
-                          <span className="mr-1">📝</span>
-                          Agregar examen final (opcional)
-                        </button>
-                      </div>
-                    </>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>o</span>
+                      <button 
+                        type="button" 
+                        className={`btn btn-ghost ${!selectedCourseId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={selectedCourseId ? handleAddExam : undefined}
+                        disabled={!selectedCourseId}
+                        title={!selectedCourseId ? 'Primero debes seleccionar o crear un curso' : 'El examen se agrega independientemente. Las otras evaluaciones se re-escalan automáticamente.'}
+                      >
+                        <span className="mr-1">📝</span>
+                        Agregar examen final (opcional)
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
@@ -918,27 +1190,33 @@ export default function ClientAverageCalculatorPage() {
                     </div>
                     <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                       El examen final representa el {examEvaluation.weightPercent}% de la nota final. 
-                      Las demás evaluaciones se distribuyen en el {formatNumber(100 - (totals.examWeight || 0), 0)}% restante.
+                      Las demás evaluaciones se re-escalan automáticamente para ocupar el {formatNumber(100 - (totals.examWeight || 0), 0)}% restante.
                     </p>
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
                       <div className="grid gap-2">
                         <label className="text-sm font-medium">Porcentaje del examen (%)</label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          className="w-full border rounded-md px-3 py-2"
-                          value={String(examEvaluation.weightPercent ?? '')}
-                          onChange={(e) => {
-                            const v = sanitizeIntegerInput(e.target.value);
-                            updateEvaluation(examEvaluation.id, { weightPercent: v });
-                          }}
-                          onBlur={(e) => {
-                            const num = Number(sanitizeIntegerInput(e.target.value));
-                            const clamped = clamp(isNaN(num) ? 0 : num, 0, 100);
-                            updateEvaluation(examEvaluation.id, { weightPercent: clamped });
-                          }}
-                          placeholder="ej: 40"
-                        />
+                        <div className="relative">
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            className="w-full border rounded-md px-3 py-2"
+                            value={String(examEvaluation.weightPercent ?? '')}
+                            onChange={(e) => {
+                              const v = sanitizeIntegerInput(e.target.value);
+                              updateEvaluation(examEvaluation.id, { weightPercent: v });
+                            }}
+                            onBlur={(e) => {
+                              const num = Number(sanitizeIntegerInput(e.target.value));
+                              const clamped = clamp(isNaN(num) ? 30 : num, 0, 80);
+                              updateEvaluation(examEvaluation.id, { weightPercent: clamped });
+                            }}
+                            placeholder="ej: 30"
+                            title="Peso del examen final (recomendado 20-50%)"
+                          />
+                          <p className="text-xs mt-1 text-gray-600">
+                            Rango recomendado: 20% - 50%
+                          </p>
+                        </div>
                       </div>
                       <div className="grid gap-2">
                         <label className="text-sm font-medium">Nota obtenida (1.0–7.0)</label>
@@ -1018,22 +1296,28 @@ export default function ClientAverageCalculatorPage() {
                             value={String(exigenciaPercent ?? '')}
                             onChange={(e) => {
                               const v = sanitizeIntegerInput(e.target.value);
-                              setExigenciaPercent(v);
+                              setExigenciaPercent(v === '' ? '' : Number(v));
                             }}
                             onBlur={(e) => {
                               const num = Number(sanitizeIntegerInput(e.target.value));
                               const clamped = clamp(isNaN(num) ? 60 : num, 20, 95);
                               setExigenciaPercent(clamped);
                             }}
+                            placeholder="60"
+                            min="20"
+                            max="95"
                           />
                           <div className="flex flex-wrap gap-2">
                             {[60, 70].map((preset) => (
-                              <button key={preset} type="button" className="btn btn-ghost" onClick={() => setExigenciaPercent(preset)}>
+                              <button key={preset} type="button" className="btn btn-ghost text-xs" onClick={() => setExigenciaPercent(preset)}>
                                 {preset}%
                               </button>
                             ))}
                           </div>
                         </div>
+                        <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+                          Rango válido: 20% - 95%
+                        </p>
                       </div>
                       <div className="card p-4">
                         <p className="text-sm font-medium flex items-center gap-2">
@@ -1048,22 +1332,29 @@ export default function ClientAverageCalculatorPage() {
                             value={String(passGradeThreshold ?? '')}
                             onChange={(e) => {
                               const v = sanitizeDecimalInput(e.target.value);
-                              setPassGradeThreshold(v);
+                              setPassGradeThreshold(v === '' ? '' : Number(v));
                             }}
                             onBlur={(e) => {
                               const num = Number(sanitizeDecimalInput(e.target.value));
                               const clamped = clamp(isNaN(num) ? 4.0 : num, 1.0, 7.0);
                               setPassGradeThreshold(clamped);
                             }}
+                            placeholder="4.0"
+                            min="1.0"
+                            max="7.0"
+                            step="0.1"
                           />
                           <div className="flex flex-wrap gap-2">
                             {[4.0, 4.5].map((preset) => (
-                              <button key={preset} type="button" className="btn btn-ghost" onClick={() => setPassGradeThreshold(preset)}>
+                              <button key={preset} type="button" className="btn btn-ghost text-xs" onClick={() => setPassGradeThreshold(preset)}>
                                 {preset}
                               </button>
                             ))}
                           </div>
                         </div>
+                        <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+                          Rango válido: 1.0 - 7.0
+                        </p>
                       </div>
                       <div className="card p-4">
                         <p className="text-sm font-medium flex items-center gap-2">
@@ -1078,22 +1369,29 @@ export default function ClientAverageCalculatorPage() {
                             value={String(exemptionThreshold ?? '')}
                             onChange={(e) => {
                               const v = sanitizeDecimalInput(e.target.value);
-                              setExemptionThreshold(v);
+                              setExemptionThreshold(v === '' ? '' : Number(v));
                             }}
                             onBlur={(e) => {
                               const num = Number(sanitizeDecimalInput(e.target.value));
                               const clamped = clamp(isNaN(num) ? 5.5 : num, 1.0, 7.0);
                               setExemptionThreshold(clamped);
                             }}
+                            placeholder="5.5"
+                            min="1.0"
+                            max="7.0"
+                            step="0.1"
                           />
                           <div className="flex flex-wrap gap-2">
                             {[5.5, 6.0].map((preset) => (
-                              <button key={preset} type="button" className="btn btn-ghost" onClick={() => setExemptionThreshold(preset)}>
+                              <button key={preset} type="button" className="btn btn-ghost text-xs" onClick={() => setExemptionThreshold(preset)}>
                                 {preset}
                               </button>
                             ))}
                           </div>
                         </div>
+                        <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+                          Rango válido: 1.0 - 7.0
+                        </p>
                       </div>
                     </div>
                   )}
@@ -1136,48 +1434,149 @@ export default function ClientAverageCalculatorPage() {
                 )}
               </div>
 
-              {/* Requirements card */}
-              {totals.completedWeight < 100 && (
-                <div className="card p-4 border-l-4 border-blue-500">
-                  <p className="text-sm font-medium text-blue-700">🎯 Lo que necesitas</p>
-                  <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
-                    {(() => {
-                      const remainingWeight = Math.max(0, 100 - totals.completedWeight);
-                      const need = neededForPass;
-                      if (remainingWeight === 0) {
-                        if (totals.currentAverage != null && totals.currentAverage >= passGradeThreshold) return 'Ya aseguras la aprobación 🎉';
-                        return 'No quedan evaluaciones pendientes';
-                      }
-                      if (need == null || isNaN(need)) return 'Agrega evaluaciones para ver qué necesitas';
-                      if (need > 7.0) return 'No es posible aprobar con lo que queda ⚠️';
-                      if (need <= 1.0) return 'Ya aseguras la aprobación 🎉';
-                      return `Promedio ${formatNumber(need, 1)} en el ${formatNumber(remainingWeight, 0)}% restante para aprobar`;
-                    })()}
-                  </p>
-                  
-                  {nextEvaluationRequirement && nextEvaluationRequirement.gradeNeeded && (
-                    <div className="mt-3 p-2 bg-yellow-50 rounded border">
-                      <p className="text-xs font-medium text-yellow-800">Próxima evaluación:</p>
-                      <p className="text-sm text-yellow-700">
-                        {nextEvaluationRequirement.name}: necesitas ≈ {formatNumber(nextEvaluationRequirement.gradeNeeded, 1)}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Requirements card - only show if exam is not rendered and not all completed */}
+              {(() => {
+                const examEval = normalizedEvaluations.find((ev) => String(ev.name || "").trim().toLowerCase() === "examen");
+                const examIsRendered = examEval && examEval.gradeValue != null;
+                const hasExam = totals.hasExam;
+                const remainingWeight = Math.max(0, 100 - totals.completedWeight);
+                
+                // Don't show requirements card if exam is already rendered
+                if (hasExam && examIsRendered) return null;
+                
+                // Don't show if all evaluations are completed (without exam)
+                if (remainingWeight === 0 && !hasExam) return null;
+                
+                return (
+                  <div className="card p-4 border-l-4 border-blue-500">
+                    <p className="text-sm font-medium text-blue-700">🎯 Para poder rendir examen</p>
+                    <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
+                      {(() => {
+                        const need = neededForPass;
+                        
+                        if (remainingWeight === 0) {
+                          if (totals.currentAverage != null) {
+                            if (totals.currentAverage >= exemptionThreshold) {
+                              return 'Ya te eximiste del examen 🎉';
+                            }
+                            if (totals.currentAverage >= passGradeThreshold) {
+                              return 'Debes rendir examen para aprobar 📝';
+                            }
+                            return 'No alcanzas la nota mínima para aprobar ❌';
+                          }
+                          return 'No quedan evaluaciones pendientes';
+                        }
+                        if (need == null || isNaN(need)) return 'Agrega evaluaciones para ver qué necesitas';
+                        if (need > 7.0) return 'No es posible aprobar con lo que queda ⚠️';
+                        if (need <= 1.0) return 'Ya aseguras poder rendir examen 🎉';
+                        return `Promedio ${formatNumber(need, 1)} en el ${formatNumber(remainingWeight, 0)}% restante para poder rendir examen`;
+                      })()}
+                    </p>
+                    
+                    {nextEvaluationRequirement && nextEvaluationRequirement.gradeNeeded && (
+                      <div className="mt-3 p-2 bg-yellow-50 rounded border">
+                        <p className="text-xs font-medium text-yellow-800">Próxima evaluación:</p>
+                        <p className="text-sm text-yellow-700">
+                          {nextEvaluationRequirement.name}: necesitas ≈ {formatNumber(nextEvaluationRequirement.gradeNeeded, 1)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
-              {/* Success state */}
-              {totals.completedWeight >= 100 && totals.currentAverage != null && totals.currentAverage >= passGradeThreshold && (
+              {/* Success state - only show when truly approved (exempted) */}
+              {totals.completedWeight >= 100 && totals.currentAverage != null && totals.currentAverage >= exemptionThreshold && (
                 <div className="card p-4 border-l-4 border-green-500 bg-green-50">
                   <p className="text-sm font-medium text-green-700">🎉 ¡Felicitaciones!</p>
                   <p className="text-sm mt-1 text-green-600">
-                    {totals.currentAverage >= exemptionThreshold 
-                      ? 'Has aprobado el curso y te eximiste del examen'
-                      : 'Has aprobado el curso'
-                    }
+                    Has aprobado el curso y te eximiste del examen final
                   </p>
                 </div>
               )}
+
+              {/* Exam required state */}
+              {(() => {
+                const examEval = normalizedEvaluations.find((ev) => String(ev.name || "").trim().toLowerCase() === "examen");
+                const examIsRendered = examEval && examEval.gradeValue != null;
+                const hasExam = totals.hasExam;
+                
+                // Only show "must take exam" if exam exists, is not rendered yet, and conditions are met
+                if (totals.completedWeight >= 100 && totals.currentAverage != null && 
+                    totals.currentAverage >= passGradeThreshold && totals.currentAverage < exemptionThreshold &&
+                    hasExam && !examIsRendered) {
+                  return (
+                    <div className="card p-4 border-l-4 border-yellow-500 bg-yellow-50">
+                      <p className="text-sm font-medium text-yellow-800">📝 Debes rendir examen</p>
+                      <p className="text-sm mt-1 text-yellow-700">
+                        Tu promedio de {formatNumber(totals.currentAverage, 1)} te permite rendir examen final para aprobar el curso
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
+              {/* Final result cards for when exam is rendered */}
+              {(() => {
+                const examEval = normalizedEvaluations.find((ev) => String(ev.name || "").trim().toLowerCase() === "examen");
+                const examIsRendered = examEval && examEval.gradeValue != null;
+                const hasExam = totals.hasExam;
+                
+                // Show final result card only if exam is rendered and we have a final average
+                if (hasExam && examIsRendered && totals.currentAverage != null) {
+                  if (totals.currentAverage >= exemptionThreshold) {
+                    return (
+                      <div className="card p-4 border-l-4 border-green-500 bg-green-50">
+                        <p className="text-sm font-medium text-green-700">🎉 Curso Aprobado (Eximido)</p>
+                        <p className="text-sm mt-1 text-green-600">
+                          Promedio final: {formatNumber(totals.currentAverage, 1)} - Has aprobado con eximición del examen
+                        </p>
+                      </div>
+                    );
+                  } else if (totals.currentAverage >= passGradeThreshold) {
+                    return (
+                      <div className="card p-4 border-l-4 border-green-500 bg-green-50">
+                        <p className="text-sm font-medium text-green-700">🎉 Curso Aprobado</p>
+                        <p className="text-sm mt-1 text-green-600">
+                          Promedio final: {formatNumber(totals.currentAverage, 1)} - Has aprobado el curso con el examen rendido
+                        </p>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className="card p-4 border-l-4 border-red-500 bg-red-50">
+                        <p className="text-sm font-medium text-red-700">❌ Curso Reprobado</p>
+                        <p className="text-sm mt-1 text-red-600">
+                          Promedio final: {formatNumber(totals.currentAverage, 1)} - No alcanza la nota mínima de {formatNumber(passGradeThreshold, 1)} para aprobar
+                        </p>
+                      </div>
+                    );
+                  }
+                }
+                return null;
+              })()}
+
+              {/* Failed state (only for non-exam cases or incomplete scenarios) */}
+              {(() => {
+                const examEval = normalizedEvaluations.find((ev) => String(ev.name || "").trim().toLowerCase() === "examen");
+                const examIsRendered = examEval && examEval.gradeValue != null;
+                const hasExam = totals.hasExam;
+                
+                // Only show this for non-exam scenarios or when exam is not rendered
+                if (totals.completedWeight >= 100 && totals.currentAverage != null && 
+                    totals.currentAverage < passGradeThreshold && (!hasExam || !examIsRendered)) {
+                  return (
+                    <div className="card p-4 border-l-4 border-red-500 bg-red-50">
+                      <p className="text-sm font-medium text-red-700">❌ Reprobado</p>
+                      <p className="text-sm mt-1 text-red-600">
+                        Tu promedio de {formatNumber(totals.currentAverage, 1)} no alcanza la nota mínima para aprobar ({formatNumber(passGradeThreshold, 1)})
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               {/* Optimistic scenario */}
               {totals.remainingWeight > 0 && (
