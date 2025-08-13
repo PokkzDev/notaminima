@@ -260,7 +260,7 @@ export default function SistemaNotasChilePage() {
 
               <details className="card">
                 <summary className="p-4 cursor-pointer font-medium">
-                  ¿Qué significa "eximirse" en Chile?
+                  ¿Qué significa &quot;eximirse&quot; en Chile?
                 </summary>
                 <div className="p-4 border-t text-sm" style={{ color: "var(--color-text-muted)" }}>
                   Eximirse significa no tener que rendir el examen final al cumplir con un promedio mínimo 
