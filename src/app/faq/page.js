@@ -75,9 +75,9 @@ const faqCategories = [
             Ingresa tus evaluaciones ya rendidas y las que faltan con su porcentaje en la
             <Link href="/promedio" className="underline ml-1">calculadora de promedio</Link>.
             La herramienta te mostrará automáticamente cuánto necesitas para alcanzar la aprobación.
-            <div className="mt-3 p-3 bg-green-50 rounded border-l-4 border-green-200">
-              <p className="text-sm font-medium text-green-800">✅ Casos típicos:</p>
-              <ul className="text-sm text-green-700 mt-1 space-y-1">
+            <div className="mt-3 p-3 bg-blue-50 rounded border-l-4 border-blue-200">
+              <p className="text-sm font-medium text-blue-800">✅ Casos típicos:</p>
+              <ul className="text-sm text-blue-700 mt-1 space-y-1">
                 <li>• <strong>Para aprobar:</strong> Promedio mínimo para nota 4.0</li>
                 <li>• <strong>Para eximirse:</strong> Promedio para evitar el examen</li>
                 <li>• <strong>Próxima evaluación:</strong> Nota específica en la siguiente prueba</li>
@@ -153,9 +153,9 @@ const faqCategories = [
           <>
             Sí, es muy fácil. El <Link href="/puntaje-a-nota" className="underline">conversor de puntaje → nota</Link> incluye
             ejemplos rápidos de un click y presets para los totales más comunes (50, 60, 70, 90, 100, 120 pts).
-            <div className="mt-3 p-3 bg-green-50 rounded border-l-4 border-green-200">
-              <p className="text-sm font-medium text-green-800">🚀 Uso rápido:</p>
-              <ul className="text-sm text-green-700 mt-1 space-y-1">
+            <div className="mt-3 p-3 bg-blue-50 rounded border-l-4 border-blue-200">
+              <p className="text-sm font-medium text-blue-800">🚀 Uso rápido:</p>
+              <ul className="text-sm text-blue-700 mt-1 space-y-1">
                 <li>• <strong>Ejemplos preset:</strong> &quot;Prueba 60 pts&quot;, &quot;Certamen 100 pts&quot;</li>
                 <li>• <strong>Totales comunes:</strong> Botones 50, 60, 70, 90, 100, 120</li>
                 <li>• <strong>Exigencias típicas:</strong> 50%, 60%, 70%, 80%</li>
@@ -229,9 +229,9 @@ const faqCategories = [
           <>
             Todos tus datos se guardan <strong>localmente en tu navegador</strong> usando localStorage.
             No se envían a ningún servidor externo, garantizando tu privacidad total.
-            <div className="mt-3 p-3 bg-green-50 rounded border-l-4 border-green-200">
-              <p className="text-sm font-medium text-green-800">🔒 Privacidad garantizada:</p>
-              <ul className="text-sm text-green-700 mt-1 space-y-1">
+            <div className="mt-3 p-3 bg-blue-50 rounded border-l-4 border-blue-200">
+              <p className="text-sm font-medium text-blue-800">🔒 Privacidad garantizada:</p>
+              <ul className="text-sm text-blue-700 mt-1 space-y-1">
                 <li>• <strong>Datos locales:</strong> Solo en tu dispositivo</li>
                 <li>• <strong>Sin registro:</strong> No necesitas crear cuenta</li>
                 <li>• <strong>Backup opcional:</strong> Puedes exportar/importar datos</li>

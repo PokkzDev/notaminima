@@ -1,0 +1,360 @@
+/* Puntaje a Nota Page Styles */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  max-width: 72rem;
+}
+
+/* CSS Variables para colores y consistencia */
+.root {
+  --primary-blue: #3b82f6;
+  --primary-blue-dark: #1d4ed8;
+  --success-green: #16a34a;
+  --success-green-light: #f0fdf4;
+  --error-red: #dc2626;
+  --error-red-light: #fef2f2;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-900: #111827;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+}
+
+/* Calculator Section */
+.calculatorGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .calculatorGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Input Section */
+.inputSection {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+}
+
+.inputSection h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--color-text);
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.scoreInputsRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.scoreInputGroup {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .scoreInputsRow {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.inputGroup label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  margin-bottom: 0.5rem;
+}
+
+.inputField {
+  width: 100%;
+  font-size: 1.25rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: all 0.15s ease;
+  background: white;
+}
+
+.inputField:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Score input specific styling */
+.inputField[type="text"] {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 1.1em;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.optionGrid {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .optionGrid.gridCols3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.optionButton {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: white;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.optionButton:hover {
+  border-color: var(--gray-300);
+  background: var(--gray-50);
+}
+
+.optionButton.selected {
+  border-color: var(--primary-blue);
+  background: #eff6ff;
+  color: var(--primary-blue-dark);
+}
+
+/* Custom total input styling */
+.customTotalInput {
+  margin-top: 0.5rem;
+}
+
+.customTotalInput input {
+  width: 100%;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease;
+}
+
+.customTotalInput input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+/* Results Section */
+.resultsSection {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+}
+
+.resultsSection h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--color-text);
+}
+
+.mainResult {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.resultNumber {
+  font-size: 6rem;
+  font-weight: 800;
+  color: var(--primary-blue);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.resultLabel {
+  font-size: 1.125rem;
+  color: var(--gray-500);
+  margin-bottom: 1rem;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.statusBadge.aprobado {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: var(--success-green);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.statusBadge.reprobado {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--error-red);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.detailsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+}
+
+.detailValue {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.statusCard {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  border: 1px solid;
+}
+
+.statusCard.aprobado {
+  background-color: var(--success-green-light);
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.statusCard.aprobado .statusTitle {
+  color: var(--success-green);
+  font-weight: 600;
+}
+
+.statusCard.aprobado .statusMessage {
+  color: #15803d;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.statusCard.reprobado {
+  background-color: var(--error-red-light);
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.statusCard.reprobado .statusTitle {
+  color: var(--error-red);
+  font-weight: 600;
+}
+
+.statusCard.reprobado .statusMessage {
+  color: #b91c1c;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.referenceCard {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+}
+
+.referenceCard .referenceTitle {
+  color: var(--primary-blue-dark);
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.referenceCard .referenceList {
+  color: #1e40af;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.referenceCard .referenceItem {
+  margin-bottom: 0.25rem;
+}
+
+.referenceCard .referenceItem:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .inputSection,
+  .resultsSection {
+    padding: 1.5rem;
+  }
+
+  .resultNumber {
+    font-size: 4rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .inputSection,
+  .resultsSection {
+    padding: 1.25rem;
+  }
+
+  .resultNumber {
+    font-size: 3.5rem;
+  }
+}

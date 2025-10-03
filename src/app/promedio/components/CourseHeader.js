@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "../Promedio.module.css";
+
 export default function CourseHeader({
   courses,
   selectedCourseId,
@@ -11,20 +13,20 @@ export default function CourseHeader({
   onDeleteCourse,
 }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className={styles.courseSection}>
       {/* Course selector row - always visible */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={styles.courseSelector}>
         <h2 className="text-base font-semibold">
           {courses.find((c) => c.id === selectedCourseId)?.name || "Mi Curso"}
         </h2>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium" htmlFor="course-select">
+            <label className={styles.courseSelectorLabel} htmlFor="course-select">
               Curso:
             </label>
             <select
               id="course-select"
-              className={`border rounded-md px-3 py-2 ${
+              className={`${styles.courseSelect} ${
                 courses.length === 0 ? "opacity-50 cursor-not-allowed" : ""
               }`}
               value={selectedCourseId || (courses[0]?.id || "")}
@@ -59,23 +61,23 @@ export default function CourseHeader({
 
       {/* Course management buttons - only when expanded */}
       {showCourseManagement && (
-        <div className="flex flex-wrap items-center justify-end gap-2 p-3 bg-gray-50 rounded border">
+        <div className={styles.courseActions}>
           <span className="text-sm text-gray-600 mr-2">Acciones del curso:</span>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onAddCourse}>
+          <button type="button" className={styles.courseActionBtn} onClick={onAddCourse}>
             <span className="mr-1">➕</span>
             Nuevo curso
           </button>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onRenameCourse}>
+          <button type="button" className={styles.courseActionBtn} onClick={onRenameCourse}>
             <span className="mr-1">✏️</span>
             Renombrar
           </button>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onDeleteCourse}>
+          <button type="button" className={styles.courseActionBtn} onClick={onDeleteCourse}>
             <span className="mr-1">🗑️</span>
             Eliminar
           </button>
           <button
             type="button"
-            className="btn btn-ghost btn-sm"
+            className={styles.courseActionBtn}
             onClick={() => setShowCourseManagement(false)}
             title="Cerrar gestión"
           >

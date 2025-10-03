@@ -1,6 +1,7 @@
 import "./globals.css";
-import Link from "next/link";
+import Navbar from "./components/Navbar";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata = {
   title: "Nota Mínima",
@@ -37,7 +38,7 @@ export default function RootLayout({ children }) {
         
         {/* PWA and mobile optimizations */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#16a34a" />
+        <meta name="theme-color" content="#2563eb" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Nota Mínima" />
@@ -121,38 +122,10 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <header style={{
-          background: "rgba(255, 255, 255, 0.75)",
-          backdropFilter: "saturate(180%) blur(10px)",
-          WebkitBackdropFilter: "saturate(180%) blur(10px)",
-          borderBottom: "1px solid var(--color-border)",
-          position: "sticky",
-          top: 0,
-          zIndex: 50
-        }}>
-          <nav className="container py-3 flex flex-wrap items-center justify-between gap-3" aria-label="Navegación principal">
-            <Link href="/" className="flex items-center gap-2 font-semibold text-base" aria-label="Ir al inicio - Nota Mínima">
-              <Image
-                src="/logo.png"
-                alt="Logo Nota Mínima - Calculadora de notas Chile"
-                width={24}
-                height={24}
-                className="rounded"
-              />
-              <span>Nota Mínima</span>
-            </Link>
-            <div className="flex items-center gap-4" role="menubar">
-              <Link href="/" className="text-sm font-medium" role="menuitem" aria-label="Página de inicio">Inicio</Link>
-              <span aria-hidden="true" role="separator" className="text-sm text-[var(--color-text-muted)]">|</span>
-              <Link href="/promedio" className="text-sm font-medium" role="menuitem" aria-label="Calculadora de promedio ponderado">Promedio</Link>
-              <Link href="/puntaje-a-nota" className="text-sm font-medium" role="menuitem" aria-label="Conversor de puntaje a nota">Puntaje→Nota</Link>
-              <span aria-hidden="true" role="separator" className="text-sm text-[var(--color-text-muted)]">|</span>
-              <Link href="/faq" className="text-sm font-medium" role="menuitem" aria-label="Preguntas frecuentes y ayuda">Preguntas frecuentes</Link>
-            </div>
-          </nav>
-        </header>
-
-        {children}
+        <Navbar />
+        <main>
+          {children}
+        </main>
 
         <footer
           style={{
@@ -184,14 +157,13 @@ export default function RootLayout({ children }) {
 
               <nav aria-label="Enlaces de pie de página" className="sm:justify-self-center">
                 <h3 className="sr-only">Enlaces del sitio</h3>
-                <ul className="flex flex-wrap gap-x-5 gap-y-3 text-sm">
-                  <li><Link href="/" aria-label="Ir al inicio">Inicio</Link></li>
-                  <li><Link href="/promedio" aria-label="Calculadora de promedio">Promedio</Link></li>
-                  <li><Link href="/puntaje-a-nota" aria-label="Conversor puntaje a nota">Puntaje→Nota</Link></li>
-                  <li><Link href="/faq" aria-label="Preguntas frecuentes">FAQ</Link></li>
-                  <li><Link href="/sistema-notas-chile" aria-label="Sistema de notas Chile">Sistema Chile</Link></li>
-                  <li><Link href="/privacidad" aria-label="Política de privacidad">Privacidad</Link></li>
-                  <li><Link href="/terminos" aria-label="Términos y condiciones">Términos</Link></li>
+                <ul className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+                  <li><Link href="/" aria-label="Ir al inicio" className="hover:text-blue-600 transition-colors">Inicio</Link></li>
+                  <li><Link href="/promedio" aria-label="Calculadora de promedio" className="hover:text-blue-600 transition-colors font-medium">Promedio</Link></li>
+                  <li><Link href="/puntaje-a-nota" aria-label="Conversor puntaje a nota" className="hover:text-blue-600 transition-colors">Puntaje→Nota</Link></li>
+                  <li><Link href="/faq" aria-label="Preguntas frecuentes" className="hover:text-blue-600 transition-colors">Ayuda</Link></li>
+                  <li><Link href="/privacidad" aria-label="Política de privacidad" className="hover:text-blue-600 transition-colors">Privacidad</Link></li>
+                  <li><Link href="/terminos" aria-label="Términos y condiciones" className="hover:text-blue-600 transition-colors">Términos</Link></li>
                 </ul>
               </nav>
 

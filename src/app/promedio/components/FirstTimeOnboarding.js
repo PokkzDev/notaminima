@@ -34,7 +34,7 @@ export default function FirstTimeOnboarding({ onStartWithExample, onStartFromScr
 
           <div className="card p-6 sm:p-8">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-xl">📝</span>
               </div>
               <div className="flex-1">

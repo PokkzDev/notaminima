@@ -2,6 +2,7 @@
 
 import { clamp, sanitizeIntegerInput, sanitizeDecimalInput, formatNumber } from "../utils";
 import { calculateTotalPercentage } from "../calculations";
+import styles from "../Promedio.module.css";
 
 export default function EvaluationsTable({
   evaluations,
@@ -14,7 +15,7 @@ export default function EvaluationsTable({
   );
 
   return (
-    <div className="mt-2 overflow-x-auto">
+    <div className={styles.evaluationsSection}>
       <table className="w-full text-sm">
         <thead>
           <tr style={{ color: "var(--color-text-muted)" }}>

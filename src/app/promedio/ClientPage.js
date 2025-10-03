@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./Promedio.module.css";
 import RenameCourseModal from "./components/RenameCourseModal";
 import CreateCourseModal from "./components/CreateCourseModal";
 import DeleteCourseModal from "./components/DeleteCourseModal";
@@ -21,6 +22,7 @@ import { clamp, createEmptyEvaluation, createDefaultCourseData } from "./utils";
 import { calculateTotalPercentage } from "./calculations";
 import { useAverageData } from "./hooks/useAverageData";
 import { useBackup } from "./hooks/useBackup";
+import Link from "next/link";
 
 export default function ClientAverageCalculatorPage() {
   // Course management
@@ -402,127 +404,172 @@ export default function ClientAverageCalculatorPage() {
 
   return (
     <main>
-      <section className="container py-12 sm:py-16">
-        <div className="mb-3"><span className="kicker">Calculadora de promedio</span></div>
-        <div>
-          <h1 className="text-3xl/[1.15] sm:text-4xl/[1.1] font-semibold tracking-tight">Promedio ponderado y nota mínima</h1>
-          <p className="mt-3 max-w-[60ch] text-base" style={{ color: "var(--color-text-muted)" }}>
-            Completa tus evaluaciones y mira tu promedio y lo que necesitas para aprobar.
-          </p>
-        </div>
-
-        {/* Course Summary Cards */}
-        {isHydrated && courses.length > 0 && (
-          <CourseSummaryGrid
-            courses={courses}
-            selectedCourseId={selectedCourseId}
-            onSelectCourse={handleSelectCourse}
-          />
-        )}
-
-        <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          {/* Form */}
-          <div className="order-2 lg:order-1 lg:col-span-2 card p-5 sm:p-6">
-            <div className="flex flex-col gap-3">
-              {/* Header with course selector always visible */}
-              <CourseHeader
-                courses={courses}
-                selectedCourseId={selectedCourseId}
-                onSelectCourse={handleSelectCourse}
-                showCourseManagement={showCourseManagement}
-                setShowCourseManagement={setShowCourseManagement}
-                onAddCourse={handleAddCourse}
-                onRenameCourse={handleRenameCourse}
-                onDeleteCourse={handleDeleteCourse}
-              />
-
-              {!isHydrated && (
-                <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                  Cargando datos…
-                </div>
+      {/* Hero Section */}
+      <section
+        className="hero-bg"
+        style={{ minHeight: "70vh", display: "flex", alignItems: "center" }}
+        aria-label="Calculadora de promedio ponderado"
+      >
+        <div className="container py-20 sm:py-32">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-8">
+              <span className="kicker">Calculadora Profesional</span>
+            </div>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-white">
+              Promedio Ponderado
+              <span className="block text-4xl sm:text-5xl text-blue-200 mt-2 font-semibold">
+                Sistema Chileno
+              </span>
+            </h1>
+            <p className="mt-6 max-w-2xl mx-auto text-xl leading-relaxed text-blue-100">
+              Calcula automáticamente tu promedio ponderado y descubre cuánto necesitas para aprobar o eximirte.
+              Gestiona múltiples cursos con evaluaciones personalizadas.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              {!isFirstTime && (
+                <Link
+                  href="#calculator"
+                  className="btn btn-primary px-8 py-3 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  aria-label="Ir a la calculadora"
+                >
+                  Usar Calculadora
+                </Link>
               )}
-
-              {/* Percentage validation feedback */}
-              <PercentageFeedback
-                examEvaluation={examEvaluation}
-                nonExamEvaluations={nonExamEvaluations}
-                evaluations={evaluations}
-              />
-
-
-
-              {/* Enhanced empty state */}
-              {nonExamEvaluations.length === 0 && !examEvaluation ? (
-                <EmptyState
-                  hasCourse={!!selectedCourseId && courses.length > 0}
-                  onCreateCourse={handleAddCourse}
-                  onAddEvaluation={addEvaluation}
-                  onStartWithExample={startWithExample}
-                />
-              ) : (
-                <EvaluationsTable
-                  evaluations={evaluations}
-                  normalizedEvaluations={nonExamEvaluations}
-                  updateEvaluation={updateEvaluation}
-                  removeEvaluation={removeEvaluation}
-                />
-              )}
-
-              {/* Action buttons for when evaluations exist */}
-              {(nonExamEvaluations.length > 0 || examEvaluation) && (
-                <FormActions
-                  canAdd={!!selectedCourseId}
-                  onAddEvaluation={addEvaluation}
-                  showAddExam={!hasExam && nonExamEvaluations.length > 0}
-                  onAddExam={handleAddExam}
-                />
-              )}
-
-              <ExamSection
-                examEvaluation={examEvaluation}
-                totals={totals}
-                updateEvaluation={updateEvaluation}
-                removeEvaluation={removeEvaluation}
-                passGradeThreshold={passGradeThreshold}
-              />
-
-              <AdvancedOptions
-                show={showAdvanced}
-                onToggle={() => setShowAdvanced((v) => !v)}
-                hasEvaluations={nonExamEvaluations.length > 0 || !!examEvaluation}
-                exigenciaPercent={exigenciaPercent}
-                setExigenciaPercent={setExigenciaPercent}
-                passGradeThreshold={passGradeThreshold}
-                setPassGradeThreshold={setPassGradeThreshold}
-                exemptionThreshold={exemptionThreshold}
-                setExemptionThreshold={setExemptionThreshold}
-              />
+              <Link
+                href="/puntaje-a-nota"
+                className="btn btn-ghost px-8 py-3 text-lg font-semibold rounded-2xl border-2 hover:bg-white/10 transition-all duration-300"
+                aria-label="Ir al conversor de puntaje a nota"
+              >
+                Puntaje → Nota
+              </Link>
             </div>
           </div>
-
-          {/* Enhanced Result Panel */}
-          <ResultPanel
-            totals={totals}
-            status={status}
-            normalizedEvaluations={normalizedEvaluations}
-            exemptionThreshold={exemptionThreshold}
-            passGradeThreshold={passGradeThreshold}
-            neededForPass={neededForPass}
-            neededForExemption={neededForExemption}
-            nextEvaluationRequirement={nextEvaluationRequirement}
-            exigenciaPercent={exigenciaPercent}
-          />
         </div>
+      </section>
 
-        {/* Backup and Data Management Section */}
-        {isHydrated && !isFirstTime && (
-          <BackupSection
-            open={showBackupSection}
-            onToggle={setShowBackupSection}
-            onExport={handleExport}
-            onOpenImport={handleOpenImport}
-          />
-        )}
+      {/* Calculator Section */}
+      <section id="calculator" className="py-20 bg-gradient-to-br from-slate-50 to-blue-50/30" aria-label="Calculadora de promedio">
+        <div className="container">
+          <div className="max-w-6xl mx-auto">
+            {/* Course Summary Cards */}
+            {isHydrated && courses.length > 0 && (
+              <div className="mb-12">
+                <CourseSummaryGrid
+                  courses={courses}
+                  selectedCourseId={selectedCourseId}
+                  onSelectCourse={handleSelectCourse}
+                />
+              </div>
+            )}
+
+            {/* Main Calculator Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Input Section */}
+              <div className="card p-8 bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+                <div className="flex flex-col gap-6">
+                  {/* Header with course selector */}
+                  <CourseHeader
+                    courses={courses}
+                    selectedCourseId={selectedCourseId}
+                    onSelectCourse={handleSelectCourse}
+                    showCourseManagement={showCourseManagement}
+                    setShowCourseManagement={setShowCourseManagement}
+                    onAddCourse={handleAddCourse}
+                    onRenameCourse={handleRenameCourse}
+                    onDeleteCourse={handleDeleteCourse}
+                  />
+
+                  {!isHydrated && (
+                    <div className="text-center py-8">
+                      <div className="text-gray-500">Cargando datos...</div>
+                    </div>
+                  )}
+
+                  {/* Percentage validation feedback */}
+                  <PercentageFeedback
+                    examEvaluation={examEvaluation}
+                    nonExamEvaluations={nonExamEvaluations}
+                    evaluations={evaluations}
+                  />
+
+                  {/* Enhanced empty state */}
+                  {nonExamEvaluations.length === 0 && !examEvaluation ? (
+                    <EmptyState
+                      hasCourse={!!selectedCourseId && courses.length > 0}
+                      onCreateCourse={handleAddCourse}
+                      onAddEvaluation={addEvaluation}
+                      onStartWithExample={startWithExample}
+                    />
+                  ) : (
+                    <EvaluationsTable
+                      evaluations={evaluations}
+                      normalizedEvaluations={nonExamEvaluations}
+                      updateEvaluation={updateEvaluation}
+                      removeEvaluation={removeEvaluation}
+                    />
+                  )}
+
+                  {/* Action buttons for when evaluations exist */}
+                  {(nonExamEvaluations.length > 0 || examEvaluation) && (
+                    <FormActions
+                      canAdd={!!selectedCourseId}
+                      onAddEvaluation={addEvaluation}
+                      showAddExam={!hasExam && nonExamEvaluations.length > 0}
+                      onAddExam={handleAddExam}
+                    />
+                  )}
+
+                  <ExamSection
+                    examEvaluation={examEvaluation}
+                    totals={totals}
+                    updateEvaluation={updateEvaluation}
+                    removeEvaluation={removeEvaluation}
+                    passGradeThreshold={passGradeThreshold}
+                  />
+
+                  <AdvancedOptions
+                    show={showAdvanced}
+                    onToggle={() => setShowAdvanced((v) => !v)}
+                    hasEvaluations={nonExamEvaluations.length > 0 || !!examEvaluation}
+                    exigenciaPercent={exigenciaPercent}
+                    setExigenciaPercent={setExigenciaPercent}
+                    passGradeThreshold={passGradeThreshold}
+                    setPassGradeThreshold={setPassGradeThreshold}
+                    exemptionThreshold={exemptionThreshold}
+                    setExemptionThreshold={setExemptionThreshold}
+                  />
+                </div>
+              </div>
+
+              {/* Results Section */}
+              <div className="card p-8 bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+                <ResultPanel
+                  totals={totals}
+                  status={status}
+                  normalizedEvaluations={normalizedEvaluations}
+                  exemptionThreshold={exemptionThreshold}
+                  passGradeThreshold={passGradeThreshold}
+                  neededForPass={neededForPass}
+                  neededForExemption={neededForExemption}
+                  nextEvaluationRequirement={nextEvaluationRequirement}
+                  exigenciaPercent={exigenciaPercent}
+                />
+              </div>
+            </div>
+
+            {/* Backup and Data Management Section */}
+            {isHydrated && !isFirstTime && (
+              <div className="mt-12">
+                <BackupSection
+                  open={showBackupSection}
+                  onToggle={setShowBackupSection}
+                  onExport={handleExport}
+                  onOpenImport={handleOpenImport}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </section>
 
       {/* Modals */}

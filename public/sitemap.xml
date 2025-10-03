@@ -47,17 +47,6 @@
     </image:image>
   </url>
   <url>
-    <loc>https://notaminima.cl/sistema-notas-chile</loc>
-    <lastmod>2025-01-15T10:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://notaminima.cl/logo-256.png</image:loc>
-      <image:title>Sistema de Notas Chile - Guía Escala 1.0-7.0</image:title>
-      <image:caption>Guía completa del sistema educativo chileno</image:caption>
-    </image:image>
-  </url>
-  <url>
     <loc>https://notaminima.cl/privacidad</loc>
     <lastmod>2025-01-15T10:00:00+00:00</lastmod>
     <changefreq>yearly</changefreq>

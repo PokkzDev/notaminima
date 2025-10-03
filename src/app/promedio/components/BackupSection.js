@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "../Promedio.module.css";
+
 export default function BackupSection({
   open,
   onToggle,
@@ -7,11 +9,11 @@ export default function BackupSection({
   onOpenImport,
 }) {
   return (
-    <div className="mt-16 pt-8 border-t" style={{ borderColor: 'var(--color-border)' }}>
-      <div className="text-center mb-8">
+    <div className={styles.backupSection}>
+      <div className={styles.backupHeader}>
         {!open ? (
-          <div>
-            <button type="button" className="btn btn-ghost text-sm" onClick={() => onToggle(true)}>
+          <div className="text-center">
+            <button type="button" className={styles.backupToggle} onClick={() => onToggle(true)}>
               <span className="mr-2">💾</span>
               Ver opciones de backup y datos
             </button>
@@ -20,10 +22,10 @@ export default function BackupSection({
             </p>
           </div>
         ) : (
-          <div>
+          <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <h3 className="text-lg font-semibold">Backup y gestión de datos</h3>
-              <button type="button" className="btn btn-ghost text-sm" onClick={() => onToggle(false)} title="Ocultar esta sección">
+              <h3 className={styles.backupTitle}>Backup y gestión de datos</h3>
+              <button type="button" className={styles.backupToggle} onClick={() => onToggle(false)} title="Ocultar esta sección">
                 ✕
               </button>
             </div>
@@ -36,7 +38,7 @@ export default function BackupSection({
 
       {open && (
         <>
-          <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+          <div className={styles.backupActions}>
             <div className="card p-6">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -47,7 +49,7 @@ export default function BackupSection({
                   <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Descarga un archivo JSON con todos tus cursos y evaluaciones. Útil para hacer respaldo o transferir a otro dispositivo.
                   </p>
-                  <button type="button" className="btn btn-primary" onClick={onExport}>
+                  <button type="button" className={styles.backupBtn} onClick={onExport}>
                     <span className="mr-2">⬇️</span>
                     Descargar mis datos
                   </button>
@@ -60,7 +62,7 @@ export default function BackupSection({
 
             <div className="card p-6">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-xl">📂</span>
                 </div>
                 <div className="flex-1">
@@ -68,7 +70,7 @@ export default function BackupSection({
                   <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Restaura tus cursos desde un archivo de backup. Esto <strong>reemplazará</strong> todos tus datos actuales.
                   </p>
-                  <button type="button" className="btn btn-ghost" onClick={onOpenImport}>
+                  <button type="button" className={`${styles.backupBtn} ${styles.secondary}`} onClick={onOpenImport}>
                     <span className="mr-2">⬆️</span>
                     Cargar desde archivo
                   </button>

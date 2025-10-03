@@ -1,13 +1,13 @@
 export const metadata = {
-  title: "🧮 Convertir Puntaje a Nota Chile | X/Y Puntos → Escala 1.0-7.0 | Exigencia 60%-70%",
+  title: "Conversor de Puntaje a Nota Chile | X/Y Puntos → Escala 1.0-7.0 | Exigencia 60%-70%",
   description:
-    "🎯 Convierte cualquier puntaje (30/60, 45/90, 70/100 puntos) a nota chilena 1.0-7.0 instantáneamente. Configura exigencia 60%, 70% según tu institución. Presets incluidos. ¡Gratis!",
-  keywords: "convertir puntaje nota chile, X Y puntos nota 1.0 7.0, exigencia 60% 70%, calculadora puntaje nota, formula chilena conversion, prueba examen puntaje",
+    "Convierte fácilmente cualquier puntaje (30/60, 45/90, 70/100 puntos) a nota chilena 1.0-7.0. Selecciona entre exigencia 60% o 70% según tu institución.",
+  keywords: "convertir puntaje nota chile, X Y puntos nota 1.0 7.0, exigencia 60% 70%, calculadora puntaje nota, conversion puntaje nota chilena",
   alternates: { canonical: "/puntaje-a-nota" },
   openGraph: {
-    title: "🧮 Conversor Puntaje → Nota Chile | Escala 1.0-7.0 con Exigencia",
+    title: "Conversor Puntaje → Nota Chile | Escala 1.0-7.0",
     description:
-      "Convierte instantáneamente cualquier puntaje a nota chilena. Configura exigencia (60%, 70%) y usa presets comunes. Fórmula oficial del sistema educativo chileno.",
+      "Conversor simple e intuitivo para convertir puntajes a notas chilenas. Selecciona el total de puntos y la exigencia para obtener tu nota instantáneamente.",
     type: "website",
     locale: "es_CL",
     url: "https://notaminima.cl/puntaje-a-nota",
@@ -23,9 +23,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "🧮 Conversor Puntaje → Nota Chile | Escala 1.0-7.0 con Exigencia",
+    title: "Conversor Puntaje → Nota Chile | Escala 1.0-7.0",
     description:
-      "Convierte puntajes a notas chilenas instantáneamente. Exigencia configurable y presets incluidos.",
+      "Convierte fácilmente puntajes a notas chilenas con esta herramienta simple e intuitiva.",
     images: ["https://notaminima.cl/logo-256.png"],
   },
   robots: {

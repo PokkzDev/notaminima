@@ -1,5 +1,7 @@
 "use client";
 
+import styles from "../Promedio.module.css";
+
 export default function FormActions({
   canAdd,
   onAddEvaluation,
