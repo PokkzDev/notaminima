@@ -87,6 +87,17 @@
   opacity: 0.6;
 }
 
+.errorMessage {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  color: #991b1b;
+  font-size: 0.938rem;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
 .buttonGroup {
   display: flex;
   gap: 1rem;

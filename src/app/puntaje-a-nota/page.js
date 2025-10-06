@@ -10,6 +10,7 @@ export default function PuntajeANota() {
   const [puntajeTotal, setPuntajeTotal] = useState('100');
   const [exigencia, setExigencia] = useState('60');
   const [nota, setNota] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const obtenido = parseFloat(puntajeObtenido);
@@ -18,13 +19,23 @@ export default function PuntajeANota() {
 
     if (isNaN(obtenido) || isNaN(total) || isNaN(exig)) {
       setNota(null);
+      setError('');
       return;
     }
 
     if (total <= 0 || exig <= 0 || exig > 100 || obtenido < 0) {
       setNota(null);
+      setError('');
       return;
     }
+
+    if (obtenido > total) {
+      setNota(null);
+      setError('El puntaje obtenido no puede ser mayor que el puntaje total');
+      return;
+    }
+
+    setError('');
 
     const puntajeMinimo = total * (exig / 100);
     
@@ -36,7 +47,12 @@ export default function PuntajeANota() {
     }
 
     notaCalculada = Math.max(1.0, Math.min(7.0, notaCalculada));
-    setNota(notaCalculada.toFixed(1));
+    
+    // Detectar si los valores tienen decimales
+    const tieneDecimales = !Number.isInteger(obtenido) || !Number.isInteger(total);
+    const decimales = tieneDecimales ? 2 : 1;
+    
+    setNota(notaCalculada.toFixed(decimales));
   }, [puntajeObtenido, puntajeTotal, exigencia]);
 
   const limpiarFormulario = () => {
@@ -106,6 +122,12 @@ export default function PuntajeANota() {
                 />
               </div>
 
+              {error && (
+                <div className={styles.errorMessage}>
+                  {error}
+                </div>
+              )}
+
               <div className={styles.buttonGroup}>
                 <button 
                   onClick={limpiarFormulario} 
@@ -141,7 +163,13 @@ export default function PuntajeANota() {
                     <div className={styles.detailItem}>
                       <span className={styles.detailLabel}>Porcentaje:</span>
                       <span className={styles.detailValue}>
-                        {((parseFloat(puntajeObtenido) / parseFloat(puntajeTotal)) * 100).toFixed(1)}%
+                        {(() => {
+                          const obtenido = parseFloat(puntajeObtenido);
+                          const total = parseFloat(puntajeTotal);
+                          const tieneDecimales = !Number.isInteger(obtenido) || !Number.isInteger(total);
+                          const decimales = tieneDecimales ? 2 : 1;
+                          return ((obtenido / total) * 100).toFixed(decimales);
+                        })()}%
                       </span>
                     </div>
                     <div className={styles.detailItem}>

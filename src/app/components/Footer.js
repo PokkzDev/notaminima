@@ -51,6 +51,9 @@ export default function Footer() {
         <p className={styles.copyright}>
           © {currentYear} NotaMinima. Todos los derechos reservados.
         </p>
+        <p className={styles.attribution}>
+          Desarrollado por <a href="https://pokkz.dev" target="_blank" rel="noopener noreferrer" className={styles.attributionLink}>pokkz.dev</a>
+        </p>
       </div>
     </footer>
   );

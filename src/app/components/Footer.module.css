@@ -75,6 +75,23 @@
   margin: 0;
 }
 
+.attribution {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin: 0.5rem 0 0;
+}
+
+.attributionLink {
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.attributionLink:hover {
+  color: #3b82f6;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .container {
