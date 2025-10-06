@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus, 
@@ -27,6 +28,15 @@ export default function Promedio() {
   const [errorImportar, setErrorImportar] = useState('');
   const [validandoArchivo, setValidandoArchivo] = useState(false);
   const [archivoValido, setArchivoValido] = useState(null);
+
+  // Actualizar metadatos de la página
+  useEffect(() => {
+    document.title = "Calculadora de Promedio Ponderado | NotaMinima";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Calcula tu promedio de notas ponderado fácilmente. Gestiona múltiples cursos, agrega notas con ponderaciones y calcula automáticamente tu promedio académico.');
+    }
+  }, []);
 
   // Cargar datos desde localStorage
   useEffect(() => {
@@ -405,8 +415,35 @@ export default function Promedio() {
     reader.readAsText(archivoImportar);
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Calculadora de Promedio Ponderado',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'CLP',
+    },
+    description: 'Calcula tu promedio de notas ponderado. Gestiona múltiples cursos y calcula automáticamente tu promedio académico.',
+    url: 'https://notaminima.cl/promedio',
+    featureList: [
+      'Gestión de múltiples cursos',
+      'Cálculo de promedio ponderado',
+      'Exportación e importación de datos',
+      'Almacenamiento local',
+    ],
+  };
+
   return (
-    <main className={styles.main}>
+    <>
+      <Script
+        id="json-ld-promedio"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className={styles.main}>
       <div className={styles.container}>
         <header className={styles.header}>
           <h1 className={styles.title}>Promedio de Notas</h1>
@@ -443,7 +480,13 @@ export default function Promedio() {
             <div className={styles.emptyState}>
               <FontAwesomeIcon icon={faBook} className={styles.emptyIcon} />
               <p className={styles.emptyText}>No tienes cursos agregados</p>
-              <p className={styles.emptySubtext}>Comienza agregando tu primer curso</p>
+              <p className={styles.emptySubtext}>Comienza agregando tu primer curso o importa tus datos</p>
+              <div className={styles.emptyStateActions}>
+                <button onClick={abrirModalImportar} className={styles.importButtonEmpty}>
+                  <FontAwesomeIcon icon={faUpload} />
+                  Importar Datos
+                </button>
+              </div>
             </div>
           )}
 
@@ -809,6 +852,7 @@ export default function Promedio() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </>
   );
 }

@@ -277,6 +277,34 @@
   color: #999;
 }
 
+.emptyStateActions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.importButtonEmpty {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: #10b981;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.importButtonEmpty:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
 /* Cursos Container */
 .cursosContainer {
   display: flex;

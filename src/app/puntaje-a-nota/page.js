@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import styles from './PuntajeNota.module.css';
@@ -11,6 +12,15 @@ export default function PuntajeANota() {
   const [exigencia, setExigencia] = useState('60');
   const [nota, setNota] = useState(null);
   const [error, setError] = useState('');
+
+  // Actualizar metadatos de la página
+  useEffect(() => {
+    document.title = "Conversor Puntaje a Nota Chile | NotaMinima";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Convierte puntajes de evaluaciones a notas según el sistema chileno. Calcula tu nota en escala 1.0-7.0 con porcentaje de exigencia personalizable.');
+    }
+  }, []);
 
   useEffect(() => {
     const obtenido = parseFloat(puntajeObtenido);
@@ -61,8 +71,35 @@ export default function PuntajeANota() {
     setExigencia('60');
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Conversor Puntaje a Nota Chile',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'CLP',
+    },
+    description: 'Convierte puntajes de evaluaciones a notas según el sistema educativo chileno en escala 1.0-7.0.',
+    url: 'https://notaminima.cl/puntaje-a-nota',
+    featureList: [
+      'Conversión de puntaje a nota',
+      'Ajuste de porcentaje de exigencia',
+      'Soporte para decimales',
+      'Cálculo instantáneo',
+    ],
+  };
+
   return (
-    <main className={styles.main}>
+    <>
+      <Script
+        id="json-ld-puntaje"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className={styles.main}>
       <div className={styles.container}>
         <header className={styles.header}>
           <h1 className={styles.title}>Puntaje a Nota</h1>
@@ -192,6 +229,7 @@ export default function PuntajeANota() {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </>
   );
 }
