@@ -19,7 +19,7 @@ export default function TerminosDeUso() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>1. Aceptación de los Términos</h2>
             <p className={styles.paragraph}>
-              Al acceder y utilizar NotaMinima ("el Servicio"), usted acepta estar sujeto a estos Términos de Uso. 
+              Al acceder y utilizar NotaMinima (&quot;el Servicio&quot;), usted acepta estar sujeto a estos Términos de Uso. 
               Si no está de acuerdo con alguna parte de estos términos, no debe utilizar nuestro servicio.
             </p>
           </section>
@@ -74,7 +74,7 @@ export default function TerminosDeUso() {
             <h2 className={styles.sectionTitle}>5. Precisión de los Cálculos</h2>
             <p className={styles.paragraph}>
               Si bien hacemos nuestro mejor esfuerzo para proporcionar cálculos precisos, NotaMinima se proporciona 
-              "tal cual" sin garantías de ningún tipo. Los usuarios deben:
+              &quot;tal cual&quot; sin garantías de ningún tipo. Los usuarios deben:
             </p>
             <ul className={styles.list}>
               <li>Verificar todos los cálculos de manera independiente</li>
@@ -131,7 +131,7 @@ export default function TerminosDeUso() {
             <p className={styles.paragraph}>
               Nos reservamos el derecho de actualizar o cambiar nuestros Términos de Uso en cualquier momento. 
               Le notificaremos sobre cualquier cambio publicando los nuevos Términos de Uso en esta página y 
-              actualizando la fecha de "última actualización" en la parte superior.
+              actualizando la fecha de &quot;última actualización&quot; en la parte superior.
             </p>
           </section>
 

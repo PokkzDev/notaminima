@@ -180,7 +180,7 @@ export default function PoliticaPrivacidad() {
             <p className={styles.paragraph}>
               Podemos actualizar nuestra Política de Privacidad de vez en cuando. Le notificaremos sobre cualquier 
               cambio publicando la nueva Política de Privacidad en esta página y actualizando la fecha de 
-              "última actualización".
+              &quot;última actualización&quot;.
             </p>
             <p className={styles.paragraph}>
               Se le recomienda revisar esta Política de Privacidad periódicamente para estar al tanto de cualquier 

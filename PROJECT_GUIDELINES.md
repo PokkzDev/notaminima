@@ -15,7 +15,7 @@ This project will be a portal for students to easily calculate their grades. Usi
 - Light / Dark Mode
 - FontAwesome Icons
 - No Emojis
-- No Hover Effects translate Y.
+- No Hover Effects translate Y
 
 
 # Features Checklist
