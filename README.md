@@ -1,131 +1,198 @@
-Nota Mínima — Project README
+# Nota Mínima
 
-**Domain**: notaminima.cl
+Portal web diseñado para estudiantes chilenos que facilita el cálculo de promedios de notas y la conversión de puntajes a notas según el sistema de evaluación chileno.
 
-**Goal**: Free, fast, single‑player calculator to find nota mínima to pass/exempt and convert puntaje→nota with exigencia. Optimized for Chilean 1.0–7.0 scale and SEO.
+## Descripción del Proyecto
 
-## Table of Contents
-- [Overview](#overview)
-- [Features (v0 — MVP)](#features-v0--mvp)
-- [Site Structure](#site-structure)
-- [SEO: Titles & Metas](#seo-titles--metas)
-- [Keyword Targets](#keyword-targets)
-- [FAQ Suggestions](#faq-suggestions)
-- [On‑Page Checklist](#on-page-checklist)
-- [Branding](#branding)
-- [Initial Content Ideas](#initial-content-ideas)
-- [Monetization](#monetization)
-- [Measurement](#measurement)
-- [Launch Plan](#launch-plan)
-- [Tech Notes](#tech-notes)
-- [Roadmap (v1+)](#roadmap-v1)
+**Nota Mínima** es una aplicación web moderna y minimalista que proporciona herramientas esenciales para la gestión académica de estudiantes. La aplicación permite:
 
-## Overview
-Nota Mínima is a free, fast calculator to:
-- Calculate the minimum grade needed to pass or get exempted
-- Convert raw points to Chilean grades (1.0–7.0) with configurable exigencia
+- **Calcular Promedio de Notas**: Gestiona múltiples cursos, agrega notas con ponderaciones personalizadas y calcula automáticamente promedios ponderados.
+- **Convertir Puntaje a Nota**: Transforma puntajes brutos de evaluaciones a notas según el sistema chileno, considerando el porcentaje de exigencia.
+- **Almacenamiento Local**: Todos los datos se guardan automáticamente en el navegador del usuario.
+- **Exportar/Importar**: Permite respaldar y restaurar datos mediante archivos JSON.
 
-## Features (v0 — MVP)
-- **Single‑page flow**: Course → Evaluations → Result
-- **Evaluations input**: name, optional date, weight %, and either:
-  - current grade (1.0–7.0), or
-  - raw points (auto‑converted via scale)
-- **Escala de notas** (default per course + override por evaluación):
-  - total points selector (60, 90, 100, custom)
-  - exigencia % editable (e.g., 60% ⇒ nota 4.0)
-  - linear mapping: 0% → 1.0, exigencia% → 4.0, 100% → 7.0
-- **Live helper**: “X/Y pts = Z% ⇒ nota N.N”
-- **Basic rules**: custom pass threshold (4.0/4.5/etc.), exam minimum, optional exemption threshold
-- **What‑if simulator**: edit remaining points or grade and see impact instantly
-- **Result card**: weighted average, needed grade/points to pass/exempt, traffic‑light status, 3 short tips
-- **Persistence**: localStorage (no login)
-- **Export**: ICS calendar (evaluation dates + reminders)
-- **Monetization**: one ad slot on Result + consent banner
-- **Demo preset**: prefilled course from the hero
-- **Validation**: weights sum to 100; grades 1.0–7.0; points within total; valid dates
+## Características Principales
 
-## Site Structure
-- **/**: Home (calculadora principal “nota mínima”)
-- **/puntaje-a-nota**: Convertir puntos→nota (60/90/100 + exigencia)
-- **/eximicion**: Calculadora para eximirse
-- **/escala-60**: Plantilla rápida “exigencia 60%”
-- **/faq**: Preguntas frecuentes
-- **/privacidad**, **/terminos**
+### Calculadora de Promedio
 
-## SEO: Titles & Metas
-- **Home (/)**
-  - **Title**: Calcula tu Nota Mínima para Aprobar | 1.0–7.0 Chile
-  - **Meta description**: Ingresa tus evaluaciones y porcentaje. Calcula la nota mínima para aprobar o eximir y convierte puntaje a nota con exigencia (60%, 70%). Gratis y sin registro.
-- **/puntaje-a-nota**
-  - **Title**: Puntaje a Nota (60/90/100 puntos) | Exigencia 60%
-  - **Meta description**: Convierte X/Y puntos a nota chilena 1.0–7.0. Ajusta exigencia y total de preguntas.
-- **/eximicion**
-  - **Title**: ¿Me eximo del examen? Calculadora de Eximición
-  - **Meta description**: Simula promedio parcial, reglas y mínimo de examen para saber si te eximes.
+- Gestión de múltiples cursos simultáneos
+- Agregar, editar y eliminar notas
+- Sistema de ponderación flexible (0-100%)
+- Cálculo automático de promedios ponderados
+- Validación automática de rangos de notas (1.0 - 7.0)
+- Visualización del estado de cada curso (Aprobado, Reprobado, En Progreso)
+- Indicadores de ponderación total con alertas
+- Exportación de datos en formato JSON
+- Importación de datos con validación de estructura
+- Almacenamiento automático en localStorage
 
-**H1 guidance**: Repetir el intento en cada página (ej., “Calculadora de Nota Mínima 1.0–7.0”).
+### Conversor Puntaje a Nota
 
-**Schema**: Agregar FAQPage donde aplique y WebApplication (o SoftwareApplication) en `/` con name, description, country “CL”.
+- Conversión precisa según el sistema chileno
+- Ajuste de porcentaje de exigencia (configurable)
+- Soporte para puntajes decimales
+- Cálculo automático del porcentaje obtenido
+- Indicador visual de estado (Aprobado/Reprobado)
+- Validación en tiempo real de valores ingresados
 
-## Keyword Targets
-- **nota mínima para aprobar / para eximirse**
-- **cuánto necesito en el examen**
-- **convertir puntaje a nota / escala 1.0–7.0**
-- **exigencia 60% / 70%**
-- **nota 4.0 con exigencia / qué necesito para 4,5**
+## Stack Tecnológico
 
-## FAQ Suggestions
-- ¿Cómo se calcula la nota mínima con una exigencia del 60%?
-- ¿Qué significa eximirse del examen?
-- ¿Cómo convertir puntos a nota en una prueba de 60/90/100?
-- ¿Puedo quitar la peor nota o reemplazar con recuperativo?
+- **Framework**: Next.js 15.5.4
+- **Biblioteca UI**: React 19.1.0
+- **Estilos**: CSS Modules
+- **Iconos**: FontAwesome 6.7.2
+- **Linter**: ESLint 9
+- **Build Tool**: Turbopack
 
-## On‑Page Checklist
-- **Canonical** por página, `sitemap.xml` y `robots.txt`
-- **Open Graph + Twitter cards** (título = keyword)
-- **Schema**: FAQPage en `/faq` y WebApplication en `/`
-- **LCP < 2.5s** (imágenes livianas; no bloquear main thread)
-- **hreflang** `es-CL`
-- **Core Web Vitals** en verde
+## Requisitos del Sistema
 
-## Branding
-- **Nombre mostrado**: Nota Mínima
-- **Tagline**: “Calcula lo que necesitas, sin enredos.”
-- **Tono**: directo, académico‑amigable
-- **Visual**: limpio; acentos verde/ámbar/rojo (semáforo)
+- Node.js 18.x o superior
+- npm o cualquier gestor de paquetes compatible
 
-## Initial Content Ideas
-- Cómo calcular la nota mínima para aprobar (1.0–7.0) con ejemplos
-- De puntaje a nota: guía para pruebas de 60/90/100 (exigencia 60%)
-- ¿Te eximes del examen? Reglas típicas y calculadora paso a paso
+## Instalación
 
-## Monetization
-- **Ads**: Un bloque responsivo solo en Result
-- **Aplicación a AdSense**: después de publicar Home + 2–3 páginas útiles
-- **Consentimiento**: claro; sin anuncios en formularios ni PDFs
+1. Clonar el repositorio:
+```bash
+git clone <repository-url>
+cd notaminima
+```
 
-## Measurement
-- **Plausible (sin cookies)** — eventos: `start_calc`, `result_view`, `ics_export`
-- **Google Search Console** — sitemap, inspección de URLs clave
+2. Instalar dependencias:
+```bash
+npm install
+```
 
-## Launch Plan (1–2 días)
-- Home con calculadora básica + demo
-- `/puntaje-a-nota` funcionando (60/90/100 + exigencia 60%)
-- `/faq` con 4–6 preguntas
-- Sitemap/robots, OG tags, GSC verificado
-- Reels cortos: “¿Cuánto necesito en el examen?” con link a `notaminima.cl`
+3. Iniciar el servidor de desarrollo:
+```bash
+npm run dev
+```
 
-## Tech Notes
-- **JS only**, no SSR (static export o client‑side pages)
-- **State** en `localStorage`
-- **ICS** generado client‑side
-- **Consent gate** antes de cargar scripts de ads/analytics
+4. Abrir el navegador en `http://localhost:3000`
 
-## Roadmap (v1+)
-- Piecewise scales
-- Drop‑lowest/recovery rules
-- Optimizer
-- A/B scenarios
-- PDF export
-- PWA/IndexedDB
-- Advanced analytics
+## Scripts Disponibles
+
+```bash
+# Iniciar servidor de desarrollo con Turbopack
+npm run dev
+
+# Construir para producción
+npm run build
+
+# Iniciar servidor de producción
+npm start
+
+# Ejecutar linter
+npm run lint
+```
+
+## Estructura del Proyecto
+
+```
+notaminima/
+├── public/              # Archivos estáticos
+│   ├── logo.png
+│   ├── logo-256.png
+│   ├── manifest.json
+│   ├── robots.txt
+│   ├── sitemap.xml
+│   └── ads.txt
+├── src/
+│   └── app/
+│       ├── components/  # Componentes reutilizables
+│       │   ├── Navbar.js
+│       │   ├── Footer.js
+│       │   └── *.module.css
+│       ├── promedio/    # Página calculadora de promedio
+│       ├── puntaje-a-nota/ # Página conversión puntaje
+│       ├── privacidad/  # Página política de privacidad
+│       ├── terminos/    # Página términos y condiciones
+│       ├── layout.js    # Layout principal
+│       ├── page.js      # Página de inicio
+│       └── globals.css  # Estilos globales
+├── package.json
+├── next.config.mjs
+└── eslint.config.mjs
+```
+
+## Guías de Diseño
+
+El proyecto sigue principios de diseño específicos:
+
+- **Simplicidad**: Interfaz limpia sin elementos innecesarios
+- **Profesionalismo**: Diseño serio y confiable
+- **Modernidad**: Uso de estándares y tecnologías actuales
+- **Responsividad**: Adaptable a todos los dispositivos
+- **Accesibilidad**: Controles intuitivos y navegación clara
+- **Sin efectos invasivos**: No se utilizan efectos hover de translateY ni emojis
+
+## Fórmula de Conversión Puntaje a Nota
+
+El sistema utiliza la fórmula estándar chilena:
+
+- Si el puntaje obtenido ≥ puntaje mínimo (exigencia):
+  ```
+  Nota = 4.0 + 3.0 × ((puntaje_obtenido - puntaje_mínimo) / (puntaje_total - puntaje_mínimo))
+  ```
+
+- Si el puntaje obtenido < puntaje mínimo:
+  ```
+  Nota = 1.0 + 3.0 × (puntaje_obtenido / puntaje_mínimo)
+  ```
+
+Donde:
+- `puntaje_mínimo = puntaje_total × (exigencia / 100)`
+- El resultado se limita entre 1.0 y 7.0
+
+## Privacidad y Seguridad
+
+- Todos los datos se almacenan localmente en el navegador del usuario
+- No se envía información a servidores externos
+- No se recopilan datos personales
+- El usuario tiene control total sobre sus datos mediante las funciones de exportación/importación
+
+## Formato de Exportación
+
+Los datos exportados siguen esta estructura JSON:
+
+```json
+{
+  "version": "1.0",
+  "fecha": "2025-01-15T10:30:00.000Z",
+  "cursos": [
+    {
+      "id": 1234567890,
+      "nombre": "Matemáticas",
+      "notas": [
+        {
+          "id": 1234567891,
+          "valor": "6.5",
+          "ponderacion": "30"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Contribución
+
+Este es un proyecto en desarrollo activo. Las contribuciones son bienvenidas siguiendo estas pautas:
+
+1. Fork el repositorio
+2. Crear una rama para tu funcionalidad (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit de tus cambios siguiendo los estándares del proyecto
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Crear un Pull Request
+
+## Licencia
+
+Este proyecto es privado y de uso personal.
+
+## Soporte
+
+Para reportar problemas o sugerir mejoras, por favor utiliza el sistema de issues del repositorio.
+
+---
+
+Desarrollado con Next.js y React para estudiantes chilenos.
+
