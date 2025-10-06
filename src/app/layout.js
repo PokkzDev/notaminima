@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 export const metadata = {
   title: "NotaMinima - Calculadora de Notas",
   description: "Portal para estudiantes chilenos para calcular promedios y convertir puntajes a notas",
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({ children }) {

@@ -1,0 +1,265 @@
+.main {
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+  background: #f5f5f5;
+}
+
+.container {
+  max-width: 850px;
+  margin: 0 auto;
+  background: white;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  background: white;
+  color: #1a1a1a;
+  padding: 3rem 3rem 2rem;
+  text-align: center;
+  border-bottom: 3px solid #1a1a1a;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lastUpdated {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+}
+
+.content {
+  padding: 3rem;
+  line-height: 1.8;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.paragraph {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #333;
+  margin: 0 0 1rem 0;
+  text-align: justify;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.list {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.list li {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 0.75rem;
+  text-align: justify;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.list li:last-child {
+  margin-bottom: 0;
+}
+
+.list li strong {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.link {
+  color: #1a1a1a;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.link:hover {
+  color: #555;
+}
+
+.highlight {
+  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  background: #f9fafb;
+  border: 2px solid #1a1a1a;
+  border-left: 6px solid #1a1a1a;
+}
+
+.highlightTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.highlightText {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #333;
+  margin: 0;
+  font-weight: 400;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  text-align: justify;
+}
+
+.footer {
+  padding: 2rem 3rem;
+  background: white;
+  border-top: 2px solid #e5e7eb;
+  text-align: center;
+}
+
+.backButton {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  background: white;
+  color: #1a1a1a;
+  text-decoration: none;
+  border: 2px solid #1a1a1a;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.backButton:hover {
+  background: #1a1a1a;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem 0.5rem 2rem;
+  }
+
+  .header {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .lastUpdated {
+    font-size: 0.85rem;
+  }
+
+  .content {
+    padding: 2rem 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+  }
+
+  .paragraph,
+  .list li {
+    font-size: 0.9rem;
+    text-align: left;
+  }
+
+  .highlight {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .highlightTitle {
+    font-size: 1rem;
+  }
+
+  .highlightText {
+    font-size: 0.9rem;
+    text-align: left;
+  }
+
+  .footer {
+    padding: 1.5rem;
+  }
+
+  .backButton {
+    padding: 0.55rem 1.25rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 0.5rem 0.25rem 1.5rem;
+  }
+
+  .header {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .lastUpdated {
+    font-size: 0.8rem;
+  }
+
+  .content {
+    padding: 1.5rem 1rem;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+  }
+
+  .sectionTitle {
+    font-size: 0.95rem;
+  }
+
+  .paragraph,
+  .list li {
+    font-size: 0.85rem;
+    text-align: left;
+  }
+
+  .list {
+    padding-left: 1.5rem;
+  }
+
+  .highlight {
+    padding: 1rem 1.25rem;
+  }
+
+  .highlightTitle {
+    font-size: 0.95rem;
+  }
+
+  .highlightText {
+    font-size: 0.85rem;
+    text-align: left;
+  }
+}
+
