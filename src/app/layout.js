@@ -102,8 +102,6 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <link rel="apple-touch-icon" href="/logo-256.png" />
         <link rel="icon" type="image/png" href="/logo-256.png" />
-      </head>
-      <body>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-5E4XVS6STV"
           strategy="afterInteractive"
@@ -116,6 +114,8 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-5E4XVS6STV');
           `}
         </Script>
+      </head>
+      <body>
         <ThemeProvider>
           <Navbar />
           {children}
