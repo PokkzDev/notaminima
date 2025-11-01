@@ -1,0 +1,57 @@
+.adWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.adSense {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Desktop breakpoint - show full ads */
+@media (min-width: 1024px) {
+  .adWrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* Tablet breakpoint - show medium ads */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .adWrapper {
+    max-width: 728px;
+    margin: 0 auto;
+  }
+}
+
+/* Mobile breakpoint - show mobile ads */
+@media (max-width: 767px) {
+  .adWrapper {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .adSense {
+    min-height: 100px;
+  }
+}
+
+/* Small mobile breakpoint - optimize for small screens */
+@media (max-width: 480px) {
+  .adWrapper {
+    padding: 0 0.75rem;
+    min-height: 90px;
+  }
+}
+
+/* Hide ads on very small screens to prevent layout issues */
+@media (max-width: 320px) {
+  .adWrapper {
+    min-height: 80px;
+  }
+}
+
