@@ -1,7 +1,8 @@
 .main {
   min-height: 100vh;
   padding: 2rem 1rem 4rem;
-  background: #fafafa;
+  background: var(--bg-tertiary);
+  transition: background-color 0.3s ease;
 }
 
 .container {
@@ -17,14 +18,16 @@
 .title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
 }
 
 .subtitle {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 400;
+  transition: color 0.3s ease;
 }
 
 .actionButtons {
@@ -45,8 +48,8 @@
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  background: #1a1a1a;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -65,7 +68,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: #1a1a1a;
+  border-top-color: var(--text-primary);
 }
 
 .buttonWithTooltip:hover .tooltip {
@@ -119,9 +122,10 @@
 .resumenTitle {
   font-size: 1.75rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   text-align: center;
+  transition: color 0.3s ease;
 }
 
 .resumenGrid {
@@ -131,48 +135,50 @@
 }
 
 .resumenCard {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px var(--shadow-color);
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: 2px solid #f0f0f0;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+  border: 2px solid var(--border-color);
 }
 
 .resumenCard:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px var(--shadow-color-hover);
 }
 
 .resumenCardAprobado {
-  border-color: #e5e7eb;
+  border-color: var(--border-color);
 }
 
 .resumenCardReprobado {
-  border-color: #e5e7eb;
+  border-color: var(--border-color);
 }
 
 .resumenCardEnRiesgo {
-  border-color: #e5e7eb;
+  border-color: var(--border-color);
 }
 
 .resumenCardNeutral {
-  border-color: #e5e7eb;
+  border-color: var(--border-color);
 }
 
 .resumenCardHeader {
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(to bottom, #fafafa, #ffffff);
-  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(to bottom, var(--bg-tertiary), var(--bg-primary));
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .resumenCardNombre {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.3s ease;
 }
 
 .resumenCardBody {
@@ -188,8 +194,9 @@
 
 .resumenPromedioLabel {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .resumenPromedioValue {
@@ -224,8 +231,9 @@
 
 .resumenInfoLabel {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .resumenEstado {
@@ -254,27 +262,31 @@
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--bg-primary);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: background-color 0.3s ease;
 }
 
 .emptyIcon {
   font-size: 4rem;
-  color: #e0e0e0;
+  color: var(--border-color);
   margin-bottom: 1rem;
+  transition: color 0.3s ease;
 }
 
 .emptyText {
   font-size: 1.25rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .emptySubtext {
   font-size: 1rem;
-  color: #999;
+  color: var(--text-tertiary);
+  transition: color 0.3s ease;
 }
 
 .emptyStateActions {
@@ -314,15 +326,15 @@
 
 /* Curso Card */
 .cursoCard {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px var(--shadow-color);
   padding: 1.5rem;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, background-color 0.3s ease;
 }
 
 .cursoCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px var(--shadow-color-hover);
 }
 
 .cursoHeader {
@@ -331,9 +343,10 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-color);
   gap: 1rem;
   flex-wrap: wrap;
+  transition: border-color 0.3s ease;
 }
 
 .cursoTitleSection {
@@ -347,8 +360,9 @@
 .cursoNombre {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .editarCursoForm {
@@ -361,11 +375,14 @@
 .editarCursoInput {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 2px solid #3b82f6;
+  border: 2px solid var(--accent-color);
   border-radius: 6px;
   font-size: 1.25rem;
   font-weight: 600;
   outline: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .cursoActions {
@@ -385,9 +402,10 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   border-radius: 8px;
-  border: 2px solid #3b82f6;
+  border: 2px solid var(--accent-color);
+  transition: background 0.3s ease;
 }
 
 .promedioInfo {
@@ -398,7 +416,7 @@
 
 .promedioLabel {
   font-size: 0.85rem;
-  color: #1e40af;
+  color: var(--accent-color);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -406,14 +424,14 @@
 
 .promedioSubLabel {
   font-size: 0.75rem;
-  color: #3b82f6;
+  color: var(--accent-color);
   font-weight: 500;
 }
 
 .promedioValue {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e40af;
+  color: var(--accent-color);
   min-width: 60px;
   text-align: center;
   line-height: 1;
@@ -431,11 +449,12 @@
   grid-template-columns: 1fr 1fr 100px;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   border-radius: 6px;
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 0.9rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .notaHeaderItem {
@@ -451,15 +470,17 @@
 
 .notaInput {
   padding: 0.75rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-color);
   border-radius: 6px;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s ease, color 0.3s ease;
   outline: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .notaInput:focus {
-  border-color: #3b82f6;
+  border-color: var(--accent-color);
 }
 
 .inputError {
@@ -475,8 +496,9 @@
 .sinNotas {
   text-align: center;
   padding: 2rem;
-  color: #999;
+  color: var(--text-tertiary);
   font-style: italic;
+  transition: color 0.3s ease;
 }
 
 .ponderacionTotal {
@@ -485,11 +507,12 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   border-radius: 6px;
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
   margin-top: 0.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .ponderacionWarning {
@@ -501,7 +524,7 @@
 .iconButton {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 6px;
@@ -513,8 +536,8 @@
 }
 
 .iconButton:hover {
-  background: #f0f0f0;
-  color: #3b82f6;
+  background: var(--bg-secondary);
+  color: var(--accent-color);
 }
 
 .deleteButton {
@@ -637,10 +660,10 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background: white;
-  border: 2px dashed #3b82f6;
+  background: var(--bg-primary);
+  border: 2px dashed var(--accent-color);
   border-radius: 8px;
-  color: #3b82f6;
+  color: var(--accent-color);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -648,7 +671,7 @@
 }
 
 .agregarNotaButton:hover {
-  background: #f0f9ff;
+  background: var(--bg-secondary);
   border-style: solid;
 }
 
@@ -683,26 +706,30 @@
   display: flex;
   gap: 1rem;
   align-items: center;
-  background: white;
+  background: var(--bg-primary);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px var(--shadow-color);
   flex-wrap: wrap;
   justify-content: center;
+  transition: background-color 0.3s ease;
 }
 
 .cursoInput {
   flex: 1;
   min-width: 250px;
   padding: 0.75rem 1rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-color);
   border-radius: 6px;
   font-size: 1rem;
   outline: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: border-color 0.2s, background-color 0.3s ease, color 0.3s ease;
 }
 
 .cursoInput:focus {
-  border-color: #3b82f6;
+  border-color: var(--accent-color);
 }
 
 .confirmarButton {
@@ -775,12 +802,13 @@
 }
 
 .modal {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 12px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px var(--shadow-color-hover);
   animation: modalFadeIn 0.2s ease-out;
+  transition: background-color 0.3s ease;
 }
 
 @keyframes modalFadeIn {
@@ -799,20 +827,22 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .modalTitle {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .modalCloseButton {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 6px;
@@ -824,8 +854,8 @@
 }
 
 .modalCloseButton:hover {
-  background: #f0f0f0;
-  color: #1a1a1a;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .modalBody {
@@ -836,10 +866,11 @@
 }
 
 .modalDescription {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.5;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .fileInputContainer {
@@ -860,10 +891,10 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  background: #f8f9fa;
-  border: 2px dashed #3b82f6;
+  background: var(--bg-secondary);
+  border: 2px dashed var(--accent-color);
   border-radius: 8px;
-  color: #3b82f6;
+  color: var(--accent-color);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -871,7 +902,7 @@
 }
 
 .fileInputLabel:hover {
-  background: #f0f9ff;
+  background: var(--bg-tertiary);
   border-style: solid;
 }
 
@@ -1218,5 +1249,246 @@
 
   .resumenPromedioValue {
     font-size: 2rem;
+  }
+}
+
+/* Simulador de Notas */
+.simuladorSection {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.simuladorToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent-color);
+  border-radius: 8px;
+  color: var(--accent-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.simuladorToggle:hover {
+  background: var(--bg-tertiary);
+  border-style: solid;
+}
+
+.simuladorContent {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.simuladorModos {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.modoButton {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.modoButton:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.modoButtonActive {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.modoButtonActive:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.simuladorInfo {
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.simuladorInfoText {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.simuladorModeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.simuladorLabel {
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.simuladorInput {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s, background-color 0.3s ease, color 0.3s ease;
+  outline: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.simuladorInput:focus {
+  border-color: var(--accent-color);
+}
+
+.simuladorResultado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  align-items: center;
+  text-align: center;
+}
+
+.simuladorResultadoLabel {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.simuladorResultadoValor {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.simuladorResultadoAprobado {
+  color: #10b981;
+}
+
+.simuladorResultadoReprobado {
+  color: #dc2626;
+}
+
+.simuladorResultadoEstado {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+.simuladorEstadoAprobado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.simuladorEstadoReprobado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.simuladorMensaje {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #fff7ed;
+  border: 2px solid #f59e0b;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.simuladorMensajeTexto {
+  font-size: 0.9rem;
+  color: #92400e;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.simuladorMensajeNota {
+  font-size: 0.85rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+/* Responsive para Simulador */
+@media (max-width: 768px) {
+  .simuladorContent {
+    padding: 1.25rem;
+  }
+
+  .simuladorModos {
+    gap: 0.5rem;
+  }
+
+  .modoButton {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .simuladorResultadoValor {
+    font-size: 2rem;
+  }
+
+  .simuladorLabel {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .simuladorContent {
+    padding: 1rem;
+  }
+
+  .simuladorModos {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modoButton {
+    width: 100%;
+  }
+
+  .simuladorResultadoValor {
+    font-size: 1.75rem;
+  }
+
+  .simuladorInput {
+    padding: 0.65rem 0.875rem;
+    font-size: 0.95rem;
   }
 }

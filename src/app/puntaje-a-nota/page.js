@@ -13,14 +13,6 @@ export default function PuntajeANota() {
   const [nota, setNota] = useState(null);
   const [error, setError] = useState('');
 
-  // Actualizar metadatos de la página
-  useEffect(() => {
-    document.title = "Conversor Puntaje a Nota Chile | NotaMinima";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Convierte puntajes de evaluaciones a notas según el sistema chileno. Calcula tu nota en escala 1.0-7.0 con porcentaje de exigencia personalizable.');
-    }
-  }, []);
 
   useEffect(() => {
     const obtenido = parseFloat(puntajeObtenido);

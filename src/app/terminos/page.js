@@ -4,6 +4,38 @@ import styles from './Terminos.module.css';
 export const metadata = {
   title: "Términos de Uso - NotaMinima",
   description: "Términos y condiciones de uso de NotaMinima, calculadora de notas para estudiantes chilenos.",
+  keywords: [
+    "términos de uso",
+    "condiciones de uso",
+    "términos notaminima",
+    "términos y condiciones chile",
+    "uso del servicio",
+  ],
+  openGraph: {
+    title: "Términos de Uso - NotaMinima",
+    description: "Términos y condiciones de uso de NotaMinima, calculadora de notas para estudiantes chilenos.",
+    url: "https://notaminima.cl/terminos",
+    siteName: "NotaMinima",
+    images: [
+      {
+        url: "/logo-256.png",
+        width: 256,
+        height: 256,
+        alt: "NotaMinima - Términos de Uso",
+      },
+    ],
+    locale: "es_CL",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Términos de Uso - NotaMinima",
+    description: "Términos y condiciones de uso de NotaMinima, calculadora de notas para estudiantes chilenos.",
+    images: ["/logo-256.png"],
+  },
+  alternates: {
+    canonical: "https://notaminima.cl/terminos",
+  },
 };
 
 export default function TerminosDeUso() {

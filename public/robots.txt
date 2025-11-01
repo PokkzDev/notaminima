@@ -21,12 +21,11 @@ User-Agent: Twitterbot
 Allow: /
 
 # Host directive
-Host: https://notaminima.cl
+Host: notaminima.cl
 
 # Sitemap location
 Sitemap: https://notaminima.cl/sitemap.xml
-Sitemap: https://notaminima.cl/manifest.json
 
-# Additional SEO directives
-# Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content
-# Clean-param: fbclid&gclid&ref_src&ref_url
+# Clean URL parameters to avoid duplicate content
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content
+Clean-param: fbclid&gclid&ref_src&ref_url

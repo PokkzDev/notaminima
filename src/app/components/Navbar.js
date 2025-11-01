@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import ThemeToggle from "./ThemeToggle";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
@@ -13,14 +14,17 @@ export default function Navbar() {
 
         <ul className={styles.navLinks}>
           <li>
+            <Link href="/promedio" className={styles.navLink}>
+              Promedio
+            </Link>
+          </li>
+          <li>
             <Link href="/puntaje-a-nota" className={styles.navLink}>
               Puntaje a Nota
             </Link>
           </li>
           <li>
-            <Link href="/promedio" className={styles.navLink}>
-              Promedio
-            </Link>
+            <ThemeToggle />
           </li>
         </ul>
       </div>

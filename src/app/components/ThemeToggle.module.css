@@ -1,0 +1,41 @@
+.toggleButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.toggleButton:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.icon {
+  font-size: 1.125rem;
+  transition: transform 0.2s ease;
+}
+
+.toggleButton:hover .icon {
+  transform: rotate(15deg);
+}
+
+@media (max-width: 480px) {
+  .toggleButton {
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0.4rem;
+  }
+
+  .icon {
+    font-size: 1rem;
+  }
+}
+

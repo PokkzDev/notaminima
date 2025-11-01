@@ -4,6 +4,39 @@ import styles from './Privacidad.module.css';
 export const metadata = {
   title: "Política de Privacidad - NotaMinima",
   description: "Política de privacidad de NotaMinima. Protegemos tu privacidad: no recopilamos información personal y todos los datos se almacenan localmente.",
+  keywords: [
+    "política de privacidad",
+    "privacidad notaminima",
+    "protección de datos chile",
+    "privacidad estudiantes",
+    "datos locales",
+    "GDPR chile",
+  ],
+  openGraph: {
+    title: "Política de Privacidad - NotaMinima",
+    description: "Política de privacidad de NotaMinima. Protegemos tu privacidad: no recopilamos información personal y todos los datos se almacenan localmente.",
+    url: "https://notaminima.cl/privacidad",
+    siteName: "NotaMinima",
+    images: [
+      {
+        url: "/logo-256.png",
+        width: 256,
+        height: 256,
+        alt: "NotaMinima - Política de Privacidad",
+      },
+    ],
+    locale: "es_CL",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Política de Privacidad - NotaMinima",
+    description: "Política de privacidad de NotaMinima. Protegemos tu privacidad: no recopilamos información personal y todos los datos se almacenan localmente.",
+    images: ["/logo-256.png"],
+  },
+  alternates: {
+    canonical: "https://notaminima.cl/privacidad",
+  },
 };
 
 export default function PoliticaPrivacidad() {

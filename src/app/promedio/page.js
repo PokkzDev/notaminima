@@ -11,7 +11,8 @@ import {
   faTimes,
   faBook,
   faDownload,
-  faUpload
+  faUpload,
+  faCalculator
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './Promedio.module.css';
 
@@ -28,15 +29,11 @@ export default function Promedio() {
   const [errorImportar, setErrorImportar] = useState('');
   const [validandoArchivo, setValidandoArchivo] = useState(false);
   const [archivoValido, setArchivoValido] = useState(null);
+  const [simuladorAbierto, setSimuladorAbierto] = useState({});
+  const [modoSimulador, setModoSimulador] = useState({});
+  const [targetPromedio, setTargetPromedio] = useState({});
+  const [notaSimulada, setNotaSimulada] = useState({});
 
-  // Actualizar metadatos de la página
-  useEffect(() => {
-    document.title = "Calculadora de Promedio Ponderado | NotaMinima";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Calcula tu promedio de notas ponderado fácilmente. Gestiona múltiples cursos, agrega notas con ponderaciones y calcula automáticamente tu promedio académico.');
-    }
-  }, []);
 
   // Cargar datos desde localStorage
   useEffect(() => {
@@ -220,6 +217,94 @@ export default function Promedio() {
     );
 
     return notasValidas.reduce((sum, nota) => sum + parseFloat(nota.ponderacion), 0).toFixed(0);
+  };
+
+  // Calcula la suma ponderada actual (sin dividir por 100)
+  const calcularSumaPonderada = (notas) => {
+    const notasValidas = notas.filter(
+      nota => nota.valor !== '' && nota.ponderacion !== '' && 
+              !isNaN(parseFloat(nota.valor)) && !isNaN(parseFloat(nota.ponderacion))
+    );
+
+    if (notasValidas.length === 0) return 0;
+
+    return notasValidas.reduce((sum, nota) => {
+      const valor = parseFloat(nota.valor);
+      const ponderacion = parseFloat(nota.ponderacion);
+      return sum + valor * (ponderacion / 100);
+    }, 0);
+  };
+
+  // Calcula la nota requerida para alcanzar un promedio objetivo
+  const calcularNotaRequerida = (notas, targetPromedio) => {
+    const sumaPonderada = calcularSumaPonderada(notas);
+    const ponderacionTotal = parseFloat(calcularPonderacionTotal(notas));
+    const ponderacionRestante = 100 - ponderacionTotal;
+
+    if (ponderacionRestante <= 0) return null;
+
+    const notaRequerida = (targetPromedio * 100 - sumaPonderada * 100) / ponderacionRestante;
+
+    // Validar que la nota requerida esté en el rango válido
+    if (notaRequerida < 1.0) return { valor: 1.0, imposible: true, mensaje: 'El promedio objetivo es muy bajo. No es posible alcanzarlo con las notas actuales.' };
+    if (notaRequerida > 7.0) return { valor: 7.0, imposible: true, mensaje: 'El promedio objetivo es muy alto. Se requiere una nota mayor a 7.0 para alcanzarlo.' };
+    
+    return { valor: notaRequerida, imposible: false };
+  };
+
+  // Calcula el promedio final si se obtiene una nota específica
+  const calcularPromedioSimulado = (notas, notaSimulada) => {
+    const sumaPonderada = calcularSumaPonderada(notas);
+    const ponderacionTotal = parseFloat(calcularPonderacionTotal(notas));
+    const ponderacionRestante = 100 - ponderacionTotal;
+
+    if (ponderacionRestante <= 0) return null;
+
+    const promedioFinal = sumaPonderada + (notaSimulada * (ponderacionRestante / 100));
+
+    return promedioFinal;
+  };
+
+  // Funciones para manejar el simulador
+  const toggleSimulador = (cursoId) => {
+    setSimuladorAbierto(prev => ({
+      ...prev,
+      [cursoId]: !prev[cursoId]
+    }));
+    // Inicializar modo si no existe
+    if (!modoSimulador[cursoId]) {
+      setModoSimulador(prev => ({
+        ...prev,
+        [cursoId]: 'target'
+      }));
+    }
+  };
+
+  const cambiarModoSimulador = (cursoId, modo) => {
+    setModoSimulador(prev => ({
+      ...prev,
+      [cursoId]: modo
+    }));
+  };
+
+  const actualizarTargetPromedio = (cursoId, valor) => {
+    const num = parseFloat(valor);
+    if (valor === '' || (!isNaN(num) && num >= 1.0 && num <= 7.0)) {
+      setTargetPromedio(prev => ({
+        ...prev,
+        [cursoId]: valor
+      }));
+    }
+  };
+
+  const actualizarNotaSimulada = (cursoId, valor) => {
+    const num = parseFloat(valor);
+    if (valor === '' || (!isNaN(num) && num >= 1.0 && num <= 7.0)) {
+      setNotaSimulada(prev => ({
+        ...prev,
+        [cursoId]: valor
+      }));
+    }
   };
 
   const exportarDatos = () => {
@@ -734,6 +819,149 @@ export default function Promedio() {
                       Agregar Nota
                     </button>
                   </div>
+
+                  {/* Simulador de Notas */}
+                  {parseFloat(ponderacionTotal) < 100 && (
+                    <div className={styles.simuladorSection}>
+                      <button
+                        onClick={() => toggleSimulador(curso.id)}
+                        className={styles.simuladorToggle}
+                      >
+                        <FontAwesomeIcon icon={faCalculator} />
+                        {simuladorAbierto[curso.id] ? 'Ocultar Simulador' : 'Simulador de Notas'}
+                      </button>
+
+                      {simuladorAbierto[curso.id] && (
+                        <div className={styles.simuladorContent}>
+                          <div className={styles.simuladorModos}>
+                            <button
+                              onClick={() => cambiarModoSimulador(curso.id, 'target')}
+                              className={`${styles.modoButton} ${modoSimulador[curso.id] === 'target' ? styles.modoButtonActive : ''}`}
+                            >
+                              Nota Requerida
+                            </button>
+                            <button
+                              onClick={() => cambiarModoSimulador(curso.id, 'simulate')}
+                              className={`${styles.modoButton} ${modoSimulador[curso.id] === 'simulate' ? styles.modoButtonActive : ''}`}
+                            >
+                              Simular Nota
+                            </button>
+                          </div>
+
+                          <div className={styles.simuladorInfo}>
+                            <span className={styles.simuladorInfoText}>
+                              Ponderación restante: {100 - parseFloat(ponderacionTotal)}%
+                            </span>
+                          </div>
+
+                          {modoSimulador[curso.id] === 'target' && (
+                            <div className={styles.simuladorModeContent}>
+                              <label className={styles.simuladorLabel}>
+                                ¿Qué promedio quieres alcanzar?
+                              </label>
+                              <input
+                                type="number"
+                                value={targetPromedio[curso.id] || ''}
+                                onChange={(e) => actualizarTargetPromedio(curso.id, e.target.value)}
+                                placeholder="1.0 - 7.0"
+                                min="1.0"
+                                max="7.0"
+                                step="0.1"
+                                className={styles.simuladorInput}
+                              />
+                              {targetPromedio[curso.id] && !isNaN(parseFloat(targetPromedio[curso.id])) && (
+                                <div className={styles.simuladorResultado}>
+                                  {(() => {
+                                    const resultado = calcularNotaRequerida(curso.notas, parseFloat(targetPromedio[curso.id]));
+                                    if (!resultado) {
+                                      return (
+                                        <div className={styles.simuladorMensaje}>
+                                          <span className={styles.simuladorMensajeTexto}>
+                                            No hay evaluación restante para calcular
+                                          </span>
+                                        </div>
+                                      );
+                                    }
+                                    if (resultado.imposible) {
+                                      return (
+                                        <div className={styles.simuladorMensaje}>
+                                          <span className={styles.simuladorMensajeTexto}>
+                                            {resultado.mensaje}
+                                          </span>
+                                          <span className={styles.simuladorMensajeNota}>
+                                            Nota mínima requerida: {resultado.valor.toFixed(2)}
+                                          </span>
+                                        </div>
+                                      );
+                                    }
+                                    const notaRequerida = resultado.valor;
+                                    const esAprobado = notaRequerida >= 4.0;
+                                    return (
+                                      <>
+                                        <span className={styles.simuladorResultadoLabel}>Necesitas obtener:</span>
+                                        <span className={`${styles.simuladorResultadoValor} ${esAprobado ? styles.simuladorResultadoAprobado : styles.simuladorResultadoReprobado}`}>
+                                          {notaRequerida.toFixed(2)}
+                                        </span>
+                                        <span className={`${styles.simuladorResultadoEstado} ${esAprobado ? styles.simuladorEstadoAprobado : styles.simuladorEstadoReprobado}`}>
+                                          {esAprobado ? 'Aprobado' : 'Reprobado'}
+                                        </span>
+                                      </>
+                                    );
+                                  })()}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {modoSimulador[curso.id] === 'simulate' && (
+                            <div className={styles.simuladorModeContent}>
+                              <label className={styles.simuladorLabel}>
+                                ¿Qué nota obtendrías?
+                              </label>
+                              <input
+                                type="number"
+                                value={notaSimulada[curso.id] || ''}
+                                onChange={(e) => actualizarNotaSimulada(curso.id, e.target.value)}
+                                placeholder="1.0 - 7.0"
+                                min="1.0"
+                                max="7.0"
+                                step="0.1"
+                                className={styles.simuladorInput}
+                              />
+                              {notaSimulada[curso.id] && !isNaN(parseFloat(notaSimulada[curso.id])) && (
+                                <div className={styles.simuladorResultado}>
+                                  {(() => {
+                                    const promedioFinal = calcularPromedioSimulado(curso.notas, parseFloat(notaSimulada[curso.id]));
+                                    if (promedioFinal === null) {
+                                      return (
+                                        <div className={styles.simuladorMensaje}>
+                                          <span className={styles.simuladorMensajeTexto}>
+                                            No hay evaluación restante para calcular
+                                          </span>
+                                        </div>
+                                      );
+                                    }
+                                    const esAprobado = promedioFinal >= 4.0;
+                                    return (
+                                      <>
+                                        <span className={styles.simuladorResultadoLabel}>Tu promedio final sería:</span>
+                                        <span className={`${styles.simuladorResultadoValor} ${esAprobado ? styles.simuladorResultadoAprobado : styles.simuladorResultadoReprobado}`}>
+                                          {promedioFinal.toFixed(2)}
+                                        </span>
+                                        <span className={`${styles.simuladorResultadoEstado} ${esAprobado ? styles.simuladorEstadoAprobado : styles.simuladorEstadoReprobado}`}>
+                                          {esAprobado ? 'Aprobado' : 'Reprobado'}
+                                        </span>
+                                      </>
+                                    );
+                                  })()}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

@@ -1,7 +1,8 @@
 .footer {
-  background-color: #f9fafb;
-  border-top: 1px solid #e5e7eb;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
   margin-top: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .container {
@@ -22,25 +23,28 @@
 .title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: -0.025em;
+  transition: color 0.3s ease;
 }
 
 .description {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-tertiary);
   line-height: 1.6;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .sectionTitle {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .links {
@@ -54,42 +58,45 @@
 
 .link {
   text-decoration: none;
-  color: #6b7280;
+  color: var(--text-tertiary);
   font-size: 0.9375rem;
   transition: color 0.2s ease;
 }
 
 .link:hover {
-  color: #3b82f6;
+  color: var(--accent-color);
 }
 
 .bottom {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   padding: 1.5rem;
   text-align: center;
+  transition: border-color 0.3s ease;
 }
 
 .copyright {
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .attribution {
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   margin: 0.5rem 0 0;
+  transition: color 0.3s ease;
 }
 
 .attributionLink {
-  color: #6b7280;
+  color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .attributionLink:hover {
-  color: #3b82f6;
+  color: var(--accent-color);
 }
 
 /* Responsive design */

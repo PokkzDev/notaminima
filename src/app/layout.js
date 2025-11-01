@@ -1,6 +1,7 @@
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 export const metadata = {
   metadataBase: new URL('https://notaminima.cl'),
@@ -44,28 +45,51 @@ export const metadata = {
     url: 'https://notaminima.cl',
     siteName: 'NotaMinima',
     title: 'NotaMinima - Calculadora de Notas Chile',
-    description: 'Calculadora gratuita de notas para estudiantes chilenos. Calcula promedios ponderados y convierte puntajes a notas.',
+    description: 'Calculadora gratuita de notas para estudiantes chilenos. Calcula promedios ponderados y convierte puntajes a notas en escala 1.0-7.0. Herramienta educativa sin registro.',
     images: [
       {
         url: '/logo-256.png',
         width: 256,
         height: 256,
-        alt: 'NotaMinima Logo',
+        alt: 'NotaMinima - Calculadora de Notas Chile',
+        type: 'image/png',
+      },
+      {
+        url: '/logo.png',
+        width: 512,
+        height: 512,
+        alt: 'NotaMinima - Calculadora de Notas Chile',
+        type: 'image/png',
       },
     ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'NotaMinima - Calculadora de Notas Chile',
-    description: 'Calculadora gratuita de notas para estudiantes chilenos. Calcula promedios y convierte puntajes.',
+    description: 'Calculadora gratuita de notas para estudiantes chilenos. Calcula promedios ponderados y convierte puntajes a notas.',
     images: ['/logo-256.png'],
+    creator: '@notaminima',
+    site: '@notaminima',
   },
   alternates: {
     canonical: 'https://notaminima.cl',
   },
   category: 'education',
+  classification: 'Educational Tool',
   other: {
     'google-site-verification': 'pending',
+    'geo.region': 'CL',
+    'geo.placename': 'Chile',
+    'geo.position': '-33.4489;-70.6693',
+    'ICBM': '-33.4489, -70.6693',
+    'application-name': 'NotaMinima',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'NotaMinima',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#16a34a',
+    'msapplication-config': '/browserconfig.xml',
   },
 };
 
@@ -73,19 +97,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es-CL">
       <head>
-        <link rel="canonical" href="https://notaminima.cl" />
         <meta name="theme-color" content="#16a34a" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="NotaMinima" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <link rel="apple-touch-icon" href="/logo-256.png" />
+        <link rel="icon" type="image/png" href="/logo-256.png" />
       </head>
       <body>
-        <Navbar />
-        {children}
-        <Footer />
+        <ThemeProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -5,35 +5,43 @@
 }
 
 .hero {
-  background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
-  padding: 6rem 1.5rem 4rem;
+  background: linear-gradient(to bottom, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  padding: clamp(5rem, 14vh, 10rem) 1.5rem clamp(4rem, 10vh, 8rem);
   text-align: center;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  min-height: min(calc(100vh - 150px), 900px);
+  flex: 1;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .title {
-  font-size: 3rem;
+  font-size: clamp(2.25rem, 6vw, 4rem);
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   line-height: 1.2;
-  margin: 0 0 1.5rem 0;
-  letter-spacing: -0.025em;
+  margin: 0 0 clamp(1.5rem, 4vh, 2.5rem) 0;
+  letter-spacing: -0.03em;
+  transition: color 0.3s ease;
 }
 
 .highlight {
-  color: #3b82f6;
+  color: var(--accent-color);
 }
 
 .description {
-  font-size: 1.25rem;
-  color: #6b7280;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: var(--text-tertiary);
   line-height: 1.6;
   max-width: 700px;
-  margin: 0 auto 3rem;
+  margin: 0 auto clamp(2rem, 5vh, 3rem);
+  transition: color 0.3s ease;
 }
 
 .ctaGroup {
@@ -44,7 +52,7 @@
 }
 
 .primaryCta {
-  background-color: #3b82f6;
+  background-color: var(--accent-color);
   color: #ffffff;
   padding: 1rem 2rem;
   border-radius: 8px;
@@ -61,24 +69,25 @@
 }
 
 .secondaryCta {
-  background-color: #ffffff;
-  color: #3b82f6;
+  background-color: var(--bg-primary);
+  color: var(--accent-color);
   padding: 1rem 2rem;
   border-radius: 8px;
   text-decoration: none;
   font-size: 1.125rem;
   font-weight: 600;
-  border: 2px solid #3b82f6;
+  border: 2px solid var(--accent-color);
   transition: all 0.2s ease;
 }
 
 .secondaryCta:hover {
-  background-color: #eff6ff;
+  background-color: var(--bg-secondary);
 }
 
 .features {
-  padding: 4rem 1.5rem;
-  background-color: #ffffff;
+  padding: clamp(3rem, 6vh, 4rem) 1.5rem clamp(3rem, 6vh, 4rem);
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
 }
 
 .featureGrid {
@@ -91,49 +100,54 @@
 .featureCard {
   padding: 2rem;
   border-radius: 12px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   text-align: center;
   transition: all 0.2s ease;
 }
 
 .featureCard:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
+  box-shadow: 0 10px 25px -5px var(--shadow-color-hover);
+  border-color: var(--accent-color);
 }
 
 .featureIcon {
   font-size: 3rem;
   margin-bottom: 1rem;
-  color: #3b82f6;
+  color: var(--accent-color);
 }
 
 .featureTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0 0 0.75rem 0;
+  transition: color 0.3s ease;
 }
 
 .featureText {
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--text-tertiary);
   line-height: 1.6;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
   .hero {
-    padding: 4rem 1rem 3rem;
+    padding: clamp(4rem, 12vh, 7rem) 1rem clamp(3rem, 8vh, 5rem);
+    min-height: min(calc(100vh - 140px), 800px);
   }
 
   .title {
-    font-size: 2.25rem;
+    font-size: clamp(2rem, 6.5vw, 3.5rem);
+    line-height: 1.2;
+    margin: 0 0 clamp(1.25rem, 3.5vh, 2rem) 0;
   }
 
   .description {
-    font-size: 1.125rem;
+    font-size: clamp(1rem, 3vw, 1.125rem);
   }
 
   .ctaGroup {
@@ -152,17 +166,24 @@
   }
 
   .features {
-    padding: 3rem 1rem;
+    padding: clamp(2rem, 5vh, 3rem) 1rem;
   }
 }
 
 @media (max-width: 480px) {
+  .hero {
+    min-height: min(calc(100vh - 120px), 700px);
+    padding: clamp(3.5rem, 11vh, 6rem) 1rem clamp(2.5rem, 7vh, 4rem);
+  }
+
   .title {
-    font-size: 1.875rem;
+    font-size: clamp(1.875rem, 7vw, 3rem);
+    line-height: 1.25;
+    margin: 0 0 clamp(1rem, 3vh, 1.75rem) 0;
   }
 
   .description {
-    font-size: 1rem;
+    font-size: clamp(0.9375rem, 3.5vw, 1rem);
   }
 
   .primaryCta,
