@@ -1,6 +1,6 @@
 .main {
-  min-height: 100vh;
-  padding: 2rem 1rem 4rem;
+  flex: 1;
+  padding: 2rem 1rem;
   background: var(--bg-tertiary);
   transition: background-color 0.3s ease;
 }
@@ -173,7 +173,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .main {
-    padding: 1rem 0.5rem 2rem;
+    padding: 1rem 0.5rem;
   }
 
   .header {
@@ -227,7 +227,7 @@
 
 @media (max-width: 480px) {
   .main {
-    padding: 0.5rem 0.25rem 1.5rem;
+    padding: 0.5rem 0.25rem;
   }
 
   .header {
