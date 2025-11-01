@@ -114,6 +114,12 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-5E4XVS6STV');
           `}
         </Script>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3504234733980898"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body>
         <ThemeProvider>

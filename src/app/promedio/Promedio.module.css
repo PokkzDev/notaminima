@@ -13,21 +13,56 @@
 .header {
   text-align: center;
   margin-bottom: 3rem;
+  padding: 2.5rem 2rem;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.header:hover {
+  box-shadow: 0 6px 20px var(--shadow-color-hover);
+}
+
+.headerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, var(--accent-color) 0%, #2563eb 100%);
+  border-radius: 20px;
+  color: white;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.headerIcon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   transition: color 0.3s ease;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .subtitle {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--text-secondary);
   font-weight: 400;
   transition: color 0.3s ease;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 .actionButtons {
@@ -106,6 +141,171 @@
 
 .importButton:hover {
   background: #059669;
+}
+
+.adContainer {
+  width: 100%;
+  margin: 2rem 0;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: center;
+  min-height: 100px;
+}
+
+/* Sección Informativa */
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.infoCard,
+.exampleCard,
+.tipsCard {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+  overflow: hidden;
+}
+
+.infoCard:hover,
+.exampleCard:hover,
+.tipsCard:hover {
+  box-shadow: 0 4px 12px var(--shadow-color-hover);
+}
+
+.infoHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.infoHeader:hover {
+  background: var(--bg-secondary);
+}
+
+.infoHeader:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: -2px;
+}
+
+.infoTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.chevronIcon {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.infoContent {
+  padding: 0 2rem 2rem 2rem;
+}
+
+.infoText {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.exampleTitle,
+.tipsTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.exampleText {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.exampleText:last-child {
+  margin-bottom: 0;
+}
+
+.exampleList {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.exampleList li {
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.tipsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tipsList li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.tipsList li:last-child {
+  border-bottom: none;
+}
+
+.tipsList li strong {
+  color: var(--text-primary);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.helpCard {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid var(--accent-color);
+  text-align: center;
+  transition: background 0.3s ease;
+}
+
+.helpLink {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-block;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.helpLink:hover {
+  color: #2563eb;
+  transform: translateX(4px);
 }
 
 .content {
@@ -1023,12 +1223,45 @@
     padding: 1.5rem 0.75rem;
   }
 
-  .title {
+  .header {
+    padding: 2rem 1.5rem;
+  }
+
+  .headerIcon {
+    width: 70px;
+    height: 70px;
     font-size: 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .title {
+    font-size: 2.25rem;
   }
 
   .subtitle {
-    font-size: 1rem;
+    font-size: 1.05rem;
+  }
+
+  .infoHeader {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .infoContent {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+
+  .infoTitle {
+    font-size: 1.5rem;
+  }
+
+  .exampleTitle,
+  .tipsTitle {
+    font-size: 1.25rem;
+  }
+
+  .infoText,
+  .exampleText {
+    font-size: 0.95rem;
   }
 
   .cursoHeader {
@@ -1114,6 +1347,25 @@
 }
 
 @media (max-width: 480px) {
+  .header {
+    padding: 1.5rem 1rem;
+  }
+
+  .headerIcon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
   .notasHeader {
     font-size: 0.75rem;
     padding: 0.5rem;
@@ -1224,6 +1476,27 @@
 
   .resumenTitle {
     font-size: 1.5rem;
+  }
+
+  .infoHeader {
+    padding: 1rem 1.25rem;
+  }
+
+  .infoContent {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+
+  .infoTitle {
+    font-size: 1.25rem;
+  }
+
+  .exampleTitle,
+  .tipsTitle {
+    font-size: 1.1rem;
+  }
+
+  .helpLink {
+    font-size: 0.9rem;
   }
 
   .resumenGrid {

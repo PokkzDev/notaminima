@@ -45,7 +45,7 @@ export default function PoliticaPrivacidad() {
       <div className={styles.container}>
         <header className={styles.header}>
           <h1 className={styles.title}>Política de Privacidad</h1>
-          <p className={styles.lastUpdated}>Última actualización: 6 de octubre de 2025</p>
+          <p className={styles.lastUpdated}>Última actualización: 1 de noviembre de 2025</p>
         </header>
 
         <div className={styles.content}>
@@ -132,11 +132,12 @@ export default function PoliticaPrivacidad() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>6. Uso de Cookies</h2>
             <p className={styles.paragraph}>
-              NotaMinima utiliza cookies únicamente a través de Google Analytics para mejorar la experiencia 
+              NotaMinima utiliza cookies a través de Google Analytics y Google AdSense para mejorar la experiencia 
               del usuario y entender cómo se utiliza nuestro sitio. Las cookies utilizadas son:
             </p>
             <ul className={styles.list}>
               <li><strong>Cookies de Google Analytics:</strong> Utilizadas para recopilar información anónima sobre el uso del sitio web</li>
+              <li><strong>Cookies de Google AdSense:</strong> Utilizadas para personalizar anuncios y medir la efectividad de las campañas publicitarias</li>
               <li><strong>localStorage:</strong> Utilizado exclusivamente para guardar sus datos académicos localmente en su dispositivo (no es una cookie tradicional)</li>
             </ul>
             <p className={styles.paragraph}>
@@ -145,7 +146,7 @@ export default function PoliticaPrivacidad() {
             </p>
             <p className={styles.paragraph}>
               También puede configurar su navegador para rechazar todas las cookies o para indicar cuándo se 
-              envía una cookie. Sin embargo, si no acepta las cookies de Analytics, esto no afectará la 
+              envía una cookie. Sin embargo, si no acepta las cookies de Analytics o AdSense, esto no afectará la 
               funcionalidad principal de la aplicación.
             </p>
           </section>
@@ -157,6 +158,7 @@ export default function PoliticaPrivacidad() {
             </p>
             <ul className={styles.list}>
               <li><strong>Google Analytics:</strong> Para análisis de uso del sitio web. Consulte la Política de Privacidad de Google en: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className={styles.link}>https://policies.google.com/privacy</a></li>
+              <li><strong>Google AdSense:</strong> Para mostrar anuncios relevantes en nuestro sitio web. Google utiliza cookies para personalizar anuncios según sus intereses y mostrar anuncios basados en sus visitas anteriores a este sitio u otros sitios web. Puede optar por no participar en la personalización de anuncios visitando <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className={styles.link}>Configuración de anuncios de Google</a>. Consulte la Política de Privacidad de Google AdSense en: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className={styles.link}>https://policies.google.com/privacy</a></li>
             </ul>
             <p className={styles.paragraph}>
               Nuestro servicio también puede contener enlaces a sitios web de terceros que no son operados por nosotros. 

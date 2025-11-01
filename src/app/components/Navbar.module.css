@@ -42,6 +42,12 @@
   letter-spacing: -0.025em;
 }
 
+.navLinksContainer {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .navLinks {
   display: flex;
   gap: 2rem;
@@ -49,6 +55,13 @@
   margin: 0;
   padding: 0;
   align-items: center;
+}
+
+.separator {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color);
+  transition: background-color 0.3s ease;
 }
 
 .navLink {
@@ -89,12 +102,20 @@
     font-size: 1.125rem;
   }
 
+  .navLinksContainer {
+    gap: 1rem;
+  }
+
   .navLinks {
     gap: 1.25rem;
   }
 
   .navLink {
     font-size: 0.875rem;
+  }
+
+  .separator {
+    height: 20px;
   }
 }
 
@@ -105,7 +126,20 @@
     padding: 0.75rem 1rem;
   }
 
+  .navLinksContainer {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
   .navLinks {
-    gap: 1.5rem;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .separator {
+    width: 100%;
+    height: 1px;
+    margin: 0;
   }
 }

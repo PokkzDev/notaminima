@@ -12,21 +12,38 @@ export default function Navbar() {
           <span className={styles.logoText}>NotaMinima</span>
         </Link>
 
-        <ul className={styles.navLinks}>
-          <li>
-            <Link href="/promedio" className={styles.navLink}>
-              Promedio
-            </Link>
-          </li>
-          <li>
-            <Link href="/puntaje-a-nota" className={styles.navLink}>
-              Puntaje a Nota
-            </Link>
-          </li>
-          <li>
-            <ThemeToggle />
-          </li>
-        </ul>
+        <div className={styles.navLinksContainer}>
+          <ul className={styles.navLinks}>
+            <li>
+              <Link href="/promedio" className={styles.navLink}>
+                Promedio
+              </Link>
+            </li>
+            <li>
+              <Link href="/puntaje-a-nota" className={styles.navLink}>
+                Puntaje a Nota
+              </Link>
+            </li>
+          </ul>
+          
+          <div className={styles.separator}></div>
+          
+          <ul className={styles.navLinks}>
+            <li>
+              <Link href="/acerca" className={styles.navLink}>
+                Acerca
+              </Link>
+            </li>
+            <li>
+              <Link href="/ayuda" className={styles.navLink}>
+                Ayuda
+              </Link>
+            </li>
+            <li>
+              <ThemeToggle />
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
   );

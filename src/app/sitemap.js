@@ -43,6 +43,18 @@ export default function sitemap() {
       ],
     },
     {
+      url: `${baseUrl}/acerca`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/ayuda`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/privacidad`,
       lastModified: currentDate,
       changeFrequency: 'monthly',

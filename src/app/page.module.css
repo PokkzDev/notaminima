@@ -133,6 +133,138 @@
   transition: color 0.3s ease;
 }
 
+.adContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.infoSection {
+  padding: clamp(3rem, 6vh, 4rem) 1.5rem;
+  background-color: var(--bg-secondary);
+  transition: background-color 0.3s ease;
+}
+
+.infoTitle {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 2rem 0;
+  transition: color 0.3s ease;
+}
+
+.infoContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.infoText {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin: 0 0 1.5rem 0;
+  text-align: justify;
+  transition: color 0.3s ease;
+}
+
+.infoText:last-child {
+  margin-bottom: 0;
+}
+
+.howItWorks {
+  padding: clamp(3rem, 6vh, 4rem) 1.5rem;
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
+}
+
+.sectionTitle {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 3rem 0;
+  transition: color 0.3s ease;
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.stepCard {
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.stepCard:hover {
+  box-shadow: 0 10px 25px -5px var(--shadow-color-hover);
+  border-color: var(--accent-color);
+}
+
+.stepNumber {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.stepTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  transition: color 0.3s ease;
+}
+
+.stepText {
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.infoLinks {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.infoLink {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--accent-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.infoLink:hover {
+  background-color: var(--accent-color);
+  color: #ffffff;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .hero {
@@ -168,6 +300,36 @@
   .features {
     padding: clamp(2rem, 5vh, 3rem) 1rem;
   }
+
+  .infoSection,
+  .howItWorks {
+    padding: clamp(2rem, 5vh, 3rem) 1rem;
+  }
+
+  .infoTitle,
+  .sectionTitle {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+  }
+
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .infoLinks {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .infoLink {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+
+  .adContainer {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+  }
 }
 
 @media (max-width: 480px) {
@@ -194,5 +356,20 @@
 
   .featureCard {
     padding: 1.5rem;
+  }
+
+  .stepCard {
+    padding: 1.5rem;
+  }
+
+  .stepNumber {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+
+  .infoLink {
+    font-size: 0.9375rem;
+    padding: 0.625rem 1.25rem;
   }
 }

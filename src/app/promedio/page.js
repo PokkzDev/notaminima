@@ -12,8 +12,12 @@ import {
   faBook,
   faDownload,
   faUpload,
-  faCalculator
+  faCalculator,
+  faChevronDown,
+  faChevronUp
 } from '@fortawesome/free-solid-svg-icons';
+import AdSense from '../components/AdSense';
+import Link from 'next/link';
 import styles from './Promedio.module.css';
 
 export default function Promedio() {
@@ -33,6 +37,9 @@ export default function Promedio() {
   const [modoSimulador, setModoSimulador] = useState({});
   const [targetPromedio, setTargetPromedio] = useState({});
   const [notaSimulada, setNotaSimulada] = useState({});
+  const [infoExpandida, setInfoExpandida] = useState(false);
+  const [ejemploExpandido, setEjemploExpandido] = useState(false);
+  const [tipsExpandidos, setTipsExpandidos] = useState(false);
 
 
   // Cargar datos desde localStorage
@@ -531,6 +538,9 @@ export default function Promedio() {
       <main className={styles.main}>
       <div className={styles.container}>
         <header className={styles.header}>
+          <div className={styles.headerIcon}>
+            <FontAwesomeIcon icon={faCalculator} />
+          </div>
           <h1 className={styles.title}>Promedio de Notas</h1>
           <p className={styles.subtitle}>
             Administra tus cursos y calcula tu promedio ponderado
@@ -559,6 +569,103 @@ export default function Promedio() {
             </div>
           )}
         </header>
+
+        <div className={styles.adContainer}>
+          <AdSense adSlot="" adFormat="auto" />
+        </div>
+
+        {/* Sección Informativa */}
+        <div className={styles.infoSection}>
+          <div className={styles.infoCard}>
+            <button 
+              className={styles.infoHeader}
+              onClick={() => setInfoExpandida(!infoExpandida)}
+              aria-expanded={infoExpandida}
+            >
+              <h2 className={styles.infoTitle}>Sistema de Evaluación Chileno</h2>
+              <FontAwesomeIcon 
+                icon={infoExpandida ? faChevronUp : faChevronDown} 
+                className={styles.chevronIcon}
+              />
+            </button>
+            {infoExpandida && (
+              <div className={styles.infoContent}>
+                <p className={styles.infoText}>
+                  En Chile, el sistema educativo utiliza una escala de notas del 1.0 al 7.0, donde 4.0 es la nota mínima de aprobación. 
+                  Las evaluaciones se califican mediante un sistema de promedio ponderado, donde cada evaluación tiene un peso 
+                  porcentual específico dentro del curso. Por ejemplo, un examen final puede valer 40% del curso, mientras que 
+                  las tareas pueden valer 20% cada una. El promedio ponderado se calcula multiplicando cada nota por su ponderación 
+                  y dividiendo la suma de estos productos por el total de ponderaciones. Este sistema permite que los estudiantes 
+                  planifiquen sus estudios y comprendan cómo cada evaluación afecta su calificación final.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.exampleCard}>
+            <button 
+              className={styles.infoHeader}
+              onClick={() => setEjemploExpandido(!ejemploExpandido)}
+              aria-expanded={ejemploExpandido}
+            >
+              <h3 className={styles.exampleTitle}>Ejemplo Práctico</h3>
+              <FontAwesomeIcon 
+                icon={ejemploExpandido ? faChevronUp : faChevronDown} 
+                className={styles.chevronIcon}
+              />
+            </button>
+            {ejemploExpandido && (
+              <div className={styles.infoContent}>
+                <p className={styles.exampleText}>
+                  Imagina que tienes un curso llamado "Matemáticas" con las siguientes evaluaciones:
+                </p>
+                <ul className={styles.exampleList}>
+                  <li>Control 1: Nota 5.5, ponderación 20%</li>
+                  <li>Control 2: Nota 6.0, ponderación 20%</li>
+                  <li>Tarea: Nota 5.0, ponderación 10%</li>
+                  <li>Examen Final: Nota 6.5, ponderación 50%</li>
+                </ul>
+                <p className={styles.exampleText}>
+                  El cálculo sería: (5.5 × 0.20) + (6.0 × 0.20) + (5.0 × 0.10) + (6.5 × 0.50) = 1.1 + 1.2 + 0.5 + 3.25 = <strong>6.05</strong>
+                </p>
+                <p className={styles.exampleText}>
+                  Para usar esta calculadora, agrega el curso "Matemáticas", luego ingresa cada nota con su respectiva ponderación. 
+                  El sistema calculará automáticamente tu promedio ponderado.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.tipsCard}>
+            <button 
+              className={styles.infoHeader}
+              onClick={() => setTipsExpandidos(!tipsExpandidos)}
+              aria-expanded={tipsExpandidos}
+            >
+              <h3 className={styles.tipsTitle}>Tips y Consejos de Uso</h3>
+              <FontAwesomeIcon 
+                icon={tipsExpandidos ? faChevronUp : faChevronDown} 
+                className={styles.chevronIcon}
+              />
+            </button>
+            {tipsExpandidos && (
+              <div className={styles.infoContent}>
+                <ul className={styles.tipsList}>
+                  <li><strong>Verifica las ponderaciones:</strong> Asegúrate de que todas las ponderaciones sumen exactamente 100% para obtener un cálculo preciso.</li>
+                  <li><strong>Usa el simulador:</strong> Si tienes evaluaciones pendientes, utiliza el simulador para calcular qué nota necesitas obtener para alcanzar tu promedio objetivo.</li>
+                  <li><strong>Gestiona múltiples cursos:</strong> Puedes agregar todos tus cursos y gestionarlos desde un solo lugar para un seguimiento completo.</li>
+                  <li><strong>Exporta tus datos:</strong> Haz copias de seguridad periódicas usando la función de exportación para no perder información.</li>
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.helpCard}>
+            <Link href="/ayuda" className={styles.helpLink}>
+              ¿Necesitas más ayuda? Visita nuestra guía completa sobre cómo calcular promedios ponderados →
+            </Link>
+          </div>
+        </div>
 
         <div className={styles.content}>
           {cursos.length === 0 && !mostrarFormCurso && (
