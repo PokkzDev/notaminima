@@ -617,7 +617,7 @@ export default function Promedio() {
             {ejemploExpandido && (
               <div className={styles.infoContent}>
                 <p className={styles.exampleText}>
-                  Imagina que tienes un curso llamado "Matemáticas" con las siguientes evaluaciones:
+                  Imagina que tienes un curso llamado {'"'}Matemáticas{'"'} con las siguientes evaluaciones:
                 </p>
                 <ul className={styles.exampleList}>
                   <li>Control 1: Nota 5.5, ponderación 20%</li>
@@ -629,7 +629,7 @@ export default function Promedio() {
                   El cálculo sería: (5.5 × 0.20) + (6.0 × 0.20) + (5.0 × 0.10) + (6.5 × 0.50) = 1.1 + 1.2 + 0.5 + 3.25 = <strong>6.05</strong>
                 </p>
                 <p className={styles.exampleText}>
-                  Para usar esta calculadora, agrega el curso "Matemáticas", luego ingresa cada nota con su respectiva ponderación. 
+                  Para usar esta calculadora, agrega el curso {'"'}Matemáticas{'"'}, luego ingresa cada nota con su respectiva ponderación. 
                   El sistema calculará automáticamente tu promedio ponderado.
                 </p>
               </div>

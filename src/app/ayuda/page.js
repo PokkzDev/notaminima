@@ -62,7 +62,7 @@ export default function Ayuda() {
               <div className={styles.subsection}>
                 <h3 className={styles.subsectionTitle}>Paso 1: Agregar un Curso</h3>
                 <p className={styles.paragraph}>
-                  Haz clic en el botón "Nuevo Curso" y escribe el nombre del curso que deseas agregar. 
+                  Haz clic en el botón {'"'}Nuevo Curso{'"'} y escribe el nombre del curso que deseas agregar. 
                   Puedes agregar múltiples cursos para gestionar todas tus materias desde un solo lugar.
                 </p>
               </div>
@@ -70,9 +70,9 @@ export default function Ayuda() {
               <div className={styles.subsection}>
                 <h3 className={styles.subsectionTitle}>Paso 2: Agregar Notas</h3>
                 <p className={styles.paragraph}>
-                  Una vez que hayas creado un curso, haz clic en "Agregar Nota". Ingresa la nota obtenida 
+                  Una vez que hayas creado un curso, haz clic en {'"'}Agregar Nota{'"'}. Ingresa la nota obtenida 
                   (en escala 1.0-7.0) y su ponderación porcentual. Por ejemplo, si un examen vale 40% del curso, 
-                  ingresa "40" en el campo de ponderación.
+                  ingresa {'"'}40{'"'} en el campo de ponderación.
                 </p>
               </div>
 
@@ -105,15 +105,15 @@ export default function Ayuda() {
                 <h3 className={styles.subsectionTitle}>Paso 1: Ingresar Puntaje Obtenido</h3>
                 <p className={styles.paragraph}>
                   Ingresa el puntaje que obtuviste en la evaluación. Por ejemplo, si obtuviste 75 puntos de 100, 
-                  ingresa "75" en el campo "Puntaje Obtenido".
+                  ingresa {'"'}75{'"'} en el campo {'"'}Puntaje Obtenido{'"'}.
                 </p>
               </div>
 
               <div className={styles.subsection}>
                 <h3 className={styles.subsectionTitle}>Paso 2: Ingresar Puntaje Total</h3>
                 <p className={styles.paragraph}>
-                  Ingresa el puntaje máximo posible de la evaluación. Siguiendo el ejemplo anterior, ingresa "100" 
-                  en el campo "Puntaje Total".
+                  Ingresa el puntaje máximo posible de la evaluación. Siguiendo el ejemplo anterior, ingresa {'"'}100{'"'} 
+                  en el campo {'"'}Puntaje Total{'"'}.
                 </p>
               </div>
 
@@ -121,8 +121,8 @@ export default function Ayuda() {
                 <h3 className={styles.subsectionTitle}>Paso 3: Ingresar Porcentaje de Exigencia</h3>
                 <p className={styles.paragraph}>
                   El porcentaje de exigencia es el porcentaje mínimo necesario para aprobar. En Chile, este valor 
-                  típicamente varía entre 50% y 70%. Si tu institución requiere 60% para aprobar, ingresa "60" 
-                  en el campo "Exigencia (%)".
+                  típicamente varía entre 50% y 70%. Si tu institución requiere 60% para aprobar, ingresa {'"'}60{'"'} 
+                  en el campo {'"'}Exigencia (%){'"'}.
                 </p>
               </div>
 
@@ -199,7 +199,7 @@ export default function Ayuda() {
               <div className={styles.faqItem}>
                 <h3 className={styles.faqQuestion}>¿Cómo puedo exportar mis datos?</h3>
                 <p className={styles.faqAnswer}>
-                  En la página de Promedio, haz clic en el botón "Exportar Datos". Esto descargará un archivo JSON 
+                  En la página de Promedio, haz clic en el botón {'"'}Exportar Datos{'"'}. Esto descargará un archivo JSON 
                   con todos tus cursos y notas. Puedes guardar este archivo para hacer respaldos o transferirlo a 
                   otro dispositivo.
                 </p>
@@ -208,7 +208,7 @@ export default function Ayuda() {
               <div className={styles.faqItem}>
                 <h3 className={styles.faqQuestion}>¿Cómo puedo importar datos?</h3>
                 <p className={styles.faqAnswer}>
-                  En la página de Promedio, haz clic en "Importar Datos" y selecciona un archivo JSON previamente 
+                  En la página de Promedio, haz clic en {'"'}Importar Datos{'"'} y selecciona un archivo JSON previamente 
                   exportado. El sistema validará el archivo antes de importarlo. Ten en cuenta que importar datos 
                   reemplazará todos tus cursos y notas actuales.
                 </p>
