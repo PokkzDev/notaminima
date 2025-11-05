@@ -101,6 +101,11 @@ export default function Navbar() {
                   Puntaje a Nota
                 </Link>
               </li>
+              <li>
+                <Link href="/escala-de-notas" className={styles.navLink} onClick={closeMenu}>
+                  Escala de Notas
+                </Link>
+              </li>
             </ul>
             
             <div className={styles.separator}></div>
