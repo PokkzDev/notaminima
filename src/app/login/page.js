@@ -35,9 +35,15 @@ export default function LoginPage() {
       if (result?.error) {
         setError(result.error);
         setLoading(false);
-      } else {
+      } else if (result?.ok) {
+        // Login successful, redirect to landing page
+        setLoading(false);
         router.push('/promedio');
         router.refresh();
+      } else {
+        // Unexpected result
+        setError('Error al iniciar sesión');
+        setLoading(false);
       }
     } catch (err) {
       setError('Error al iniciar sesión');
