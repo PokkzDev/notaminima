@@ -12,8 +12,8 @@
 
 .header {
   text-align: center;
-  margin-bottom: 3rem;
-  padding: 2.5rem 2rem;
+  margin-bottom: 1rem;
+  padding: 1.5rem 2rem;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
   border-radius: 16px;
   border: 2px solid var(--border-color);
@@ -29,13 +29,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1.5rem;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
   background: linear-gradient(135deg, var(--accent-color) 0%, #2563eb 100%);
   border-radius: 20px;
   color: white;
-  font-size: 2.5rem;
+  font-size: 2rem;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -46,23 +46,23 @@
 }
 
 .title {
-  font-size: 2.75rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   transition: color 0.3s ease;
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
 .subtitle {
-  font-size: 1.15rem;
+  font-size: 1rem;
   color: var(--text-secondary);
   font-weight: 400;
   transition: color 0.3s ease;
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .actionButtons {
@@ -145,7 +145,7 @@
 
 .adContainer {
   width: 100%;
-  margin: 2rem 0;
+  margin: 1rem 0;
   padding: 0 1rem;
   display: flex;
   justify-content: center;
@@ -461,7 +461,7 @@
 /* Empty State */
 .emptyState {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 2.5rem 2rem;
   background: var(--bg-primary);
   border-radius: 12px;
   box-shadow: 0 2px 8px var(--shadow-color);
@@ -469,14 +469,14 @@
 }
 
 .emptyIcon {
-  font-size: 4rem;
+  font-size: 3rem;
   color: var(--border-color);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   transition: color 0.3s ease;
 }
 
 .emptyText {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
   font-weight: 500;
@@ -493,6 +493,90 @@
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.spinner {
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.migrationPrompt {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.migrationPrompt p {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.migrationButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.migrateButton {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.migrateButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.migrateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.skipButton {
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.skipButton:hover {
+  border-color: var(--accent-color);
+  background: var(--bg-secondary);
 }
 
 .importButtonEmpty {
@@ -1224,18 +1308,18 @@
   }
 
   .header {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.5rem;
   }
 
   .headerIcon {
-    width: 70px;
-    height: 70px;
-    font-size: 2rem;
-    margin-bottom: 1.25rem;
+    width: 55px;
+    height: 55px;
+    font-size: 1.75rem;
+    margin-bottom: 0.875rem;
   }
 
   .title {
-    font-size: 2.25rem;
+    font-size: 1.75rem;
   }
 
   .subtitle {
@@ -1348,18 +1432,18 @@
 
 @media (max-width: 480px) {
   .header {
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 1rem;
   }
 
   .headerIcon {
-    width: 60px;
-    height: 60px;
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   .subtitle {
