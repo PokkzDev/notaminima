@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTable, faChevronDown, faChevronUp, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faTable, faSearch } from '@fortawesome/free-solid-svg-icons';
 import AdSense from '../components/AdSense';
-import Link from 'next/link';
 import styles from './EscalaNotas.module.css';
 
 export default function EscalaDeNotas() {
@@ -15,9 +14,6 @@ export default function EscalaDeNotas() {
   const [tablaGenerada, setTablaGenerada] = useState(false);
   const [datosTabla, setDatosTabla] = useState([]);
   const [error, setError] = useState('');
-  const [infoExpandida, setInfoExpandida] = useState(false);
-  const [ejemploExpandido, setEjemploExpandido] = useState(false);
-  const [tipsExpandidos, setTipsExpandidos] = useState(false);
   const [busqueda, setBusqueda] = useState('');
 
   const calcularNota = (puntaje, total, exig) => {
@@ -191,96 +187,6 @@ export default function EscalaDeNotas() {
 
           <div className={styles.adContainer}>
             <AdSense adSlot="" adFormat="auto" />
-          </div>
-
-          {/* Sección Informativa */}
-          <div className={styles.infoSection}>
-            <div className={styles.infoCard}>
-              <button 
-                className={styles.infoHeader}
-                onClick={() => setInfoExpandida(!infoExpandida)}
-                aria-expanded={infoExpandida}
-              >
-                <h2 className={styles.infoTitle}>Sistema de Evaluación Chileno</h2>
-                <FontAwesomeIcon 
-                  icon={infoExpandida ? faChevronUp : faChevronDown} 
-                  className={styles.chevronIcon}
-                />
-              </button>
-              {infoExpandida && (
-                <div className={styles.infoContent}>
-                  <p className={styles.infoText}>
-                    En Chile, el sistema educativo utiliza una escala de notas del 1.0 al 7.0, donde 4.0 es la nota mínima de aprobación. 
-                    Esta herramienta te permite generar una tabla completa que muestra la conversión de todos los puntajes posibles 
-                    (desde 0 hasta el puntaje máximo que definas) a sus equivalentes en notas. Puedes personalizar el puntaje máximo 
-                    de la evaluación, el porcentaje de exigencia (típicamente entre 50% y 70%) y el incremento entre cada puntaje 
-                    (1 punto, 0.5 puntos o 0.25 puntos). Esta tabla es útil para entender cómo se traduce cada puntaje a una nota 
-                    y planificar tu desempeño académico.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className={styles.exampleCard}>
-              <button 
-                className={styles.infoHeader}
-                onClick={() => setEjemploExpandido(!ejemploExpandido)}
-                aria-expanded={ejemploExpandido}
-              >
-                <h3 className={styles.exampleTitle}>Ejemplo Práctico</h3>
-                <FontAwesomeIcon 
-                  icon={ejemploExpandido ? faChevronUp : faChevronDown} 
-                  className={styles.chevronIcon}
-                />
-              </button>
-              {ejemploExpandido && (
-                <div className={styles.infoContent}>
-                  <p className={styles.exampleText}>
-                    Supongamos que tienes una evaluación de 100 puntos con una exigencia del 60%:
-                  </p>
-                  <ul className={styles.exampleList}>
-                    <li>Con un paso de 1 punto, generarás una tabla con 101 filas (de 0 a 100 puntos).</li>
-                    <li>Cada fila mostrará el puntaje, su porcentaje, la nota equivalente y si aprueba o reprueba.</li>
-                    <li>Por ejemplo, 60 puntos (60%) = 4.0 (nota mínima de aprobación).</li>
-                    <li>75 puntos (75%) = aproximadamente 5.125 (nota aprobada).</li>
-                    <li>30 puntos (30%) = aproximadamente 2.5 (nota reprobada).</li>
-                  </ul>
-                  <p className={styles.exampleText}>
-                    Puedes usar un paso más pequeño (0.5 o 0.25) para obtener una tabla más detallada, aunque generará más filas.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className={styles.tipsCard}>
-              <button 
-                className={styles.infoHeader}
-                onClick={() => setTipsExpandidos(!tipsExpandidos)}
-                aria-expanded={tipsExpandidos}
-              >
-                <h3 className={styles.tipsTitle}>Tips y Consejos de Uso</h3>
-                <FontAwesomeIcon 
-                  icon={tipsExpandidos ? faChevronUp : faChevronDown} 
-                  className={styles.chevronIcon}
-                />
-              </button>
-              {tipsExpandidos && (
-                <div className={styles.infoContent}>
-                  <ul className={styles.tipsList}>
-                    <li><strong>Paso de incremento:</strong> Usa paso de 1 punto para tablas rápidas y generales. Usa 0.5 o 0.25 para mayor detalle.</li>
-                    <li><strong>Puntaje máximo:</strong> Ingresa el puntaje total de tu evaluación. No hay límite, pero valores muy altos con pasos pequeños generarán tablas muy largas.</li>
-                    <li><strong>Exigencia:</strong> Verifica el porcentaje de exigencia de tu institución (generalmente entre 50% y 70%).</li>
-                    <li><strong>Exportar tabla:</strong> Puedes exportar la tabla generada a CSV para usarla en Excel u otras herramientas.</li>
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            <div className={styles.helpCard}>
-              <Link href="/ayuda" className={styles.helpLink}>
-                ¿Necesitas más ayuda? Visita nuestra guía completa sobre cómo convertir puntajes a notas →
-              </Link>
-            </div>
           </div>
 
           <div className={styles.content}>

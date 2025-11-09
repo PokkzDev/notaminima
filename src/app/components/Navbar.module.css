@@ -123,6 +123,122 @@
   width: 100%;
 }
 
+.authItem {
+  margin-left: auto;
+}
+
+.loginButton {
+  padding: 0.5rem 1rem;
+  background: var(--accent-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.loginButton:hover {
+  opacity: 0.9;
+}
+
+.userMenuContainer {
+  position: relative;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.userButton:hover {
+  border-color: var(--accent-color);
+  background: var(--bg-tertiary);
+}
+
+.userEmail {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  min-width: 200px;
+  z-index: 1002;
+  overflow: hidden;
+}
+
+.userInfo {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+  font-size: 0.9375rem;
+}
+
+.userEmailSmall {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  word-break: break-all;
+}
+
+.menuLink {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s ease;
+  border-top: 1px solid var(--border-color);
+}
+
+.menuLink:hover {
+  background: var(--bg-secondary);
+}
+
+.signOutButton {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s ease;
+  border-top: 1px solid var(--border-color);
+}
+
 /* Backdrop overlay */
 .backdrop {
   position: fixed;
@@ -195,6 +311,33 @@
 
   .navLink::after {
     display: none;
+  }
+
+  .authItem {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .loginButton {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .userButton {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .userEmail {
+    max-width: none;
+  }
+
+  .userMenu {
+    position: static;
+    width: 100%;
+    margin-top: 0.5rem;
   }
 
   .separator {

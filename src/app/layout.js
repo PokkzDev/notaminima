@@ -1,8 +1,10 @@
 import "./globals.css";
-import Script from "next/script";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
+import AuthProvider from "./components/AuthProvider";
+import CookieConsent from "./components/CookieConsent";
+import ConditionalScripts from "./components/ConditionalScripts";
 
 export const metadata = {
   metadataBase: new URL('https://notaminima.cl'),
@@ -102,31 +104,17 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <link rel="apple-touch-icon" href="/logo-256.png" />
         <link rel="icon" type="image/png" href="/logo-256.png" />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-5E4XVS6STV"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-5E4XVS6STV');
-          `}
-        </Script>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3504234733980898"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </head>
       <body>
-        <ThemeProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <Navbar />
+            {children}
+            <Footer />
+            <CookieConsent />
+            <ConditionalScripts />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

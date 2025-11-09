@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -10,74 +12,125 @@ import {
   faCheck, 
   faTimes,
   faBook,
-  faDownload,
-  faUpload,
   faCalculator,
-  faChevronDown,
-  faChevronUp
+  faSpinner
 } from '@fortawesome/free-solid-svg-icons';
 import AdSense from '../components/AdSense';
-import Link from 'next/link';
 import styles from './Promedio.module.css';
 
 export default function Promedio() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [nuevoCursoNombre, setNuevoCursoNombre] = useState('');
   const [mostrarFormCurso, setMostrarFormCurso] = useState(false);
   const [editandoCurso, setEditandoCurso] = useState(null);
   const [nombreEditado, setNombreEditado] = useState('');
   const [confirmarEliminarCurso, setConfirmarEliminarCurso] = useState(null);
   const [confirmarEliminarNota, setConfirmarEliminarNota] = useState(null);
-  const [mostrarModalImportar, setMostrarModalImportar] = useState(false);
-  const [archivoImportar, setArchivoImportar] = useState(null);
-  const [errorImportar, setErrorImportar] = useState('');
-  const [validandoArchivo, setValidandoArchivo] = useState(false);
-  const [archivoValido, setArchivoValido] = useState(null);
   const [simuladorAbierto, setSimuladorAbierto] = useState({});
   const [modoSimulador, setModoSimulador] = useState({});
   const [targetPromedio, setTargetPromedio] = useState({});
   const [notaSimulada, setNotaSimulada] = useState({});
-  const [infoExpandida, setInfoExpandida] = useState(false);
-  const [ejemploExpandido, setEjemploExpandido] = useState(false);
-  const [tipsExpandidos, setTipsExpandidos] = useState(false);
+  const saveTimeoutRef = useRef(null);
 
-
-  // Cargar datos desde localStorage
+  // Redirect if not authenticated
   useEffect(() => {
-    const cursosGuardados = localStorage.getItem('cursosPromedio');
-    if (cursosGuardados) {
-      try {
-        setCursos(JSON.parse(cursosGuardados));
-      } catch (error) {
-        console.error('Error al cargar cursos:', error);
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
+
+  // Load cursos from API
+  useEffect(() => {
+    if (status === 'authenticated') {
+      loadCursos();
+    }
+  }, [status]);
+
+  const loadCursos = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/promedios');
+      if (response.ok) {
+        const data = await response.json();
+        // Convert from database format to component format
+        const cursosFormatted = data.promedios.map(p => ({
+          id: p.id,
+          nombre: p.nombre,
+          notas: p.notas || []
+        }));
+        setCursos(cursosFormatted);
+      } else {
+        console.error('Error loading cursos');
       }
+    } catch (error) {
+      console.error('Error loading cursos:', error);
+    } finally {
+      setLoading(false);
     }
-  }, []);
-
-  // Guardar datos en localStorage
-  useEffect(() => {
-    if (cursos.length > 0 || localStorage.getItem('cursosPromedio')) {
-      localStorage.setItem('cursosPromedio', JSON.stringify(cursos));
-    }
-  }, [cursos]);
-
-  const agregarCurso = () => {
-    if (nuevoCursoNombre.trim() === '') return;
-
-    const nuevoCurso = {
-      id: Date.now(),
-      nombre: nuevoCursoNombre.trim(),
-      notas: []
-    };
-
-    setCursos([...cursos, nuevoCurso]);
-    setNuevoCursoNombre('');
-    setMostrarFormCurso(false);
   };
 
-  const eliminarCurso = (cursoId) => {
-    setCursos(cursos.filter(curso => curso.id !== cursoId));
-    setConfirmarEliminarCurso(null);
+  const agregarCurso = async () => {
+    if (nuevoCursoNombre.trim() === '') return;
+
+    try {
+      setSaving(true);
+      const response = await fetch('/api/promedios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: nuevoCursoNombre.trim(),
+          notas: []
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const nuevoCurso = {
+          id: data.promedio.id,
+          nombre: data.promedio.nombre,
+          notas: data.promedio.notas || []
+        };
+        setCursos([...cursos, nuevoCurso]);
+        setNuevoCursoNombre('');
+        setMostrarFormCurso(false);
+      } else {
+        const errorData = await response.json();
+        alert('Error al crear curso: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error creating curso:', error);
+      alert('Error al crear curso');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const eliminarCurso = async (cursoId) => {
+    try {
+      setSaving(true);
+      const response = await fetch(`/api/promedios/${cursoId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCursos(cursos.filter(curso => curso.id !== cursoId));
+        setConfirmarEliminarCurso(null);
+      } else {
+        const errorData = await response.json();
+        alert('Error al eliminar curso: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error deleting curso:', error);
+      alert('Error al eliminar curso');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const iniciarEdicionCurso = (curso) => {
@@ -85,19 +138,44 @@ export default function Promedio() {
     setNombreEditado(curso.nombre);
   };
 
-  const guardarEdicionCurso = (cursoId) => {
+  const guardarEdicionCurso = async (cursoId) => {
     if (nombreEditado.trim() === '') {
       cancelarEdicionCurso();
       return;
     }
 
-    setCursos(cursos.map(curso => 
-      curso.id === cursoId 
-        ? { ...curso, nombre: nombreEditado.trim() }
-        : curso
-    ));
-    setEditandoCurso(null);
-    setNombreEditado('');
+    try {
+      setSaving(true);
+      const curso = cursos.find(c => c.id === cursoId);
+      const response = await fetch(`/api/promedios/${cursoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: nombreEditado.trim(),
+          notas: curso.notas
+        }),
+      });
+
+      if (response.ok) {
+        setCursos(cursos.map(curso => 
+          curso.id === cursoId 
+            ? { ...curso, nombre: nombreEditado.trim() }
+            : curso
+        ));
+        setEditandoCurso(null);
+        setNombreEditado('');
+      } else {
+        const errorData = await response.json();
+        alert('Error al actualizar curso: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error updating curso:', error);
+      alert('Error al actualizar curso');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const cancelarEdicionCurso = () => {
@@ -147,7 +225,7 @@ export default function Promedio() {
   };
 
   const actualizarNota = (cursoId, notaId, campo, valor) => {
-    setCursos(cursos.map(curso => {
+    const updatedCursos = cursos.map(curso => {
       if (curso.id === cursoId) {
         return {
           ...curso,
@@ -157,7 +235,34 @@ export default function Promedio() {
         };
       }
       return curso;
-    }));
+    });
+    setCursos(updatedCursos);
+    // Debounce save to API
+    debounceSaveCurso(cursoId, updatedCursos.find(c => c.id === cursoId));
+  };
+
+  const debounceSaveCurso = (cursoId, curso) => {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveCurso(cursoId, curso);
+    }, 1000);
+  };
+
+  const saveCurso = async (cursoId, curso) => {
+    try {
+      await fetch(`/api/promedios/${cursoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: curso.nombre,
+          notas: curso.notas
+        }),
+      });
+    } catch (error) {
+      console.error('Error saving curso:', error);
+    }
   };
 
   const manejarBlurNota = (cursoId, notaId, valor) => {
@@ -187,7 +292,7 @@ export default function Promedio() {
   };
 
   const eliminarNota = (cursoId, notaId) => {
-    setCursos(cursos.map(curso => {
+    const updatedCursos = cursos.map(curso => {
       if (curso.id === cursoId) {
         return {
           ...curso,
@@ -195,8 +300,11 @@ export default function Promedio() {
         };
       }
       return curso;
-    }));
+    });
+    setCursos(updatedCursos);
     setConfirmarEliminarNota(null);
+    const curso = updatedCursos.find(c => c.id === cursoId);
+    saveCurso(cursoId, curso);
   };
 
   const calcularPromedio = (notas) => {
@@ -314,199 +422,6 @@ export default function Promedio() {
     }
   };
 
-  const exportarDatos = () => {
-    const datos = {
-      version: '1.0',
-      fecha: new Date().toISOString(),
-      cursos: cursos
-    };
-
-    const json = JSON.stringify(datos, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `notaminima-promedio-notas-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
-  const abrirModalImportar = () => {
-    setMostrarModalImportar(true);
-    setArchivoImportar(null);
-    setErrorImportar('');
-    setArchivoValido(null);
-    setValidandoArchivo(false);
-  };
-
-  const cerrarModalImportar = () => {
-    setMostrarModalImportar(false);
-    setArchivoImportar(null);
-    setErrorImportar('');
-    setArchivoValido(null);
-    setValidandoArchivo(false);
-  };
-
-  const manejarArchivoSeleccionado = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    setArchivoImportar(null);
-    setErrorImportar('');
-    setArchivoValido(null);
-
-    // Verificar extensión
-    if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-      setErrorImportar('Por favor selecciona un archivo JSON válido (.json)');
-      return;
-    }
-
-    // Verificar tamaño (máximo 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setErrorImportar('El archivo es demasiado grande (máximo 5MB)');
-      return;
-    }
-
-    // Pre-validar el archivo
-    setValidandoArchivo(true);
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      try {
-        const texto = e.target.result;
-        
-        if (!texto || texto.trim() === '') {
-          setErrorImportar('El archivo está vacío');
-          setValidandoArchivo(false);
-          return;
-        }
-
-        let contenido;
-        try {
-          contenido = JSON.parse(texto);
-        } catch (jsonError) {
-          setErrorImportar('El archivo no contiene JSON válido');
-          setValidandoArchivo(false);
-          return;
-        }
-
-        // Validar estructura
-        const validacion = validarEstructuraJSON(contenido);
-        if (!validacion.valido) {
-          setErrorImportar(validacion.error);
-          setValidandoArchivo(false);
-          setArchivoValido(false);
-          return;
-        }
-
-        // Archivo válido
-        setArchivoImportar(file);
-        setArchivoValido(true);
-        setValidandoArchivo(false);
-        setErrorImportar('');
-      } catch (error) {
-        setErrorImportar('Error al validar el archivo: ' + error.message);
-        setValidandoArchivo(false);
-        setArchivoValido(false);
-      }
-    };
-
-    reader.onerror = () => {
-      setErrorImportar('Error al leer el archivo');
-      setValidandoArchivo(false);
-      setArchivoValido(false);
-    };
-
-    reader.readAsText(file);
-  };
-
-  const validarEstructuraJSON = (contenido) => {
-    // Verificar que tenga la propiedad cursos
-    if (!contenido.cursos) {
-      return { valido: false, error: 'El archivo no contiene la propiedad "cursos"' };
-    }
-
-    // Verificar que cursos sea un array
-    if (!Array.isArray(contenido.cursos)) {
-      return { valido: false, error: 'La propiedad "cursos" debe ser un array' };
-    }
-
-    // Verificar cada curso
-    for (let i = 0; i < contenido.cursos.length; i++) {
-      const curso = contenido.cursos[i];
-
-      // Verificar que el curso tenga id, nombre y notas
-      if (!curso.hasOwnProperty('id') || !curso.hasOwnProperty('nombre') || !curso.hasOwnProperty('notas')) {
-        return { valido: false, error: `El curso en posición ${i + 1} no tiene la estructura correcta (falta id, nombre o notas)` };
-      }
-
-      // Verificar que notas sea un array
-      if (!Array.isArray(curso.notas)) {
-        return { valido: false, error: `El curso "${curso.nombre}" debe tener un array de notas` };
-      }
-
-      // Verificar cada nota
-      for (let j = 0; j < curso.notas.length; j++) {
-        const nota = curso.notas[j];
-
-        if (!nota.hasOwnProperty('id') || !nota.hasOwnProperty('valor') || !nota.hasOwnProperty('ponderacion')) {
-          return { valido: false, error: `Una nota del curso "${curso.nombre}" no tiene la estructura correcta` };
-        }
-      }
-    }
-
-    return { valido: true };
-  };
-
-  const importarDatos = () => {
-    if (!archivoImportar) {
-      setErrorImportar('Por favor selecciona un archivo');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        // Verificar que el contenido sea un JSON válido
-        const texto = e.target.result;
-        
-        if (!texto || texto.trim() === '') {
-          setErrorImportar('El archivo está vacío');
-          return;
-        }
-
-        let contenido;
-        try {
-          contenido = JSON.parse(texto);
-        } catch (jsonError) {
-          setErrorImportar('El archivo no es un JSON válido: ' + jsonError.message);
-          return;
-        }
-
-        // Validar la estructura del JSON
-        const validacion = validarEstructuraJSON(contenido);
-        if (!validacion.valido) {
-          setErrorImportar(validacion.error);
-          return;
-        }
-
-        // Todo está bien, importar los datos
-        setCursos(contenido.cursos);
-        cerrarModalImportar();
-      } catch (error) {
-        setErrorImportar('Error inesperado: ' + error.message);
-      }
-    };
-
-    reader.onerror = () => {
-      setErrorImportar('Error al leer el archivo. Por favor intenta nuevamente.');
-    };
-
-    reader.readAsText(archivoImportar);
-  };
-
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -523,8 +438,6 @@ export default function Promedio() {
     featureList: [
       'Gestión de múltiples cursos',
       'Cálculo de promedio ponderado',
-      'Exportación e importación de datos',
-      'Almacenamiento local',
     ],
   };
 
@@ -537,6 +450,13 @@ export default function Promedio() {
       />
       <main className={styles.main}>
       <div className={styles.container}>
+        {loading && (
+          <div className={styles.loadingContainer}>
+            <FontAwesomeIcon icon={faSpinner} spin className={styles.spinner} />
+            <p>Cargando tus cursos...</p>
+          </div>
+        )}
+
         <header className={styles.header}>
           <div className={styles.headerIcon}>
             <FontAwesomeIcon icon={faCalculator} />
@@ -545,140 +465,18 @@ export default function Promedio() {
           <p className={styles.subtitle}>
             Administra tus cursos y calcula tu promedio ponderado
           </p>
-          
-          {cursos.length > 0 && (
-            <div className={styles.actionButtons}>
-              <div className={styles.buttonWithTooltip}>
-                <button onClick={exportarDatos} className={styles.exportButton}>
-                  <FontAwesomeIcon icon={faDownload} />
-                  Exportar Datos
-                </button>
-                <span className={styles.tooltip}>
-                  Descarga tus cursos y notas en un archivo JSON
-                </span>
-              </div>
-              <div className={styles.buttonWithTooltip}>
-                <button onClick={abrirModalImportar} className={styles.importButton}>
-                  <FontAwesomeIcon icon={faUpload} />
-                  Importar Datos
-                </button>
-                <span className={styles.tooltip}>
-                  Carga un archivo JSON previamente exportado
-                </span>
-              </div>
-            </div>
-          )}
         </header>
 
         <div className={styles.adContainer}>
           <AdSense adSlot="" adFormat="auto" />
         </div>
 
-        {/* Sección Informativa */}
-        <div className={styles.infoSection}>
-          <div className={styles.infoCard}>
-            <button 
-              className={styles.infoHeader}
-              onClick={() => setInfoExpandida(!infoExpandida)}
-              aria-expanded={infoExpandida}
-            >
-              <h2 className={styles.infoTitle}>Sistema de Evaluación Chileno</h2>
-              <FontAwesomeIcon 
-                icon={infoExpandida ? faChevronUp : faChevronDown} 
-                className={styles.chevronIcon}
-              />
-            </button>
-            {infoExpandida && (
-              <div className={styles.infoContent}>
-                <p className={styles.infoText}>
-                  En Chile, el sistema educativo utiliza una escala de notas del 1.0 al 7.0, donde 4.0 es la nota mínima de aprobación. 
-                  Las evaluaciones se califican mediante un sistema de promedio ponderado, donde cada evaluación tiene un peso 
-                  porcentual específico dentro del curso. Por ejemplo, un examen final puede valer 40% del curso, mientras que 
-                  las tareas pueden valer 20% cada una. El promedio ponderado se calcula multiplicando cada nota por su ponderación 
-                  y dividiendo la suma de estos productos por el total de ponderaciones. Este sistema permite que los estudiantes 
-                  planifiquen sus estudios y comprendan cómo cada evaluación afecta su calificación final.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.exampleCard}>
-            <button 
-              className={styles.infoHeader}
-              onClick={() => setEjemploExpandido(!ejemploExpandido)}
-              aria-expanded={ejemploExpandido}
-            >
-              <h3 className={styles.exampleTitle}>Ejemplo Práctico</h3>
-              <FontAwesomeIcon 
-                icon={ejemploExpandido ? faChevronUp : faChevronDown} 
-                className={styles.chevronIcon}
-              />
-            </button>
-            {ejemploExpandido && (
-              <div className={styles.infoContent}>
-                <p className={styles.exampleText}>
-                  Imagina que tienes un curso llamado {'"'}Matemáticas{'"'} con las siguientes evaluaciones:
-                </p>
-                <ul className={styles.exampleList}>
-                  <li>Control 1: Nota 5.5, ponderación 20%</li>
-                  <li>Control 2: Nota 6.0, ponderación 20%</li>
-                  <li>Tarea: Nota 5.0, ponderación 10%</li>
-                  <li>Examen Final: Nota 6.5, ponderación 50%</li>
-                </ul>
-                <p className={styles.exampleText}>
-                  El cálculo sería: (5.5 × 0.20) + (6.0 × 0.20) + (5.0 × 0.10) + (6.5 × 0.50) = 1.1 + 1.2 + 0.5 + 3.25 = <strong>6.05</strong>
-                </p>
-                <p className={styles.exampleText}>
-                  Para usar esta calculadora, agrega el curso {'"'}Matemáticas{'"'}, luego ingresa cada nota con su respectiva ponderación. 
-                  El sistema calculará automáticamente tu promedio ponderado.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.tipsCard}>
-            <button 
-              className={styles.infoHeader}
-              onClick={() => setTipsExpandidos(!tipsExpandidos)}
-              aria-expanded={tipsExpandidos}
-            >
-              <h3 className={styles.tipsTitle}>Tips y Consejos de Uso</h3>
-              <FontAwesomeIcon 
-                icon={tipsExpandidos ? faChevronUp : faChevronDown} 
-                className={styles.chevronIcon}
-              />
-            </button>
-            {tipsExpandidos && (
-              <div className={styles.infoContent}>
-                <ul className={styles.tipsList}>
-                  <li><strong>Verifica las ponderaciones:</strong> Asegúrate de que todas las ponderaciones sumen exactamente 100% para obtener un cálculo preciso.</li>
-                  <li><strong>Usa el simulador:</strong> Si tienes evaluaciones pendientes, utiliza el simulador para calcular qué nota necesitas obtener para alcanzar tu promedio objetivo.</li>
-                  <li><strong>Gestiona múltiples cursos:</strong> Puedes agregar todos tus cursos y gestionarlos desde un solo lugar para un seguimiento completo.</li>
-                  <li><strong>Exporta tus datos:</strong> Haz copias de seguridad periódicas usando la función de exportación para no perder información.</li>
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.helpCard}>
-            <Link href="/ayuda" className={styles.helpLink}>
-              ¿Necesitas más ayuda? Visita nuestra guía completa sobre cómo calcular promedios ponderados →
-            </Link>
-          </div>
-        </div>
-
         <div className={styles.content}>
-          {cursos.length === 0 && !mostrarFormCurso && (
+          {!loading && cursos.length === 0 && !mostrarFormCurso && (
             <div className={styles.emptyState}>
               <FontAwesomeIcon icon={faBook} className={styles.emptyIcon} />
               <p className={styles.emptyText}>No tienes cursos agregados</p>
-              <p className={styles.emptySubtext}>Comienza agregando tu primer curso o importa tus datos</p>
-              <div className={styles.emptyStateActions}>
-                <button onClick={abrirModalImportar} className={styles.importButtonEmpty}>
-                  <FontAwesomeIcon icon={faUpload} />
-                  Importar Datos
-                </button>
-              </div>
+              <p className={styles.emptySubtext}>Comienza agregando tu primer curso</p>
             </div>
           )}
 
@@ -1116,77 +914,6 @@ export default function Promedio() {
 
         </div>
       </div>
-
-      {mostrarModalImportar && (
-        <div className={styles.modalOverlay} onClick={cerrarModalImportar}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2 className={styles.modalTitle}>Importar Datos</h2>
-              <button onClick={cerrarModalImportar} className={styles.modalCloseButton}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-
-            <div className={styles.modalBody}>
-              <p className={styles.modalDescription}>
-                Selecciona un archivo JSON previamente exportado para restaurar tus cursos y notas.
-              </p>
-
-              <div className={styles.fileInputContainer}>
-                <input
-                  type="file"
-                  id="fileInput"
-                  accept=".json,application/json"
-                  onChange={manejarArchivoSeleccionado}
-                  className={styles.fileInput}
-                />
-                <label htmlFor="fileInput" className={`${styles.fileInputLabel} ${archivoValido ? styles.fileInputValid : ''}`}>
-                  <FontAwesomeIcon icon={faUpload} />
-                  {archivoImportar ? archivoImportar.name : 'Seleccionar archivo JSON'}
-                </label>
-              </div>
-
-              {validandoArchivo && (
-                <div className={styles.validatingMessage}>
-                  Validando archivo...
-                </div>
-              )}
-
-              {archivoValido && !errorImportar && (
-                <div className={styles.successMessage}>
-                  <FontAwesomeIcon icon={faCheck} />
-                  Archivo válido - Listo para importar
-                </div>
-              )}
-
-              {errorImportar && (
-                <div className={styles.errorMessage}>
-                  {errorImportar}
-                </div>
-              )}
-
-              <div className={styles.modalActions}>
-                <button 
-                  onClick={importarDatos} 
-                  className={styles.modalImportButton}
-                  disabled={!archivoValido || validandoArchivo}
-                >
-                  <FontAwesomeIcon icon={faCheck} />
-                  Importar
-                </button>
-                <button onClick={cerrarModalImportar} className={styles.modalCancelButton}>
-                  <FontAwesomeIcon icon={faTimes} />
-                  Cancelar
-                </button>
-              </div>
-
-              <div className={styles.warningMessage}>
-                <strong>Advertencia:</strong> Importar datos reemplazará todos tus cursos y notas actuales.
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       </main>
     </>
   );

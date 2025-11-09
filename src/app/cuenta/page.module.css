@@ -1,0 +1,349 @@
+.main {
+  flex: 1;
+  padding: 2rem 1rem;
+  background: var(--bg-tertiary);
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2.5rem 2rem;
+  background: var(--bg-primary);
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.section {
+  background: var(--bg-primary);
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin-bottom: 2rem;
+  transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  overflow: hidden;
+}
+
+.dangerSection {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 1.5rem 2rem;
+  margin: 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.sectionIcon {
+  font-size: 1.25rem;
+  color: var(--accent-color);
+}
+
+.sectionContent {
+  padding: 2rem;
+}
+
+.currentInfo {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.currentInfo strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.inputIcon {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.passwordInputWrapper .input {
+  padding-right: 3rem;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  z-index: 1;
+}
+
+.passwordToggle:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.passwordToggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.passwordToggle svg {
+  font-size: 1rem;
+}
+
+.submitButton {
+  padding: 0.875rem 1.5rem;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.successMessage {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.warningBox {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  display: flex;
+  gap: 1rem;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.warningIcon {
+  font-size: 1.5rem;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.warningBox strong {
+  color: #ef4444;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.warningBox ul {
+  margin: 0.75rem 0 0 1.25rem;
+  padding: 0;
+}
+
+.warningBox li {
+  margin-bottom: 0.5rem;
+}
+
+.dangerButton {
+  padding: 0.875rem 1.5rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background 0.2s ease;
+  width: 100%;
+}
+
+.dangerButton:hover:not(:disabled) {
+  opacity: 0.9;
+  background: #dc2626;
+}
+
+.dangerButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  padding: 0.875rem 1.5rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.cancelButton:hover:not(:disabled) {
+  border-color: var(--accent-color);
+  background: var(--bg-tertiary);
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+}
+
+.buttonGroup .dangerButton {
+  flex: 1;
+}
+
+.buttonGroup .cancelButton {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0;
+  }
+
+  .header {
+    padding: 2rem 1.5rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .sectionContent {
+    padding: 1.5rem;
+  }
+
+  .sectionTitle {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+}
+
