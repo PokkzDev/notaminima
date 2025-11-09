@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 // import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import styles from './page.module.css';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -36,10 +37,31 @@ export default function LoginPage() {
         setError(result.error);
         setLoading(false);
       } else if (result?.ok) {
-        // Login successful, redirect to landing page
+        // Login successful, redirect to callbackUrl or default to landing page
         setLoading(false);
-        router.push('/promedio');
-        router.refresh();
+        
+        // Get callbackUrl from query params
+        const callbackUrl = searchParams.get('callbackUrl');
+        let redirectPath = '/'; // Default redirect to landing page
+        
+        if (callbackUrl) {
+          try {
+            // If callbackUrl is a full URL, extract the pathname
+            const url = new URL(callbackUrl, window.location.origin);
+            // Only allow same-origin redirects for security
+            if (url.origin === window.location.origin) {
+              redirectPath = url.pathname + url.search + url.hash;
+            }
+          } catch {
+            // If callbackUrl is already a relative path, use it directly
+            if (callbackUrl.startsWith('/')) {
+              redirectPath = callbackUrl;
+            }
+          }
+        }
+        
+        // Use hard redirect to ensure session cookie is properly loaded
+        window.location.href = redirectPath;
       } else {
         // Unexpected result
         setError('Error al iniciar sesión');
@@ -169,6 +191,14 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
 

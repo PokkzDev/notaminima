@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -20,7 +19,6 @@ import styles from './Promedio.module.css';
 
 export default function Promedio() {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -39,9 +37,9 @@ export default function Promedio() {
   // Redirect if not authenticated
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/login');
+      window.location.href = '/login';
     }
-  }, [status, router]);
+  }, [status]);
 
   // Load cursos from API
   useEffect(() => {

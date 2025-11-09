@@ -13,7 +13,7 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/promedio/:path*', '/cuenta'],
+  matcher: ['/cuenta'],
 };
 
 

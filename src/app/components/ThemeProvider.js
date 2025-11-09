@@ -5,21 +5,29 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext(undefined);
 
 export function ThemeProvider({ children }) {
+  // Always start with 'light' to match SSR, then sync in useEffect
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    // Check localStorage first
+    // Sync state with DOM (blocking script already set the class)
+    const hasDarkClass = document.documentElement.classList.contains('dark');
     const savedTheme = localStorage.getItem('theme');
     
     if (savedTheme) {
       setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+      // Ensure DOM matches saved theme
+      if ((savedTheme === 'dark') !== hasDarkClass) {
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+      }
     } else {
       // Check system preference
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const initialTheme = systemPrefersDark ? 'dark' : 'light';
       setTheme(initialTheme);
-      document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+      // Ensure DOM matches system preference
+      if ((initialTheme === 'dark') !== hasDarkClass) {
+        document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+      }
     }
   }, []);
 

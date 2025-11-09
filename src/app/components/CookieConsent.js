@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import styles from './CookieConsent.module.css';
 
@@ -10,9 +12,20 @@ const COOKIE_CONSENT_EXPIRY_DAYS = 365;
 export default function CookieConsent() {
   const [showModal, setShowModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
+    
+    // Don't show modal on login/register pages or if user is authenticated
+    const isAuthPage = pathname === '/login' || pathname === '/register' || pathname?.startsWith('/register/');
+    const isAuthenticated = status === 'authenticated';
+    
+    if (isAuthPage || isAuthenticated) {
+      return;
+    }
+    
     // Check if user has already given consent
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!consent) {
@@ -21,7 +34,7 @@ export default function CookieConsent() {
         setShowModal(true);
       }, 500);
     }
-  }, []);
+  }, [pathname, status]);
 
   const handleAccept = () => {
     localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');

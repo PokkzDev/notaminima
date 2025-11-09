@@ -98,12 +98,31 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es-CL">
+    <html lang="es-CL" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#16a34a" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <link rel="apple-touch-icon" href="/logo-256.png" />
         <link rel="icon" type="image/png" href="/logo-256.png" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else if (!theme) {
+                    var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    if (systemPrefersDark) {
+                      document.documentElement.classList.add('dark');
+                    }
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         <AuthProvider>
