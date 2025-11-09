@@ -18,13 +18,18 @@ export default function Footer() {
           <h4 className={styles.sectionTitle}>Herramientas</h4>
           <ul className={styles.links}>
             <li>
-              <Link href="/promedio" className={styles.link}>
-                Promedio
+              <Link href="/login" className={styles.link}>
+                Calcular Promedio
               </Link>
             </li>
             <li>
               <Link href="/puntaje-a-nota" className={styles.link}>
                 Puntaje a Nota
+              </Link>
+            </li>
+            <li>
+              <Link href="/escala-de-notas" className={styles.link}>
+                Escala de Notas
               </Link>
             </li>
           </ul>

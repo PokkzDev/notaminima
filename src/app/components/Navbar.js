@@ -13,6 +13,12 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure component is mounted before rendering auth-dependent content
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -99,11 +105,13 @@ export default function Navbar() {
 
           <div className={`${styles.navLinksContainer} ${isMenuOpen ? styles.navLinksContainerOpen : ''}`}>
             <ul className={styles.navLinks}>
-              <li>
-                <Link href="/promedio" className={styles.navLink} onClick={closeMenu}>
-                  Promedio
-                </Link>
-              </li>
+              {mounted && status === 'authenticated' && (
+                <li>
+                  <Link href="/promedio" className={styles.navLink} onClick={closeMenu}>
+                    Promedio
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/puntaje-a-nota" className={styles.navLink} onClick={closeMenu}>
                   Puntaje a Nota

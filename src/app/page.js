@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +10,16 @@ import AdSense from './components/AdSense';
 import styles from './page.module.css';
 
 export default function Home() {
+  const { status } = useSession();
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure component is mounted before using auth status to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine the redirect URL based on authentication status
+  const promedioHref = mounted && status === 'authenticated' ? '/promedio' : '/login';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
@@ -66,11 +78,14 @@ export default function Home() {
             </p>
           
           <div className={styles.ctaGroup}>
-            <Link href="/promedio" className={styles.primaryCta}>
+            <Link href={promedioHref} className={styles.primaryCta}>
               Calcular Promedio
             </Link>
             <Link href="/puntaje-a-nota" className={styles.secondaryCta}>
               Puntaje a Nota
+            </Link>
+            <Link href="/escala-de-notas" className={styles.secondaryCta}>
+              Escala de Notas
             </Link>
           </div>
         </div>
