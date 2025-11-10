@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faBullseye, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
-import AdSense from './components/AdSense';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -90,10 +89,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <div className={styles.adContainer}>
-        <AdSense adSlot="" adFormat="auto" />
-      </div>
 
       <section className={styles.infoSection}>
         <div className={styles.container}>
@@ -188,10 +183,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <div className={styles.adContainer}>
-        <AdSense adSlot="" adFormat="auto" />
-      </div>
       </main>
     </>
   );

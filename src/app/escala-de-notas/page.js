@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTable, faSearch } from '@fortawesome/free-solid-svg-icons';
-import AdSense from '../components/AdSense';
 import styles from './EscalaNotas.module.css';
 
 export default function EscalaDeNotas() {
@@ -184,10 +183,6 @@ export default function EscalaDeNotas() {
               Genera una tabla completa de conversión de puntajes a notas según el sistema chileno
             </p>
           </header>
-
-          <div className={styles.adContainer}>
-            <AdSense adSlot="" adFormat="auto" />
-          </div>
 
           <div className={styles.content}>
             <div className={styles.formSection}>

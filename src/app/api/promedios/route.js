@@ -44,7 +44,7 @@ export async function POST(request) {
       );
     }
 
-    const { nombre, notas } = await request.json();
+    const { nombre, notas, examenFinal } = await request.json();
 
     if (!nombre || !notas) {
       return NextResponse.json(
@@ -58,6 +58,7 @@ export async function POST(request) {
         userId: session.user.id,
         nombre,
         notas,
+        examenFinal: examenFinal || null,
       },
     });
 
