@@ -14,7 +14,6 @@ import {
   faCalculator,
   faSpinner
 } from '@fortawesome/free-solid-svg-icons';
-import AdSense from '../components/AdSense';
 import styles from './Promedio.module.css';
 
 export default function Promedio() {
@@ -28,11 +27,14 @@ export default function Promedio() {
   const [nombreEditado, setNombreEditado] = useState('');
   const [confirmarEliminarCurso, setConfirmarEliminarCurso] = useState(null);
   const [confirmarEliminarNota, setConfirmarEliminarNota] = useState(null);
+  const [confirmarEliminarExamenFinal, setConfirmarEliminarExamenFinal] = useState(null);
   const [simuladorAbierto, setSimuladorAbierto] = useState({});
   const [modoSimulador, setModoSimulador] = useState({});
   const [targetPromedio, setTargetPromedio] = useState({});
   const [notaSimulada, setNotaSimulada] = useState({});
-  const saveTimeoutRef = useRef(null);
+  // Per-course debounce timers and abort controllers
+  const saveTimeoutRefs = useRef({}); // { cursoId: timeoutId }
+  const abortControllersRef = useRef({}); // { cursoId: AbortController }
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -48,6 +50,23 @@ export default function Promedio() {
     }
   }, [status]);
 
+  // Cleanup: cancel pending requests and clear timers on unmount
+  useEffect(() => {
+    return () => {
+      // Clear all pending debounce timers
+      Object.values(saveTimeoutRefs.current).forEach(timeoutId => {
+        clearTimeout(timeoutId);
+      });
+      saveTimeoutRefs.current = {};
+      
+      // Abort all pending requests
+      Object.values(abortControllersRef.current).forEach(controller => {
+        controller.abort();
+      });
+      abortControllersRef.current = {};
+    };
+  }, []);
+
   const loadCursos = async () => {
     try {
       setLoading(true);
@@ -58,7 +77,8 @@ export default function Promedio() {
         const cursosFormatted = data.promedios.map(p => ({
           id: p.id,
           nombre: p.nombre,
-          notas: p.notas || []
+          notas: p.notas || [],
+          examenFinal: p.examenFinal || null
         }));
         setCursos(cursosFormatted);
       } else {
@@ -83,7 +103,8 @@ export default function Promedio() {
         },
         body: JSON.stringify({
           nombre: nuevoCursoNombre.trim(),
-          notas: []
+          notas: [],
+          examenFinal: null
         }),
       });
 
@@ -92,7 +113,8 @@ export default function Promedio() {
         const nuevoCurso = {
           id: data.promedio.id,
           nombre: data.promedio.nombre,
-          notas: data.promedio.notas || []
+          notas: data.promedio.notas || [],
+          examenFinal: data.promedio.examenFinal || null
         };
         setCursos([...cursos, nuevoCurso]);
         setNuevoCursoNombre('');
@@ -152,7 +174,8 @@ export default function Promedio() {
         },
         body: JSON.stringify({
           nombre: nombreEditado.trim(),
-          notas: curso.notas
+          notas: curso.notas,
+          examenFinal: curso.examenFinal
         }),
       });
 
@@ -240,26 +263,121 @@ export default function Promedio() {
   };
 
   const debounceSaveCurso = (cursoId, curso) => {
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    saveTimeoutRef.current = setTimeout(() => {
+    // Clear existing timeout for this course
+    if (saveTimeoutRefs.current[cursoId]) {
+      clearTimeout(saveTimeoutRefs.current[cursoId]);
+    }
+    
+    // Cancel any in-flight request for this course
+    if (abortControllersRef.current[cursoId]) {
+      abortControllersRef.current[cursoId].abort();
+    }
+    
+    // Set new timeout with increased delay
+    saveTimeoutRefs.current[cursoId] = setTimeout(() => {
       saveCurso(cursoId, curso);
-    }, 1000);
+      // Clean up timeout reference after execution
+      delete saveTimeoutRefs.current[cursoId];
+    }, 1500);
   };
 
   const saveCurso = async (cursoId, curso) => {
+    // Create new AbortController for this request
+    const abortController = new AbortController();
+    abortControllersRef.current[cursoId] = abortController;
+    
     try {
-      await fetch(`/api/promedios/${cursoId}`, {
+      const response = await fetch(`/api/promedios/${cursoId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           nombre: curso.nombre,
-          notas: curso.notas
+          notas: curso.notas,
+          examenFinal: curso.examenFinal
         }),
+        signal: abortController.signal,
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }));
+        throw new Error(errorData.error || 'Error al guardar curso');
+      }
+
+      // Clean up abort controller on success
+      delete abortControllersRef.current[cursoId];
     } catch (error) {
+      // Don't show error if request was aborted (user is still typing)
+      if (error.name === 'AbortError') {
+        return;
+      }
+      
       console.error('Error saving curso:', error);
+      // Show user-friendly error message
+      alert(`Error al guardar cambios: ${error.message || 'Error desconocido'}`);
+      
+      // Clean up abort controller on error
+      delete abortControllersRef.current[cursoId];
+    }
+  };
+
+  // Funciones para manejar examen final
+  const agregarExamenFinal = (cursoId) => {
+    setCursos(cursos.map(curso => {
+      if (curso.id === cursoId) {
+        return {
+          ...curso,
+          examenFinal: { valor: '', ponderacion: '' }
+        };
+      }
+      return curso;
+    }));
+  };
+
+  const actualizarExamenFinal = (cursoId, campo, valor) => {
+    const updatedCursos = cursos.map(curso => {
+      if (curso.id === cursoId) {
+        return {
+          ...curso,
+          examenFinal: curso.examenFinal 
+            ? { ...curso.examenFinal, [campo]: valor }
+            : { valor: '', ponderacion: '' }
+        };
+      }
+      return curso;
+    });
+    setCursos(updatedCursos);
+    debounceSaveCurso(cursoId, updatedCursos.find(c => c.id === cursoId));
+  };
+
+  const eliminarExamenFinal = (cursoId) => {
+    const updatedCursos = cursos.map(curso => {
+      if (curso.id === cursoId) {
+        return {
+          ...curso,
+          examenFinal: null
+        };
+      }
+      return curso;
+    });
+    setCursos(updatedCursos);
+    setConfirmarEliminarExamenFinal(null);
+    const curso = updatedCursos.find(c => c.id === cursoId);
+    saveCurso(cursoId, curso);
+  };
+
+  const manejarBlurExamenFinalValor = (cursoId, valor) => {
+    if (valor !== '') {
+      const valorFormateado = validarYFormatearNota(valor);
+      actualizarExamenFinal(cursoId, 'valor', valorFormateado);
+    }
+  };
+
+  const manejarBlurExamenFinalPonderacion = (cursoId, valor) => {
+    if (valor !== '') {
+      const valorValidado = validarPonderacion(valor);
+      actualizarExamenFinal(cursoId, 'ponderacion', valorValidado);
     }
   };
 
@@ -305,7 +423,8 @@ export default function Promedio() {
     saveCurso(cursoId, curso);
   };
 
-  const calcularPromedio = (notas) => {
+  // Calcula el promedio de las notas regulares (siempre deben sumar 100% entre ellas)
+  const calcularPromedioNotasRegulares = (notas) => {
     const notasValidas = notas.filter(
       nota => nota.valor !== '' && nota.ponderacion !== '' && 
               !isNaN(parseFloat(nota.valor)) && !isNaN(parseFloat(nota.ponderacion))
@@ -321,7 +440,38 @@ export default function Promedio() {
       sumaProductos += valor * (ponderacion / 100);
     });
 
-    return sumaProductos.toFixed(2);
+    return sumaProductos;
+  };
+
+  // Calcula el promedio final considerando examen final si existe
+  const calcularPromedio = (notas, examenFinal) => {
+    const promedioNotasRegulares = calcularPromedioNotasRegulares(notas);
+    
+    if (promedioNotasRegulares === null) {
+      // Si no hay notas regulares válidas, solo puede calcularse si hay examen final
+      if (examenFinal && examenFinal.valor !== '' && examenFinal.ponderacion !== '' &&
+          !isNaN(parseFloat(examenFinal.valor)) && !isNaN(parseFloat(examenFinal.ponderacion))) {
+        const valorExamen = parseFloat(examenFinal.valor);
+        const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+        return (valorExamen * (ponderacionExamen / 100)).toFixed(2);
+      }
+      return null;
+    }
+
+    // Si hay examen final, calcular promedio combinado
+    if (examenFinal && examenFinal.valor !== '' && examenFinal.ponderacion !== '' &&
+        !isNaN(parseFloat(examenFinal.valor)) && !isNaN(parseFloat(examenFinal.ponderacion))) {
+      const valorExamen = parseFloat(examenFinal.valor);
+      const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+      const ponderacionNotasRegulares = 100 - ponderacionExamen;
+      
+      const promedioFinal = (promedioNotasRegulares * (ponderacionNotasRegulares / 100)) + 
+                           (valorExamen * (ponderacionExamen / 100));
+      return promedioFinal.toFixed(2);
+    }
+
+    // Si no hay examen final, retornar promedio de notas regulares
+    return promedioNotasRegulares.toFixed(2);
   };
 
   const calcularPonderacionTotal = (notas) => {
@@ -332,7 +482,7 @@ export default function Promedio() {
     return notasValidas.reduce((sum, nota) => sum + parseFloat(nota.ponderacion), 0).toFixed(0);
   };
 
-  // Calcula la suma ponderada actual (sin dividir por 100)
+  // Calcula la suma ponderada de las notas regulares (sin dividir por 100)
   const calcularSumaPonderada = (notas) => {
     const notasValidas = notas.filter(
       nota => nota.valor !== '' && nota.ponderacion !== '' && 
@@ -349,11 +499,33 @@ export default function Promedio() {
   };
 
   // Calcula la nota requerida para alcanzar un promedio objetivo
-  const calcularNotaRequerida = (notas, targetPromedio) => {
+  const calcularNotaRequerida = (notas, targetPromedio, examenFinal) => {
     const sumaPonderada = calcularSumaPonderada(notas);
     const ponderacionTotal = parseFloat(calcularPonderacionTotal(notas));
+    
+    // Si hay examen final, el cálculo es diferente
+    if (examenFinal && examenFinal.valor !== '' && examenFinal.ponderacion !== '' &&
+        !isNaN(parseFloat(examenFinal.ponderacion))) {
+      const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+      const ponderacionNotasRegulares = 100 - ponderacionExamen;
+      
+      // Si las notas regulares no suman 100%, no se puede calcular
+      if (ponderacionTotal !== 100) return null;
+      
+      // Calcular nota requerida en el examen final
+      // targetPromedio = (promedio_notas_regulares * ponderacion_notas_regulares / 100) + (nota_examen * ponderacion_examen / 100)
+      // nota_examen = (targetPromedio - promedio_notas_regulares * ponderacion_notas_regulares / 100) / (ponderacion_examen / 100)
+      const notaRequerida = (targetPromedio - sumaPonderada * (ponderacionNotasRegulares / 100)) / (ponderacionExamen / 100);
+      
+      // Validar que la nota requerida esté en el rango válido
+      if (notaRequerida < 1.0) return { valor: 1.0, imposible: true, mensaje: 'El promedio objetivo es muy bajo. No es posible alcanzarlo con las notas actuales.' };
+      if (notaRequerida > 7.0) return { valor: 7.0, imposible: true, mensaje: 'El promedio objetivo es muy alto. Se requiere una nota mayor a 7.0 para alcanzarlo.' };
+      
+      return { valor: notaRequerida, imposible: false };
+    }
+    
+    // Si no hay examen final, calcular normalmente
     const ponderacionRestante = 100 - ponderacionTotal;
-
     if (ponderacionRestante <= 0) return null;
 
     const notaRequerida = (targetPromedio * 100 - sumaPonderada * 100) / ponderacionRestante;
@@ -366,11 +538,27 @@ export default function Promedio() {
   };
 
   // Calcula el promedio final si se obtiene una nota específica
-  const calcularPromedioSimulado = (notas, notaSimulada) => {
+  const calcularPromedioSimulado = (notas, notaSimulada, examenFinal) => {
     const sumaPonderada = calcularSumaPonderada(notas);
     const ponderacionTotal = parseFloat(calcularPonderacionTotal(notas));
+    
+    // Si hay examen final, el cálculo es diferente
+    if (examenFinal && examenFinal.ponderacion !== '' &&
+        !isNaN(parseFloat(examenFinal.ponderacion))) {
+      const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+      const ponderacionNotasRegulares = 100 - ponderacionExamen;
+      
+      // Si las notas regulares no suman 100%, no se puede calcular
+      if (ponderacionTotal !== 100) return null;
+      
+      // Calcular promedio final con la nota simulada en el examen final
+      const promedioFinal = (sumaPonderada * (ponderacionNotasRegulares / 100)) + 
+                           (notaSimulada * (ponderacionExamen / 100));
+      return promedioFinal;
+    }
+    
+    // Si no hay examen final, calcular normalmente
     const ponderacionRestante = 100 - ponderacionTotal;
-
     if (ponderacionRestante <= 0) return null;
 
     const promedioFinal = sumaPonderada + (notaSimulada * (ponderacionRestante / 100));
@@ -465,10 +653,6 @@ export default function Promedio() {
           </p>
         </header>
 
-        <div className={styles.adContainer}>
-          <AdSense adSlot="" adFormat="auto" />
-        </div>
-
         <div className={styles.content}>
           {!loading && cursos.length === 0 && !mostrarFormCurso && (
             <div className={styles.emptyState}>
@@ -480,10 +664,9 @@ export default function Promedio() {
 
           {cursos.length > 0 && (
             <div className={styles.resumenSection}>
-              <h2 className={styles.resumenTitle}>Resumen de Cursos</h2>
               <div className={styles.resumenGrid}>
                 {cursos.map(curso => {
-                  const promedio = calcularPromedio(curso.notas);
+                  const promedio = calcularPromedio(curso.notas, curso.examenFinal);
                   const promedioNum = promedio ? parseFloat(promedio) : null;
                   const ponderacionTotal = parseFloat(calcularPonderacionTotal(curso.notas));
                   
@@ -548,7 +731,7 @@ export default function Promedio() {
 
           <div className={styles.cursosContainer}>
             {cursos.map(curso => {
-              const promedio = calcularPromedio(curso.notas);
+              const promedio = calcularPromedio(curso.notas, curso.examenFinal);
               const ponderacionTotal = calcularPonderacionTotal(curso.notas);
 
               return (
@@ -640,48 +823,105 @@ export default function Promedio() {
                   </div>
 
                   <div className={styles.notasSection}>
-                    {curso.notas.length > 0 ? (
+                    {curso.notas.length > 0 || curso.examenFinal ? (
                       <>
-                        <div className={styles.notasHeader}>
-                          <span className={styles.notaHeaderItem}>Nota</span>
-                          <span className={styles.notaHeaderItem}>Ponderación (%)</span>
-                          <span className={styles.notaHeaderItem}>Acciones</span>
-                        </div>
-                        {curso.notas.map(nota => (
-                          <div key={nota.id} className={styles.notaRow}>
+                        {curso.notas.length > 0 && (
+                          <>
+                            <div className={styles.notasHeader}>
+                              <span className={styles.notaHeaderItem}>Nota</span>
+                              <span className={styles.notaHeaderItem}>Ponderación (%)</span>
+                              <span className={styles.notaHeaderItem}>Acciones</span>
+                            </div>
+                            {curso.notas.map(nota => (
+                              <div key={nota.id} className={styles.notaRow}>
+                                <input
+                                  type="number"
+                                  value={nota.valor}
+                                  onChange={(e) => actualizarNota(curso.id, nota.id, 'valor', e.target.value)}
+                                  onBlur={(e) => manejarBlurNota(curso.id, nota.id, e.target.value)}
+                                  placeholder="1.0 - 7.0"
+                                  min="1.0"
+                                  max="7.0"
+                                  step="0.1"
+                                  className={`${styles.notaInput} ${esNotaInvalida(nota.valor) ? styles.inputError : ''}`}
+                                />
+                                <input
+                                  type="number"
+                                  value={nota.ponderacion}
+                                  onChange={(e) => actualizarNota(curso.id, nota.id, 'ponderacion', e.target.value)}
+                                  onBlur={(e) => manejarBlurPonderacion(curso.id, nota.id, e.target.value)}
+                                  placeholder="0 - 100"
+                                  min="0"
+                                  max="100"
+                                  step="1"
+                                  className={`${styles.notaInput} ${esPonderacionInvalida(nota.ponderacion) ? styles.inputError : ''}`}
+                                />
+                                {confirmarEliminarNota === `${curso.id}-${nota.id}` ? (
+                                  <div className={styles.confirmDeleteNotaGroup}>
+                                    <button
+                                      onClick={() => eliminarNota(curso.id, nota.id)}
+                                      className={styles.confirmNotaButton}
+                                      title="Confirmar"
+                                    >
+                                      <FontAwesomeIcon icon={faCheck} />
+                                    </button>
+                                    <button
+                                      onClick={() => setConfirmarEliminarNota(null)}
+                                      className={styles.cancelNotaButton}
+                                      title="Cancelar"
+                                    >
+                                      <FontAwesomeIcon icon={faTimes} />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => setConfirmarEliminarNota(`${curso.id}-${nota.id}`)}
+                                    className={styles.deleteNotaButton}
+                                    title="Eliminar nota"
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </>
+                        )}
+                        {curso.examenFinal && (
+                          <div key="examen-final" className={`${styles.notaRow} ${styles.examenFinalRow}`}>
+                            <div className={styles.examenFinalLabel}>Examen Final</div>
                             <input
                               type="number"
-                              value={nota.valor}
-                              onChange={(e) => actualizarNota(curso.id, nota.id, 'valor', e.target.value)}
-                              onBlur={(e) => manejarBlurNota(curso.id, nota.id, e.target.value)}
+                              value={curso.examenFinal.valor || ''}
+                              onChange={(e) => actualizarExamenFinal(curso.id, 'valor', e.target.value)}
+                              onBlur={(e) => manejarBlurExamenFinalValor(curso.id, e.target.value)}
                               placeholder="1.0 - 7.0"
                               min="1.0"
                               max="7.0"
                               step="0.1"
-                              className={`${styles.notaInput} ${esNotaInvalida(nota.valor) ? styles.inputError : ''}`}
+                              className={`${styles.notaInput} ${esNotaInvalida(curso.examenFinal.valor) ? styles.inputError : ''}`}
                             />
                             <input
                               type="number"
-                              value={nota.ponderacion}
-                              onChange={(e) => actualizarNota(curso.id, nota.id, 'ponderacion', e.target.value)}
-                              onBlur={(e) => manejarBlurPonderacion(curso.id, nota.id, e.target.value)}
+                              value={curso.examenFinal.ponderacion || ''}
+                              onChange={(e) => actualizarExamenFinal(curso.id, 'ponderacion', e.target.value)}
+                              onBlur={(e) => manejarBlurExamenFinalPonderacion(curso.id, e.target.value)}
                               placeholder="0 - 100"
                               min="0"
                               max="100"
                               step="1"
-                              className={`${styles.notaInput} ${esPonderacionInvalida(nota.ponderacion) ? styles.inputError : ''}`}
+                              className={`${styles.notaInput} ${esPonderacionInvalida(curso.examenFinal.ponderacion) ? styles.inputError : ''}`}
                             />
-                            {confirmarEliminarNota === `${curso.id}-${nota.id}` ? (
+                            {confirmarEliminarExamenFinal === curso.id ? (
                               <div className={styles.confirmDeleteNotaGroup}>
                                 <button
-                                  onClick={() => eliminarNota(curso.id, nota.id)}
+                                  onClick={() => eliminarExamenFinal(curso.id)}
                                   className={styles.confirmNotaButton}
                                   title="Confirmar"
                                 >
                                   <FontAwesomeIcon icon={faCheck} />
                                 </button>
                                 <button
-                                  onClick={() => setConfirmarEliminarNota(null)}
+                                  onClick={() => setConfirmarEliminarExamenFinal(null)}
                                   className={styles.cancelNotaButton}
                                   title="Cancelar"
                                 >
@@ -690,22 +930,31 @@ export default function Promedio() {
                               </div>
                             ) : (
                               <button
-                                onClick={() => setConfirmarEliminarNota(`${curso.id}-${nota.id}`)}
+                                onClick={() => setConfirmarEliminarExamenFinal(curso.id)}
                                 className={styles.deleteNotaButton}
-                                title="Eliminar nota"
+                                title="Eliminar examen final"
                               >
                                 <FontAwesomeIcon icon={faTrash} />
                               </button>
                             )}
                           </div>
-                        ))}
+                        )}
                         <div className={styles.ponderacionTotal}>
-                          <span>Ponderación Total: {ponderacionTotal}%</span>
-                          {parseFloat(ponderacionTotal) !== 100 && (
-                            <span className={styles.ponderacionWarning}>
-                              {parseFloat(ponderacionTotal) < 100 
-                                ? '(Falta ' + (100 - parseFloat(ponderacionTotal)) + '%)' 
-                                : '(Excede en ' + (parseFloat(ponderacionTotal) - 100) + '%)'}
+                          {curso.notas.length > 0 && (
+                            <>
+                              <span>Ponderación Total Notas Regulares: {ponderacionTotal}%</span>
+                              {parseFloat(ponderacionTotal) !== 100 && (
+                                <span className={styles.ponderacionWarning}>
+                                  {parseFloat(ponderacionTotal) < 100 
+                                    ? '(Falta ' + (100 - parseFloat(ponderacionTotal)) + '%)' 
+                                    : '(Excede en ' + (parseFloat(ponderacionTotal) - 100) + '%)'}
+                                </span>
+                              )}
+                            </>
+                          )}
+                          {curso.examenFinal && curso.examenFinal.ponderacion && (
+                            <span className={styles.examenFinalPonderacion}>
+                              {curso.notas.length > 0 ? ' | ' : ''}Examen Final: {curso.examenFinal.ponderacion}%
                             </span>
                           )}
                         </div>
@@ -714,17 +963,30 @@ export default function Promedio() {
                       <p className={styles.sinNotas}>No hay notas agregadas</p>
                     )}
 
-                    <button
-                      onClick={() => agregarNota(curso.id)}
-                      className={styles.agregarNotaButton}
-                    >
-                      <FontAwesomeIcon icon={faPlus} />
-                      Agregar Nota
-                    </button>
+                    <div className={styles.agregarButtons}>
+                      {parseFloat(ponderacionTotal) < 100 && (
+                        <button
+                          onClick={() => agregarNota(curso.id)}
+                          className={styles.agregarNotaButton}
+                        >
+                          <FontAwesomeIcon icon={faPlus} />
+                          Agregar Nota
+                        </button>
+                      )}
+                      {!curso.examenFinal && (
+                        <button
+                          onClick={() => agregarExamenFinal(curso.id)}
+                          className={styles.agregarExamenFinalButton}
+                        >
+                          <FontAwesomeIcon icon={faPlus} />
+                          Agregar Examen Final
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Simulador de Notas */}
-                  {parseFloat(ponderacionTotal) < 100 && (
+                  {parseFloat(ponderacionTotal) < 100 && !curso.examenFinal && (
                     <div className={styles.simuladorSection}>
                       <button
                         onClick={() => toggleSimulador(curso.id)}
@@ -775,7 +1037,7 @@ export default function Promedio() {
                               {targetPromedio[curso.id] && !isNaN(parseFloat(targetPromedio[curso.id])) && (
                                 <div className={styles.simuladorResultado}>
                                   {(() => {
-                                    const resultado = calcularNotaRequerida(curso.notas, parseFloat(targetPromedio[curso.id]));
+                                    const resultado = calcularNotaRequerida(curso.notas, parseFloat(targetPromedio[curso.id]), curso.examenFinal);
                                     if (!resultado) {
                                       return (
                                         <div className={styles.simuladorMensaje}>
@@ -834,7 +1096,7 @@ export default function Promedio() {
                               {notaSimulada[curso.id] && !isNaN(parseFloat(notaSimulada[curso.id])) && (
                                 <div className={styles.simuladorResultado}>
                                   {(() => {
-                                    const promedioFinal = calcularPromedioSimulado(curso.notas, parseFloat(notaSimulada[curso.id]));
+                                    const promedioFinal = calcularPromedioSimulado(curso.notas, parseFloat(notaSimulada[curso.id]), curso.examenFinal);
                                     if (promedioFinal === null) {
                                       return (
                                         <div className={styles.simuladorMensaje}>

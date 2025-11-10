@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator, faRotateRight } from '@fortawesome/free-solid-svg-icons';
-import AdSense from '../components/AdSense';
 import styles from './PuntajeNota.module.css';
 
 export default function PuntajeANota() {
@@ -103,10 +102,6 @@ export default function PuntajeANota() {
             Convierte tus puntajes de evaluaciones a notas según el sistema chileno
           </p>
         </header>
-
-        <div className={styles.adContainer}>
-          <AdSense adSlot="" adFormat="auto" />
-        </div>
 
         <div className={styles.content}>
           <div className={styles.formSection}>
