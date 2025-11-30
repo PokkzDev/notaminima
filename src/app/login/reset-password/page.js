@@ -37,6 +37,7 @@ function ResetPasswordContent() {
         const data = await response.json();
         setTokenValid(data.valid === true);
       } catch (err) {
+        console.error('Token verification error:', err);
         setTokenValid(false);
       } finally {
         setTokenChecked(true);
@@ -83,6 +84,7 @@ function ResetPasswordContent() {
         router.push('/login');
       }, 3000);
     } catch (err) {
+      console.error('Password reset error:', err);
       setError('Error al restablecer la contraseña');
       setLoading(false);
     }

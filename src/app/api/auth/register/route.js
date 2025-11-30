@@ -79,14 +79,14 @@ export async function POST(request) {
     // Send welcome email (don't fail registration if email fails)
     try {
       const emailResult = await sendWelcomeEmail(email, trimmedUsername);
-      if (!emailResult.success) {
+      if (emailResult.success) {
+        console.log('Welcome email sent successfully to:', email);
+      } else {
         console.error('Failed to send welcome email:', {
           email: email,
           error: emailResult.error,
         });
         // Continue with registration even if email fails
-      } else {
-        console.log('Welcome email sent successfully to:', email);
       }
     } catch (emailError) {
       console.error('Exception while sending welcome email:', {

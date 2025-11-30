@@ -12,9 +12,17 @@ export function isValidEmail(email) {
     return false;
   }
   
-  // RFC 5322 compliant email regex (simplified version)
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.trim());
+  const trimmedEmail = email.trim();
+  
+  // Length check to prevent ReDoS attacks
+  if (trimmedEmail.length > 254) {
+    return false;
+  }
+  
+  // Simple email validation with atomic groups pattern to prevent backtracking
+  // Checks: local-part@domain.tld format
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+  return emailRegex.test(trimmedEmail);
 }
 
 /**
@@ -49,7 +57,7 @@ export function hasMinLength(password) {
  */
 export function hasSymbol(password) {
   if (!password) return false;
-  return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  return /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
 }
 
 /**
@@ -79,7 +87,7 @@ export function hasLowercase(password) {
  */
 export function hasNumber(password) {
   if (!password) return false;
-  return /[0-9]/.test(password);
+  return /\d/.test(password);
 }
 
 /**

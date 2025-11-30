@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import styles from './AdSense.module.css';
 
 export default function AdSense({ adSlot, adFormat = 'auto', fullWidthResponsive = true }) {
   useEffect(() => {
     try {
-      ((window.adsbygoogle = window.adsbygoogle || []).push({}));
+      const adsbygoogle = globalThis.adsbygoogle || [];
+      globalThis.adsbygoogle = adsbygoogle;
+      adsbygoogle.push({});
     } catch (err) {
       console.error('AdSense error:', err);
     }
@@ -25,4 +28,10 @@ export default function AdSense({ adSlot, adFormat = 'auto', fullWidthResponsive
     </div>
   );
 }
+
+AdSense.propTypes = {
+  adSlot: PropTypes.string.isRequired,
+  adFormat: PropTypes.string,
+  fullWidthResponsive: PropTypes.bool,
+};
 

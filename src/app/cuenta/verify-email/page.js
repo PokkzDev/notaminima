@@ -45,6 +45,7 @@ function VerifyEmailContent() {
           router.push('/login');
         }, 3000);
       } catch (err) {
+        console.error('Error verifying email token:', err);
         setStatus('error');
         setError('Error al verificar el token');
       }

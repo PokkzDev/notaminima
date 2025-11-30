@@ -5,20 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser, faEye, faEyeSlash, faCheck } from '@fortawesome/free-solid-svg-icons';
-// import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { signIn } from 'next-auth/react';
 import PasswordComplexity from '@/app/components/PasswordComplexity';
-import { isValidPassword } from '@/lib/validation';
+import { isValidPassword, isValidEmail } from '@/lib/validation';
 import styles from './page.module.css';
-
-// Email validation function
-function isValidEmail(email) {
-  if (!email || typeof email !== 'string') {
-    return false;
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.trim());
-}
 
 function RegisterContent() {
   const router = useRouter();
@@ -69,6 +59,7 @@ function RegisterContent() {
           setStep('registration');
           setLoading(false);
         } catch (err) {
+          console.error('Token validation error:', err);
           setError('Error al verificar el token');
           setLoading(false);
         }
@@ -120,6 +111,7 @@ function RegisterContent() {
       setEmailSent(true);
       setLoading(false);
     } catch (err) {
+      console.error('Email verification error:', err);
       setError('Error al enviar el email de verificación');
       setLoading(false);
     }
@@ -196,6 +188,7 @@ function RegisterContent() {
         router.refresh();
       }
     } catch (err) {
+      console.error('Registration error:', err);
       setError('Error al crear la cuenta');
       setLoading(false);
     }

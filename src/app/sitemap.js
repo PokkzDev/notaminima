@@ -7,7 +7,7 @@ export default function sitemap() {
       url: baseUrl,
       lastModified: currentDate,
       changeFrequency: 'weekly',
-      priority: 1.0,
+      priority: 1,
       images: [
         {
           url: `${baseUrl}/logo-256.png`,

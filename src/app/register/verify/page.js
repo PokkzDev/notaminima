@@ -36,6 +36,7 @@ function VerifyContent() {
         // Redirect to registration page with token
         router.push(`/register?token=${encodeURIComponent(token)}`);
       } catch (err) {
+        console.error('Email verification error:', err);
         setStatus('error');
         setError('Error al verificar el token');
       }

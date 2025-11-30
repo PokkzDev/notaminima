@@ -248,7 +248,7 @@
 .card {
   background: var(--bg-primary);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-shadow: 0 2px 8px var(--shadow-color);
   border: 1px solid var(--border-color);
   transition: box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
@@ -330,22 +330,24 @@
 }
 
 .formGroup {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  border: none;
+  padding: 0;
 }
 
 .label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.375rem;
   font-weight: 500;
   color: var(--text-primary);
-  font-size: 0.938rem;
+  font-size: 0.875rem;
   transition: color 0.3s ease;
 }
 
 .input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.938rem;
   border: 2px solid var(--border-color);
   border-radius: 8px;
   background: var(--bg-primary);
@@ -366,15 +368,13 @@
 
 .stepSelector {
   display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .stepButton {
   flex: 1;
-  min-width: 100px;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
   border: 2px solid var(--border-color);
   border-radius: 8px;
@@ -382,6 +382,7 @@
   transition: all 0.2s;
   background: var(--bg-primary);
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .stepButton:hover {
@@ -414,13 +415,13 @@
 .buttonGroup {
   display: flex;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1.25rem;
   justify-content: center;
 }
 
 .generateButton {
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.938rem;
   font-weight: 600;
   border: none;
   border-radius: 8px;
@@ -660,11 +661,12 @@
   }
 
   .stepSelector {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 
   .stepButton {
-    width: 100%;
+    flex: 1 1 auto;
+    min-width: calc(33.33% - 0.35rem);
   }
 
   .tableHeader {

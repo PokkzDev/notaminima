@@ -1,0 +1,6 @@
+projectKey=notaminima.cl
+serverUrl=http://localhost:9000
+serverVersion=25.11.0.114957
+dashboardUrl=http://localhost:9000/dashboard?id=notaminima.cl
+ceTaskId=121291c8-7706-4a82-80b4-05d2b0f1d745
+ceTaskUrl=http://localhost:9000/api/ce/task?id=121291c8-7706-4a82-80b4-05d2b0f1d745

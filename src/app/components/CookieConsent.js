@@ -12,7 +12,7 @@ const COOKIE_CONSENT_EXPIRY_DAYS = 365;
 export default function CookieConsent() {
   const [showModal, setShowModal] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -44,9 +44,9 @@ export default function CookieConsent() {
     );
     setShowModal(false);
     // Dispatch event to notify other components
-    window.dispatchEvent(new Event('cookieConsentChanged'));
+    globalThis.dispatchEvent(new Event('cookieConsentChanged'));
     // Reload to ensure scripts are properly initialized
-    window.location.reload();
+    globalThis.location.reload();
   };
 
   const handleReject = () => {
@@ -57,10 +57,10 @@ export default function CookieConsent() {
     );
     setShowModal(false);
     // Dispatch event to notify other components
-    window.dispatchEvent(new Event('cookieConsentChanged'));
+    globalThis.dispatchEvent(new Event('cookieConsentChanged'));
     // Disable Google Analytics if it was already loaded
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('consent', 'update', {
+    if (typeof globalThis !== 'undefined' && globalThis.gtag) {
+      globalThis.gtag('consent', 'update', {
         'analytics_storage': 'denied',
         'ad_storage': 'denied',
       });
@@ -110,7 +110,7 @@ export default function CookieConsent() {
 
 // Export function to check consent status (useful for other components)
 export function hasCookieConsent() {
-  if (typeof window === 'undefined') return false;
+  if (typeof globalThis === 'undefined') return false;
   return localStorage.getItem(COOKIE_CONSENT_KEY) === 'accepted';
 }
 

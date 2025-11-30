@@ -1,9 +1,28 @@
 'use client';
 
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { validatePasswordComplexity } from '@/lib/validation';
 import styles from './PasswordComplexity.module.css';
+
+function ComplexityItem({ isValid, label }) {
+  const icon = isValid ? faCheck : faTimes;
+  const iconClass = `${styles.icon} ${isValid ? styles.iconValid : styles.iconInvalid}`;
+  const textClass = isValid ? styles.textValid : styles.textInvalid;
+
+  return (
+    <div className={styles.complexityItem}>
+      <FontAwesomeIcon icon={icon} className={iconClass} />
+      <span className={textClass}>{label}</span>
+    </div>
+  );
+}
+
+ComplexityItem.propTypes = {
+  isValid: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired
+};
 
 export default function PasswordComplexity({ password }) {
   if (!password) {
@@ -14,56 +33,15 @@ export default function PasswordComplexity({ password }) {
 
   return (
     <div className={styles.complexityContainer}>
-      <div className={styles.complexityItem}>
-        <FontAwesomeIcon
-          icon={validation.minLength ? faCheck : faTimes}
-          className={`${styles.icon} ${validation.minLength ? styles.iconValid : styles.iconInvalid}`}
-        />
-        <span className={validation.minLength ? styles.textValid : styles.textInvalid}>
-          Más de 7 caracteres
-        </span>
-      </div>
-      <div className={styles.complexityItem}>
-        <FontAwesomeIcon
-          icon={validation.hasSymbol ? faCheck : faTimes}
-          className={`${styles.icon} ${validation.hasSymbol ? styles.iconValid : styles.iconInvalid}`}
-        />
-        <span className={validation.hasSymbol ? styles.textValid : styles.textInvalid}>
-          Un símbolo
-        </span>
-      </div>
-      <div className={styles.complexityItem}>
-        <FontAwesomeIcon
-          icon={validation.hasUppercase ? faCheck : faTimes}
-          className={`${styles.icon} ${validation.hasUppercase ? styles.iconValid : styles.iconInvalid}`}
-        />
-        <span className={validation.hasUppercase ? styles.textValid : styles.textInvalid}>
-          Una letra mayúscula
-        </span>
-      </div>
-      <div className={styles.complexityItem}>
-        <FontAwesomeIcon
-          icon={validation.hasLowercase ? faCheck : faTimes}
-          className={`${styles.icon} ${validation.hasLowercase ? styles.iconValid : styles.iconInvalid}`}
-        />
-        <span className={validation.hasLowercase ? styles.textValid : styles.textInvalid}>
-          Una letra minúscula
-        </span>
-      </div>
-      <div className={styles.complexityItem}>
-        <FontAwesomeIcon
-          icon={validation.hasNumber ? faCheck : faTimes}
-          className={`${styles.icon} ${validation.hasNumber ? styles.iconValid : styles.iconInvalid}`}
-        />
-        <span className={validation.hasNumber ? styles.textValid : styles.textInvalid}>
-          Un número
-        </span>
-      </div>
+      <ComplexityItem isValid={validation.minLength} label="Más de 7 caracteres" />
+      <ComplexityItem isValid={validation.hasSymbol} label="Un símbolo" />
+      <ComplexityItem isValid={validation.hasUppercase} label="Una letra mayúscula" />
+      <ComplexityItem isValid={validation.hasLowercase} label="Una letra minúscula" />
+      <ComplexityItem isValid={validation.hasNumber} label="Un número" />
     </div>
   );
 }
 
-
-
-
-
+PasswordComplexity.propTypes = {
+  password: PropTypes.string
+};

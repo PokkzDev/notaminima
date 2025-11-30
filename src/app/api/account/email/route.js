@@ -10,7 +10,7 @@ export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 401 }
@@ -76,14 +76,14 @@ export async function PUT(request) {
     // Send verification email (don't fail if email fails, but log it)
     try {
       const emailResult = await sendEmailChangeVerificationEmail(normalizedEmail, token);
-      if (!emailResult.success) {
+      if (emailResult.success) {
+        console.log('Email change verification email sent successfully to:', normalizedEmail);
+      } else {
         console.error('Failed to send email change verification email:', {
           email: normalizedEmail,
           error: emailResult.error,
         });
         // Still return success to user, but log the error
-      } else {
-        console.log('Email change verification email sent successfully to:', normalizedEmail);
       }
     } catch (emailError) {
       console.error('Exception while sending email change verification email:', {

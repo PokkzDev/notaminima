@@ -89,14 +89,14 @@ export async function POST(request) {
     // Send verification email (don't fail if email fails, but log it)
     try {
       const emailResult = await sendVerificationEmail(normalizedEmail, token);
-      if (!emailResult.success) {
+      if (emailResult.success) {
+        console.log('Verification email sent successfully to:', normalizedEmail);
+      } else {
         console.error('Failed to send verification email:', {
           email: normalizedEmail,
           error: emailResult.error,
         });
         // Still return success to user, but log the error
-      } else {
-        console.log('Verification email sent successfully to:', normalizedEmail);
       }
     } catch (emailError) {
       console.error('Exception while sending verification email:', {
