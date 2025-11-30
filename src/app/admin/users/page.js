@@ -39,7 +39,6 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [searchTimeout, setSearchTimeout] = useState(null);
 
   // Modal states
   const [roleModal, setRoleModal] = useState({ open: false, user: null, newRole: '' });
@@ -83,21 +82,17 @@ export default function AdminUsersPage() {
     if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
       loadUsers(1);
     }
-  }, [status, session, roleFilter, statusFilter]);
+  }, [status, session, roleFilter, statusFilter, loadUsers]);
 
   // Debounced search
   useEffect(() => {
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
-    }
     const timeout = setTimeout(() => {
       if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
         loadUsers(1);
       }
     }, 300);
-    setSearchTimeout(timeout);
     return () => clearTimeout(timeout);
-  }, [search]);
+  }, [search, status, session?.user?.role, loadUsers]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {

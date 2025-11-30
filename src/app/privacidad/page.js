@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import styles from './Privacidad.module.css';
 
 export const metadata = {
@@ -40,12 +42,20 @@ export const metadata = {
 };
 
 export default function PoliticaPrivacidad() {
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
+
   return (
     <main className={styles.main}>
       <div className={styles.container}>
         <header className={styles.header}>
+          <div className={styles.headerIcon}>
+            <FontAwesomeIcon icon={faShieldAlt} />
+          </div>
           <h1 className={styles.title}>Política de Privacidad</h1>
-          <p className={styles.lastUpdated}>Última actualización: {new Date(Date.now()).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p className={styles.subtitle}>
+            Última actualización: {formattedDate}
+          </p>
         </header>
 
         <div className={styles.content}>
@@ -383,12 +393,6 @@ export default function PoliticaPrivacidad() {
               de su navegador.
             </p>
           </div>
-        </div>
-
-        <div className={styles.footer}>
-          <Link href="/" className={styles.backButton}>
-            Volver al Inicio
-          </Link>
         </div>
       </div>
     </main>

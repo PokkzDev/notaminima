@@ -30,7 +30,10 @@ export const metadata = {
     "notas estudiantes chile",
     "conversor puntaje nota",
     "calculadora notas universidad",
-    "calculadora notas colegio"
+    "calculadora notas colegio",
+    "escala de notas chile",
+    "tabla de notas",
+    "nota aprobatoria chile"
   ],
   authors: [{ name: "NotaMinima", url: "https://notaminima.cl" }],
   creator: "NotaMinima",
@@ -81,11 +84,17 @@ export const metadata = {
   },
   alternates: {
     canonical: 'https://notaminima.cl',
+    languages: {
+      'es-CL': 'https://notaminima.cl',
+      'es': 'https://notaminima.cl',
+    },
   },
   category: 'education',
   classification: 'Educational Tool',
+  verification: {
+    google: 'pending',
+  },
   other: {
-    'google-site-verification': 'pending',
     'geo.region': 'CL',
     'geo.placename': 'Chile',
     'geo.position': '-33.4489;-70.6693',
@@ -101,6 +110,48 @@ export const metadata = {
   },
 };
 
+// Organization structured data for SEO
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'NotaMinima',
+  url: 'https://notaminima.cl',
+  logo: 'https://notaminima.cl/logo-256.png',
+  description: 'Calculadora gratuita de notas para estudiantes chilenos',
+  sameAs: [],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer service',
+    availableLanguage: ['Spanish'],
+  },
+};
+
+// Website structured data for SEO
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'NotaMinima',
+  url: 'https://notaminima.cl',
+  description: 'Calculadora gratuita de notas para estudiantes chilenos',
+  inLanguage: 'es-CL',
+  publisher: {
+    '@type': 'Organization',
+    name: 'NotaMinima',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://notaminima.cl/logo-256.png',
+    },
+  },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://notaminima.cl/ayuda?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="es-CL" suppressHydrationWarning>
@@ -109,6 +160,14 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <link rel="apple-touch-icon" href="/logo-256.png" />
         <link rel="icon" type="image/png" href="/logo-256.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
