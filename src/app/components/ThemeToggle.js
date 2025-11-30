@@ -14,21 +14,28 @@ export default function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  // Use a consistent initial icon to prevent hydration mismatch
-  // Theme will be synced correctly after mount via ThemeProvider
+  // Don't render icon until mounted to prevent flash
+  // The blocking script in layout.js sets the theme before hydration
+  if (!mounted) {
+    return (
+      <button
+        className={styles.toggleButton}
+        aria-label="Switch theme"
+        type="button"
+        disabled
+      >
+        <span className={styles.iconPlaceholder} />
+      </button>
+    );
+  }
+
   const getIcon = () => {
-    if (!mounted) return faMoon;
     return theme === 'light' ? faMoon : faSun;
   };
 
-  const getAriaLabel = () => {
-    if (!mounted) return 'Switch theme';
-    const targetMode = theme === 'light' ? 'dark' : 'light';
-    return `Switch to ${targetMode} mode`;
-  };
-
   const icon = getIcon();
-  const ariaLabel = getAriaLabel();
+  const targetMode = theme === 'light' ? 'dark' : 'light';
+  const ariaLabel = `Switch to ${targetMode} mode`;
 
   return (
     <button

@@ -67,6 +67,7 @@ export async function createUser(email, password, username) {
       email: normalizedEmail,
       password: hashedPassword,
       username,
+      emailVerified: new Date(), // Email was verified during registration flow
     },
   });
 }
@@ -75,7 +76,10 @@ export async function updateUserEmail(userId, newEmail) {
   const normalizedEmail = normalizeEmail(newEmail);
   return prisma.user.update({
     where: { id: userId },
-    data: { email: normalizedEmail },
+    data: { 
+      email: normalizedEmail,
+      emailVerified: new Date(), // Update verification timestamp for new email
+    },
   });
 }
 

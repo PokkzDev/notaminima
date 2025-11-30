@@ -12,7 +12,6 @@ import {
   faCheck, 
   faTimes,
   faCalculator,
-  faSpinner,
   faGraduationCap,
   faFolder,
   faGripVertical
@@ -1022,13 +1021,19 @@ export default function Promedio() {
       />
       <main className={styles.main}>
       <div className={styles.container}>
-        {(loading || loadingSemesters) && (
+        {(loading || loadingSemesters) ? (
           <div className={styles.loadingContainer}>
-            <FontAwesomeIcon icon={faSpinner} spin className={styles.spinner} />
-            <p>Cargando tus cursos...</p>
+            <div className={styles.loadingContent}>
+              <div className={styles.loadingIconWrapper}>
+                <FontAwesomeIcon icon={faCalculator} className={styles.loadingMainIcon} />
+                <div className={styles.loadingSpinnerRing}></div>
+              </div>
+              <h2 className={styles.loadingTitle}>Cargando tus cursos</h2>
+              <p className={styles.loadingSubtitle}>Preparando tu información académica...</p>
+            </div>
           </div>
-        )}
-
+        ) : (
+          <>
         <header className={styles.header}>
           <div className={styles.headerIcon}>
             <FontAwesomeIcon icon={faCalculator} />
@@ -1522,6 +1527,8 @@ export default function Promedio() {
           </DndContext>
 
         </div>
+          </>
+        )}
       </div>
       </main>
     </>

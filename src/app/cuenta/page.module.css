@@ -7,7 +7,7 @@
 }
 
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -20,39 +20,50 @@
 
 .header {
   text-align: center;
-  margin-bottom: 3rem;
-  padding: 2.5rem 2rem;
-  background: var(--bg-primary);
-  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  border-radius: 12px;
   border: 2px solid var(--border-color);
   box-shadow: 0 4px 12px var(--shadow-color);
   transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   transition: color 0.3s ease;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text-secondary);
   font-weight: 400;
   transition: color 0.3s ease;
 }
 
+/* Grid layout for email and password sections */
+.sectionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 .section {
   background: var(--bg-primary);
-  border-radius: 16px;
+  border-radius: 12px;
   border: 2px solid var(--border-color);
-  box-shadow: 0 4px 12px var(--shadow-color);
-  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px var(--shadow-color);
   transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
   overflow: hidden;
+}
+
+.section:hover {
+  box-shadow: 0 4px 12px var(--shadow-color-hover);
 }
 
 .dangerSection {
@@ -62,32 +73,33 @@
 .sectionTitle {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.5rem;
+  gap: 0.5rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
-  padding: 1.5rem 2rem;
+  padding: 1rem 1.25rem;
   margin: 0;
   border-bottom: 1px solid var(--border-color);
-  transition: color 0.3s ease, border-color 0.3s ease;
+  background: linear-gradient(to bottom, var(--bg-tertiary), var(--bg-primary));
+  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
 }
 
 .sectionIcon {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: var(--accent-color);
 }
 
 .sectionContent {
-  padding: 2rem;
+  padding: 1.25rem;
 }
 
 .currentInfo {
-  margin-bottom: 1.5rem;
-  padding: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -99,37 +111,37 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .inputGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
+  gap: 0.4rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
 .inputIcon {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   transition: color 0.3s ease;
 }
 
 .input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
   background: var(--bg-secondary);
   color: var(--text-primary);
   transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
@@ -151,19 +163,19 @@
 }
 
 .passwordInputWrapper .input {
-  padding-right: 3rem;
+  padding-right: 2.5rem;
 }
 
 .passwordToggle {
   position: absolute;
-  right: 0.75rem;
+  right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.35rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,19 +193,20 @@
 }
 
 .passwordToggle svg {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .submitButton {
-  padding: 0.875rem 1.5rem;
+  padding: 0.7rem 1.25rem;
   background: var(--accent-color);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  margin-top: 0.25rem;
 }
 
 .submitButton:hover:not(:disabled) {
@@ -209,66 +222,79 @@
   background: rgba(220, 38, 38, 0.1);
   border: 1px solid rgba(220, 38, 38, 0.3);
   color: #991b1b;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
+}
+
+.errorMessage svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 .successMessage {
   background: rgba(34, 197, 94, 0.1);
   border: 1px solid rgba(34, 197, 94, 0.3);
   color: #047857;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
 }
 
+.successMessage svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
 .warningBox {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 8px;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
   color: var(--text-primary);
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .warningIcon {
-  font-size: 1.5rem;
-  color: #991b1b;
+  font-size: 1.25rem;
+  color: #dc2626;
   flex-shrink: 0;
 }
 
 .warningBox strong {
-  color: #991b1b;
+  color: #dc2626;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
 }
 
 .warningBox ul {
-  margin: 0.75rem 0 0 1.25rem;
+  margin: 0.5rem 0 0 1rem;
   padding: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
 .warningBox li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .dangerButton {
-  padding: 0.875rem 1.5rem;
+  padding: 0.7rem 1.25rem;
   background: #ef4444;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s ease, background 0.2s ease;
@@ -286,12 +312,12 @@
 }
 
 .cancelButton {
-  padding: 0.875rem 1.5rem;
+  padding: 0.7rem 1.25rem;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.3s ease, background 0.3s ease;
@@ -309,7 +335,7 @@
 
 .buttonGroup {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .buttonGroup .dangerButton {
@@ -320,26 +346,46 @@
   flex: 1;
 }
 
-@media (max-width: 640px) {
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sectionsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .header {
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
   .container {
     padding: 0;
   }
 
   .header {
-    padding: 2rem 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
   }
 
   .title {
-    font-size: 2rem;
+    font-size: 1.5rem;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
   }
 
   .sectionContent {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .sectionTitle {
-    padding: 1.25rem 1.5rem;
-    font-size: 1.25rem;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
   }
 
   .buttonGroup {

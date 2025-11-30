@@ -822,8 +822,61 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
+  min-height: 60vh;
+  padding: 2rem;
   text-align: center;
+}
+
+.loadingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 3rem 4rem;
+  background: var(--bg-primary);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.loadingIconWrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingMainIcon {
+  font-size: 2.5rem;
+  color: var(--accent-color);
+  z-index: 1;
+}
+
+.loadingSpinnerRing {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.loadingSubtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+  transition: color 0.3s ease;
 }
 
 .spinner {
@@ -2246,6 +2299,33 @@
     padding: 1.5rem 0.75rem;
   }
 
+  .loadingContainer {
+    min-height: 50vh;
+    padding: 1.5rem;
+  }
+
+  .loadingContent {
+    padding: 2rem 2.5rem;
+    gap: 1.25rem;
+  }
+
+  .loadingIconWrapper {
+    width: 70px;
+    height: 70px;
+  }
+
+  .loadingMainIcon {
+    font-size: 2rem;
+  }
+
+  .loadingTitle {
+    font-size: 1.25rem;
+  }
+
+  .loadingSubtitle {
+    font-size: 0.9rem;
+  }
+
   .header {
     padding: 1.5rem 1.5rem;
   }
@@ -2439,6 +2519,38 @@
 }
 
 @media (max-width: 480px) {
+  .loadingContainer {
+    min-height: 45vh;
+    padding: 1rem;
+  }
+
+  .loadingContent {
+    padding: 1.75rem 1.5rem;
+    gap: 1rem;
+    border-radius: 16px;
+  }
+
+  .loadingIconWrapper {
+    width: 60px;
+    height: 60px;
+  }
+
+  .loadingMainIcon {
+    font-size: 1.75rem;
+  }
+
+  .loadingSpinnerRing {
+    border-width: 2px;
+  }
+
+  .loadingTitle {
+    font-size: 1.1rem;
+  }
+
+  .loadingSubtitle {
+    font-size: 0.85rem;
+  }
+
   .header {
     padding: 1.25rem 1rem;
   }

@@ -149,20 +149,60 @@
 .userButton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0.625rem;
+  padding: 0.375rem 0.75rem 0.375rem 0.375rem;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: 50px;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: border-color 0.3s ease, background 0.3s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .userButton:hover {
   border-color: var(--accent-color);
   background: var(--bg-tertiary);
+}
+
+.userButton:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.userButtonOpen {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 59, 130, 246), 0.15);
+}
+
+.userAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-color);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+}
+
+.userDisplayName {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.chevron {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
 }
 
 .userEmail {
@@ -237,6 +277,108 @@
   gap: 0.5rem;
   transition: background 0.2s ease;
   border-top: 1px solid var(--border-color);
+}
+
+/* Mobile user section - shown only on mobile */
+.mobileUserSection {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+}
+
+.mobileLoginSection {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+}
+
+.mobileUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0 1rem;
+}
+
+.mobileUserIcon {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.mobileUserName {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.125rem 0;
+  font-size: 1rem;
+}
+
+.mobileUserEmail {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+  word-break: break-all;
+}
+
+.mobileMenuLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  transition: color 0.2s ease;
+}
+
+.mobileMenuLink:hover {
+  color: var(--accent-color);
+}
+
+.mobileBottomSection {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.mobileBottomActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 0.5rem;
+}
+
+.mobileSignOutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.mobileSignOutButton:hover {
+  color: var(--accent-color);
+}
+
+/* Desktop secondary links - hidden on mobile */
+.desktopSecondaryLinks {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+/* Desktop auth item */
+.desktopAuthItem {
+  margin-left: auto;
 }
 
 /* Backdrop overlay */
@@ -322,22 +464,25 @@
     display: block;
     width: 100%;
     text-align: center;
-    padding: 1rem 0;
+    padding: 0.75rem 1rem;
   }
 
-  .userButton {
-    width: 100%;
-    justify-content: flex-start;
+  /* Hide desktop elements on mobile */
+  .desktopSecondaryLinks {
+    display: none;
   }
 
-  .userEmail {
-    max-width: none;
+  /* Show mobile sections */
+  .mobileUserSection {
+    display: flex;
   }
 
-  .userMenu {
-    position: static;
-    width: 100%;
-    margin-top: 0.5rem;
+  .mobileLoginSection {
+    display: flex;
+  }
+
+  .mobileBottomSection {
+    display: flex;
   }
 
   .separator {
