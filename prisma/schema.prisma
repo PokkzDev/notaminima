@@ -11,9 +11,9 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  username      String    @unique
+  id            String     @id @default(uuid())
+  email         String     @unique
+  username      String     @unique
   emailVerified DateTime?
   image         String?
   password      String?
@@ -21,8 +21,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
   promedios     Promedio[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  semesters     Semester[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   @@map("users")
 }
@@ -67,16 +68,31 @@ model VerificationToken {
 }
 
 model Promedio {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   userId      String
+  semesterId  String?
   nombre      String
   notas       Json     // Array of { id, valor, ponderacion }
   examenFinal Json?    // { valor, ponderacion } or null
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  semester    Semester? @relation(fields: [semesterId], references: [id], onDelete: SetNull)
 
   @@map("promedios")
+}
+
+model Semester {
+  id        String     @id @default(uuid())
+  userId    String
+  nombre    String
+  orden     Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  promedios Promedio[]
+
+  @@map("semesters")
 }
 
 

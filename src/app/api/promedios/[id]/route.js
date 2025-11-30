@@ -15,19 +15,37 @@ export async function PUT(request, { params }) {
     }
 
     const { id } = await params;
-    const { nombre, notas, examenFinal } = await request.json();
+    const { nombre, notas, examenFinal, semesterId } = await request.json();
 
-    if (!nombre && !notas && examenFinal === undefined) {
+    if (!nombre && !notas && examenFinal === undefined && semesterId === undefined) {
       return NextResponse.json(
-        { error: 'Nombre, notas o examenFinal son requeridos' },
+        { error: 'Nombre, notas, examenFinal o semesterId son requeridos' },
         { status: 400 }
       );
+    }
+
+    // Verify semester belongs to user if provided
+    if (semesterId) {
+      const semester = await prisma.semester.findFirst({
+        where: {
+          id: semesterId,
+          userId: session.user.id,
+        },
+      });
+
+      if (!semester) {
+        return NextResponse.json(
+          { error: 'Semestre no encontrado' },
+          { status: 404 }
+        );
+      }
     }
 
     const updateData = {};
     if (nombre) updateData.nombre = nombre;
     if (notas) updateData.notas = notas;
     if (examenFinal !== undefined) updateData.examenFinal = examenFinal;
+    if (semesterId !== undefined) updateData.semesterId = semesterId || null;
 
     // Update with userId in where clause - combines ownership check and update in one query
     // Prisma will throw P2025 if record not found or doesn't belong to user

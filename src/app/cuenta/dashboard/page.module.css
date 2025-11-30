@@ -1,0 +1,491 @@
+.main {
+  flex: 1;
+  padding: 2rem 1rem;
+  background: var(--bg-tertiary);
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.spinner {
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.headerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, var(--accent-color) 0%, #2563eb 100%);
+  border-radius: 20px;
+  color: white;
+  font-size: 2rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: background-color 0.3s ease;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: var(--border-color);
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.emptyText {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.emptySubtext {
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  transition: color 0.3s ease;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 2px solid var(--border-color);
+  transition: box-shadow 0.2s, transform 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 16px var(--shadow-color-hover);
+  transform: translateY(-2px);
+}
+
+.statIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  color: white;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  transition: color 0.3s ease;
+}
+
+/* Section Title */
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  transition: color 0.3s ease;
+}
+
+/* Highlights Section */
+.highlightsSection {
+  margin-bottom: 2rem;
+}
+
+.highlightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.highlightCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 2px solid var(--border-color);
+  transition: box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.highlightCard:hover {
+  box-shadow: 0 4px 12px var(--shadow-color-hover);
+}
+
+.highlightIconGold {
+  font-size: 2rem;
+  color: #f59e0b;
+}
+
+.highlightIconWarning {
+  font-size: 2rem;
+  color: #ef4444;
+}
+
+.highlightContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.highlightLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.highlightValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.highlightCurso {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  transition: color 0.3s ease;
+}
+
+/* Tendencia Icons */
+.tendenciaUp {
+  font-size: 2rem;
+  color: #10b981;
+}
+
+.tendenciaDown {
+  font-size: 2rem;
+  color: #ef4444;
+}
+
+.tendenciaNeutral {
+  font-size: 2rem;
+  color: #6b7280;
+}
+
+/* Semester Section */
+.semesterSection {
+  margin-bottom: 2rem;
+}
+
+.semesterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.semesterCard {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 2px solid var(--border-color);
+  overflow: hidden;
+  transition: box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.semesterCard:hover {
+  box-shadow: 0 4px 12px var(--shadow-color-hover);
+}
+
+.semesterHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(to bottom, var(--bg-tertiary), var(--bg-primary));
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.semesterIcon {
+  color: var(--accent-color);
+  font-size: 1.1rem;
+}
+
+.semesterName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.semesterBody {
+  padding: 1.25rem;
+}
+
+.semesterStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.semesterStatLabel {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.semesterStatValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.promedioAprobado {
+  color: #10b981;
+}
+
+.promedioReprobado {
+  color: #ef4444;
+}
+
+.semesterStats {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.semesterMiniStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.miniStatValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.miniStatLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.aprobadoColor {
+  color: #10b981;
+}
+
+.reprobadoColor {
+  color: #ef4444;
+}
+
+/* Orphan Section */
+.orphanSection {
+  padding: 1rem 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.orphanText {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.orphanText strong {
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .header {
+    padding: 1.5rem;
+  }
+
+  .headerIcon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .statCard {
+    padding: 1.25rem;
+  }
+
+  .statIcon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+
+  .statValue {
+    font-size: 1.75rem;
+  }
+
+  .highlightsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .semesterGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 1.25rem 1rem;
+  }
+
+  .headerIcon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.25rem;
+  }
+
+  .statCard {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .statIcon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+  }
+
+  .statValue {
+    font-size: 1.5rem;
+  }
+
+  .statLabel {
+    font-size: 0.85rem;
+  }
+
+  .highlightCard {
+    padding: 1rem 1.25rem;
+  }
+
+  .highlightValue {
+    font-size: 1.25rem;
+  }
+
+  .semesterStatValue {
+    font-size: 1.75rem;
+  }
+
+  .miniStatValue {
+    font-size: 1.25rem;
+  }
+}

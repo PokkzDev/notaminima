@@ -12,7 +12,11 @@ import {
   faTimes,
   faBook,
   faCalculator,
-  faSpinner
+  faSpinner,
+  faGraduationCap,
+  faChevronLeft,
+  faChevronRight,
+  faFolder
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './Promedio.module.css';
 
@@ -28,6 +32,18 @@ export default function Promedio() {
   const [confirmarEliminarCurso, setConfirmarEliminarCurso] = useState(null);
   const [confirmarEliminarNota, setConfirmarEliminarNota] = useState(null);
   const [confirmarEliminarExamenFinal, setConfirmarEliminarExamenFinal] = useState(null);
+  
+  // Semester state
+  const [semesters, setSemesters] = useState([]);
+  const [selectedSemesterId, setSelectedSemesterId] = useState(null); // null = "Sin Semestre"
+  const [hasOrphanCursos, setHasOrphanCursos] = useState(false);
+  const [nuevoSemestreNombre, setNuevoSemestreNombre] = useState('');
+  const [mostrarFormSemestre, setMostrarFormSemestre] = useState(false);
+  const [editandoSemestre, setEditandoSemestre] = useState(null);
+  const [nombreSemestreEditado, setNombreSemestreEditado] = useState('');
+  const [confirmarEliminarSemestre, setConfirmarEliminarSemestre] = useState(null);
+  const [loadingSemesters, setLoadingSemesters] = useState(true);
+  
   // Per-course debounce timers and abort controllers
   const saveTimeoutRefs = useRef({}); // { cursoId: timeoutId }
   const abortControllersRef = useRef({}); // { cursoId: AbortController }
@@ -39,12 +55,19 @@ export default function Promedio() {
     }
   }, [status]);
 
-  // Load cursos from API
+  // Load semesters and cursos from API
   useEffect(() => {
     if (status === 'authenticated') {
-      loadCursos();
+      loadSemesters();
     }
   }, [status]);
+
+  // Load cursos when semester selection changes
+  useEffect(() => {
+    if (status === 'authenticated' && !loadingSemesters) {
+      loadCursos(selectedSemesterId);
+    }
+  }, [selectedSemesterId, status, loadingSemesters]);
 
   // Cleanup: cancel pending requests and clear timers on unmount
   useEffect(() => {
@@ -63,10 +86,43 @@ export default function Promedio() {
     };
   }, []);
 
-  const loadCursos = async () => {
+  const loadSemesters = async () => {
+    try {
+      setLoadingSemesters(true);
+      const response = await fetch('/api/semesters');
+      if (response.ok) {
+        const data = await response.json();
+        setSemesters(data.semesters);
+        
+        // Check if there are orphan cursos (without semester)
+        const orphanResponse = await fetch('/api/promedios?semesterId=null');
+        if (orphanResponse.ok) {
+          const orphanData = await orphanResponse.json();
+          setHasOrphanCursos(orphanData.promedios.length > 0);
+          
+          // If there are orphan cursos and no semesters, show "Sin Semestre"
+          // Otherwise, select first semester if available
+          if (orphanData.promedios.length > 0) {
+            setSelectedSemesterId(null);
+          } else if (data.semesters.length > 0) {
+            setSelectedSemesterId(data.semesters[0].id);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading semesters:', error);
+    } finally {
+      setLoadingSemesters(false);
+    }
+  };
+
+  const loadCursos = async (semesterId) => {
     try {
       setLoading(true);
-      const response = await fetch('/api/promedios');
+      const url = semesterId 
+        ? `/api/promedios?semesterId=${semesterId}`
+        : '/api/promedios?semesterId=null';
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         // Convert from database format to component format
@@ -74,7 +130,8 @@ export default function Promedio() {
           id: p.id,
           nombre: p.nombre,
           notas: p.notas || [],
-          examenFinal: p.examenFinal || null
+          examenFinal: p.examenFinal || null,
+          semesterId: p.semesterId
         }));
         setCursos(cursosFormatted);
       } else {
@@ -100,7 +157,8 @@ export default function Promedio() {
         body: JSON.stringify({
           nombre: nuevoCursoNombre.trim(),
           notas: [],
-          examenFinal: null
+          examenFinal: null,
+          semesterId: selectedSemesterId
         }),
       });
 
@@ -110,11 +168,17 @@ export default function Promedio() {
           id: data.promedio.id,
           nombre: data.promedio.nombre,
           notas: data.promedio.notas || [],
-          examenFinal: data.promedio.examenFinal || null
+          examenFinal: data.promedio.examenFinal || null,
+          semesterId: data.promedio.semesterId
         };
         setCursos([...cursos, nuevoCurso]);
         setNuevoCursoNombre('');
         setMostrarFormCurso(false);
+        
+        // Update orphan status if adding to "Sin Semestre"
+        if (!selectedSemesterId) {
+          setHasOrphanCursos(true);
+        }
       } else {
         const errorData = await response.json();
         alert('Error al crear curso: ' + (errorData.error || 'Error desconocido'));
@@ -135,8 +199,14 @@ export default function Promedio() {
       });
 
       if (response.ok) {
-        setCursos(cursos.filter(curso => curso.id !== cursoId));
+        const newCursos = cursos.filter(curso => curso.id !== cursoId);
+        setCursos(newCursos);
         setConfirmarEliminarCurso(null);
+        
+        // Update orphan status if deleting from "Sin Semestre" and no more orphans
+        if (!selectedSemesterId && newCursos.length === 0) {
+          setHasOrphanCursos(false);
+        }
       } else {
         const errorData = await response.json();
         alert('Error al eliminar curso: ' + (errorData.error || 'Error desconocido'));
@@ -144,6 +214,165 @@ export default function Promedio() {
     } catch (error) {
       console.error('Error deleting curso:', error);
       alert('Error al eliminar curso');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Semester CRUD functions
+  const agregarSemestre = async () => {
+    if (nuevoSemestreNombre.trim() === '') return;
+
+    try {
+      setSaving(true);
+      const response = await fetch('/api/semesters', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: nuevoSemestreNombre.trim()
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSemesters([...semesters, data.semester]);
+        setNuevoSemestreNombre('');
+        setMostrarFormSemestre(false);
+        // Auto-select the new semester
+        setSelectedSemesterId(data.semester.id);
+      } else {
+        const errorData = await response.json();
+        alert('Error al crear semestre: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error creating semester:', error);
+      alert('Error al crear semestre');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const eliminarSemestre = async (semesterId, deleteCourses = false) => {
+    try {
+      setSaving(true);
+      const url = deleteCourses 
+        ? `/api/semesters/${semesterId}?deleteCourses=true`
+        : `/api/semesters/${semesterId}`;
+      
+      const response = await fetch(url, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setSemesters(semesters.filter(s => s.id !== semesterId));
+        setConfirmarEliminarSemestre(null);
+        
+        // If we deleted the selected semester, go to "Sin Semestre" or first available
+        if (selectedSemesterId === semesterId) {
+          const remainingSemesters = semesters.filter(s => s.id !== semesterId);
+          if (!deleteCourses) {
+            // Courses became orphans, show "Sin Semestre"
+            setHasOrphanCursos(true);
+            setSelectedSemesterId(null);
+          } else if (remainingSemesters.length > 0) {
+            setSelectedSemesterId(remainingSemesters[0].id);
+          } else {
+            setSelectedSemesterId(null);
+          }
+        }
+      } else {
+        const errorData = await response.json();
+        alert('Error al eliminar semestre: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error deleting semester:', error);
+      alert('Error al eliminar semestre');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const iniciarEdicionSemestre = (semestre) => {
+    setEditandoSemestre(semestre.id);
+    setNombreSemestreEditado(semestre.nombre);
+  };
+
+  const guardarEdicionSemestre = async (semesterId) => {
+    if (nombreSemestreEditado.trim() === '') {
+      cancelarEdicionSemestre();
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const response = await fetch(`/api/semesters/${semesterId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: nombreSemestreEditado.trim()
+        }),
+      });
+
+      if (response.ok) {
+        setSemesters(semesters.map(s => 
+          s.id === semesterId 
+            ? { ...s, nombre: nombreSemestreEditado.trim() }
+            : s
+        ));
+        setEditandoSemestre(null);
+        setNombreSemestreEditado('');
+      } else {
+        const errorData = await response.json();
+        alert('Error al actualizar semestre: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error updating semester:', error);
+      alert('Error al actualizar semestre');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const cancelarEdicionSemestre = () => {
+    setEditandoSemestre(null);
+    setNombreSemestreEditado('');
+  };
+
+  const moverCursoASemestre = async (cursoId, nuevoSemesterId) => {
+    try {
+      setSaving(true);
+      const response = await fetch(`/api/promedios/${cursoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          semesterId: nuevoSemesterId
+        }),
+      });
+
+      if (response.ok) {
+        // Remove from current view
+        setCursos(cursos.filter(c => c.id !== cursoId));
+        
+        // Update orphan status if moving from "Sin Semestre"
+        if (!selectedSemesterId) {
+          const remainingCursos = cursos.filter(c => c.id !== cursoId);
+          if (remainingCursos.length === 0) {
+            setHasOrphanCursos(false);
+          }
+        }
+      } else {
+        const errorData = await response.json();
+        alert('Error al mover curso: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error moving curso:', error);
+      alert('Error al mover curso');
     } finally {
       setSaving(false);
     }
@@ -523,7 +752,7 @@ export default function Promedio() {
       />
       <main className={styles.main}>
       <div className={styles.container}>
-        {loading && (
+        {(loading || loadingSemesters) && (
           <div className={styles.loadingContainer}>
             <FontAwesomeIcon icon={faSpinner} spin className={styles.spinner} />
             <p>Cargando tus cursos...</p>
@@ -540,12 +769,169 @@ export default function Promedio() {
           </p>
         </header>
 
+        {/* Semester Selector */}
+        {!loadingSemesters && (
+          <div className={styles.semesterSection}>
+            <div className={styles.semesterHeader}>
+              <FontAwesomeIcon icon={faGraduationCap} className={styles.semesterIcon} />
+              <h2 className={styles.semesterTitle}>Semestres</h2>
+            </div>
+            
+            <div className={styles.semesterTabs}>
+              {/* Sin Semestre tab - only show if there are orphan cursos */}
+              {hasOrphanCursos && (
+                <button
+                  className={`${styles.semesterTab} ${selectedSemesterId === null ? styles.semesterTabActive : ''}`}
+                  onClick={() => setSelectedSemesterId(null)}
+                >
+                  <FontAwesomeIcon icon={faFolder} />
+                  <span>Sin Semestre</span>
+                </button>
+              )}
+              
+              {/* Semester tabs */}
+              {semesters.map(semester => (
+                <div key={semester.id} className={styles.semesterTabWrapper}>
+                  {editandoSemestre === semester.id ? (
+                    <div className={styles.editarSemestreForm}>
+                      <input
+                        type="text"
+                        value={nombreSemestreEditado}
+                        onChange={(e) => setNombreSemestreEditado(e.target.value)}
+                        className={styles.editarSemestreInput}
+                        autoFocus
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') guardarEdicionSemestre(semester.id);
+                        }}
+                      />
+                      <button
+                        onClick={() => guardarEdicionSemestre(semester.id)}
+                        className={styles.semesterActionButton}
+                        title="Guardar"
+                      >
+                        <FontAwesomeIcon icon={faCheck} />
+                      </button>
+                      <button
+                        onClick={cancelarEdicionSemestre}
+                        className={styles.semesterActionButton}
+                        title="Cancelar"
+                      >
+                        <FontAwesomeIcon icon={faTimes} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        className={`${styles.semesterTab} ${selectedSemesterId === semester.id ? styles.semesterTabActive : ''}`}
+                        onClick={() => setSelectedSemesterId(semester.id)}
+                      >
+                        <FontAwesomeIcon icon={faGraduationCap} />
+                        <span>{semester.nombre}</span>
+                      </button>
+                      {selectedSemesterId === semester.id && (
+                        <div className={styles.semesterActions}>
+                          <button
+                            onClick={() => iniciarEdicionSemestre(semester)}
+                            className={styles.semesterActionButton}
+                            title="Editar nombre"
+                          >
+                            <FontAwesomeIcon icon={faEdit} />
+                          </button>
+                          {confirmarEliminarSemestre === semester.id ? (
+                            <div className={styles.confirmDeleteSemestre}>
+                              <span className={styles.confirmSemestreText}>¿Eliminar?</span>
+                              <button
+                                onClick={() => eliminarSemestre(semester.id, false)}
+                                className={styles.confirmSemestreButton}
+                                title="Mover cursos a Sin Semestre"
+                              >
+                                Mantener cursos
+                              </button>
+                              <button
+                                onClick={() => eliminarSemestre(semester.id, true)}
+                                className={styles.deleteSemestreButton}
+                                title="Eliminar cursos también"
+                              >
+                                Eliminar todo
+                              </button>
+                              <button
+                                onClick={() => setConfirmarEliminarSemestre(null)}
+                                className={styles.cancelSemestreButton}
+                                title="Cancelar"
+                              >
+                                <FontAwesomeIcon icon={faTimes} />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setConfirmarEliminarSemestre(semester.id)}
+                              className={styles.semesterDeleteButton}
+                              title="Eliminar semestre"
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+              
+              {/* Add semester button/form */}
+              {mostrarFormSemestre ? (
+                <div className={styles.agregarSemestreForm}>
+                  <input
+                    type="text"
+                    value={nuevoSemestreNombre}
+                    onChange={(e) => setNuevoSemestreNombre(e.target.value)}
+                    placeholder="Ej: 2024-1"
+                    className={styles.semestreInput}
+                    autoFocus
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') agregarSemestre();
+                    }}
+                  />
+                  <button onClick={agregarSemestre} className={styles.confirmarSemestreButton}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMostrarFormSemestre(false);
+                      setNuevoSemestreNombre('');
+                    }}
+                    className={styles.cancelarSemestreButton}
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setMostrarFormSemestre(true)}
+                  className={styles.nuevoSemestreButton}
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                  <span>Nuevo Semestre</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className={styles.content}>
-          {!loading && cursos.length === 0 && !mostrarFormCurso && (
+          {!loading && !loadingSemesters && cursos.length === 0 && !mostrarFormCurso && (
             <div className={styles.emptyState}>
               <FontAwesomeIcon icon={faBook} className={styles.emptyIcon} />
-              <p className={styles.emptyText}>No tienes cursos agregados</p>
-              <p className={styles.emptySubtext}>Comienza agregando tu primer curso</p>
+              <p className={styles.emptyText}>
+                {selectedSemesterId === null && !hasOrphanCursos 
+                  ? 'Crea un semestre para comenzar'
+                  : 'No tienes cursos agregados'}
+              </p>
+              <p className={styles.emptySubtext}>
+                {selectedSemesterId === null && !hasOrphanCursos 
+                  ? 'Organiza tus notas por semestre'
+                  : 'Comienza agregando tu primer curso'}
+              </p>
             </div>
           )}
 
@@ -679,6 +1065,30 @@ export default function Promedio() {
                           </span>
                         </div>
                       </div>
+                      {/* Move to semester select */}
+                      {semesters.length > 0 && (
+                        <select
+                          className={styles.moverSemestreSelect}
+                          value=""
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              moverCursoASemestre(curso.id, e.target.value === 'null' ? null : e.target.value);
+                            }
+                          }}
+                          title="Mover a otro semestre"
+                        >
+                          <option value="">Mover a...</option>
+                          {selectedSemesterId !== null && (
+                            <option value="null">Sin Semestre</option>
+                          )}
+                          {semesters
+                            .filter(s => s.id !== selectedSemesterId)
+                            .map(s => (
+                              <option key={s.id} value={s.id}>{s.nombre}</option>
+                            ))
+                          }
+                        </select>
+                      )}
                       {confirmarEliminarCurso === curso.id ? (
                         <div className={styles.confirmDeleteGroup}>
                           <span className={styles.confirmText}>¿Eliminar?</span>
