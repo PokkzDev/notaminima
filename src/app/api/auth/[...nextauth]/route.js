@@ -1,10 +1,8 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-// import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
 import { verifyPassword, getUserByUsernameOrEmail } from '@/lib/auth';
-import { normalizeEmail } from '@/lib/validation';
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -24,7 +22,7 @@ export const authOptions = {
         // Try to find user by username or email
         const user = await getUserByUsernameOrEmail(credentials.identifier);
 
-        if (!user || !user.password) {
+        if (!user?.password) {
           throw new Error('Credenciales inválidas');
         }
 
@@ -43,7 +41,7 @@ export const authOptions = {
           id: user.id,
           email: user.email,
           name: user.username,
-          rememberMe: credentials.rememberMe === 'true' || credentials.rememberMe === true,
+          rememberMe: credentials.rememberMe === 'true',
         };
       },
     }),

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import Script from 'next/script';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus, 
@@ -10,18 +11,201 @@ import {
   faEdit, 
   faCheck, 
   faTimes,
-  faBook,
   faCalculator,
   faSpinner,
   faGraduationCap,
-  faChevronLeft,
-  faChevronRight,
-  faFolder
+  faFolder,
+  faGripVertical
 } from '@fortawesome/free-solid-svg-icons';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+  rectSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import styles from './Promedio.module.css';
 
+// Sortable semester tab component
+function SortableSemesterTab({ semester, isSelected, isEditing, nombreEditado, setNombreSemestreEditado, guardarEdicionSemestre, cancelarEdicionSemestre, setSelectedSemesterId, iniciarEdicionSemestre, confirmarEliminarSemestre, setConfirmarEliminarSemestre, eliminarSemestre }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: semester.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={styles.semesterTabWrapper}>
+      {isEditing ? (
+        <div className={styles.editarSemestreForm}>
+          <input
+            type="text"
+            value={nombreEditado}
+            onChange={(e) => setNombreSemestreEditado(e.target.value)}
+            className={styles.editarSemestreInput}
+            autoFocus
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') guardarEdicionSemestre(semester.id);
+            }}
+          />
+          <button
+            onClick={() => guardarEdicionSemestre(semester.id)}
+            className={styles.semesterActionButton}
+            title="Guardar"
+          >
+            <FontAwesomeIcon icon={faCheck} />
+          </button>
+          <button
+            onClick={cancelarEdicionSemestre}
+            className={styles.semesterActionButton}
+            title="Cancelar"
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+      ) : (
+        <>
+          <button
+            className={`${styles.semesterTab} ${isSelected ? styles.semesterTabActive : ''}`}
+            onClick={() => setSelectedSemesterId(semester.id)}
+          >
+            <span
+              {...attributes}
+              {...listeners}
+              className={styles.dragHandle}
+              title="Arrastra para reordenar"
+            >
+              <FontAwesomeIcon icon={faGripVertical} />
+            </span>
+            <FontAwesomeIcon icon={faGraduationCap} />
+            <span>{semester.nombre}</span>
+          </button>
+          {isSelected && (
+            <div className={styles.semesterActions}>
+              <button
+                onClick={() => iniciarEdicionSemestre(semester)}
+                className={styles.semesterActionButton}
+                title="Editar nombre"
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </button>
+              {confirmarEliminarSemestre === semester.id ? (
+                <div className={styles.confirmDeleteSemestre}>
+                  <span className={styles.confirmSemestreText}>¿Eliminar?</span>
+                  <button
+                    onClick={() => eliminarSemestre(semester.id, false)}
+                    className={styles.confirmSemestreButton}
+                    title="Mover cursos a Sin Semestre"
+                  >
+                    Mantener cursos
+                  </button>
+                  <button
+                    onClick={() => eliminarSemestre(semester.id, true)}
+                    className={styles.deleteSemestreButton}
+                    title="Eliminar cursos también"
+                  >
+                    Eliminar todo
+                  </button>
+                  <button
+                    onClick={() => setConfirmarEliminarSemestre(null)}
+                    className={styles.cancelSemestreButton}
+                    title="Cancelar"
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setConfirmarEliminarSemestre(semester.id)}
+                  className={styles.semesterDeleteButton}
+                  title="Eliminar semestre"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+SortableSemesterTab.propTypes = {
+  semester: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    nombre: PropTypes.string.isRequired
+  }).isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  isEditing: PropTypes.bool.isRequired,
+  nombreEditado: PropTypes.string.isRequired,
+  setNombreSemestreEditado: PropTypes.func.isRequired,
+  guardarEdicionSemestre: PropTypes.func.isRequired,
+  cancelarEdicionSemestre: PropTypes.func.isRequired,
+  setSelectedSemesterId: PropTypes.func.isRequired,
+  iniciarEdicionSemestre: PropTypes.func.isRequired,
+  confirmarEliminarSemestre: PropTypes.string,
+  setConfirmarEliminarSemestre: PropTypes.func.isRequired,
+  eliminarSemestre: PropTypes.func.isRequired
+};
+
+// Sortable curso card component
+function SortableCursoCard({ curso, children }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: curso.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={styles.cursoCard}>
+      <div className={styles.cursoDragHandle} {...attributes} {...listeners}>
+        <FontAwesomeIcon icon={faGripVertical} />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+SortableCursoCard.propTypes = {
+  curso: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }).isRequired,
+  children: PropTypes.node.isRequired
+};
+
 export default function Promedio() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -48,10 +232,22 @@ export default function Promedio() {
   const saveTimeoutRefs = useRef({}); // { cursoId: timeoutId }
   const abortControllersRef = useRef({}); // { cursoId: AbortController }
 
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   // Redirect if not authenticated
   useEffect(() => {
     if (status === 'unauthenticated') {
-      window.location.href = '/login';
+      globalThis.location.href = '/login';
     }
   }, [status]);
 
@@ -64,8 +260,14 @@ export default function Promedio() {
 
   // Load cursos when semester selection changes
   useEffect(() => {
-    if (status === 'authenticated' && !loadingSemesters) {
+    if (status === 'authenticated' && loadingSemesters === false) {
       loadCursos(selectedSemesterId);
+      // Save the selected semester to localStorage
+      if (selectedSemesterId === null) {
+        localStorage.setItem('lastSelectedSemesterId', 'null');
+      } else {
+        localStorage.setItem('lastSelectedSemesterId', selectedSemesterId);
+      }
     }
   }, [selectedSemesterId, status, loadingSemesters]);
 
@@ -73,42 +275,54 @@ export default function Promedio() {
   useEffect(() => {
     return () => {
       // Clear all pending debounce timers
-      Object.values(saveTimeoutRefs.current).forEach(timeoutId => {
+      for (const timeoutId of Object.values(saveTimeoutRefs.current)) {
         clearTimeout(timeoutId);
-      });
+      }
       saveTimeoutRefs.current = {};
       
       // Abort all pending requests
-      Object.values(abortControllersRef.current).forEach(controller => {
+      for (const controller of Object.values(abortControllersRef.current)) {
         controller.abort();
-      });
+      }
       abortControllersRef.current = {};
     };
   }, []);
+
+  // Helper to determine initial semester selection
+  const determineInitialSemester = (semesters, orphanPromedios) => {
+    const lastSelectedId = localStorage.getItem('lastSelectedSemesterId');
+    const hasOrphans = orphanPromedios.length > 0;
+    
+    if (lastSelectedId) {
+      const semesterExists = semesters.some(s => s.id === lastSelectedId);
+      if (semesterExists) return lastSelectedId;
+      if (lastSelectedId === 'null' && hasOrphans) return null;
+    }
+    
+    // Fallback: orphans exist -> null, otherwise first semester
+    if (hasOrphans) return null;
+    if (semesters.length > 0) return semesters[0].id;
+    return null;
+  };
 
   const loadSemesters = async () => {
     try {
       setLoadingSemesters(true);
       const response = await fetch('/api/semesters');
-      if (response.ok) {
-        const data = await response.json();
-        setSemesters(data.semesters);
-        
-        // Check if there are orphan cursos (without semester)
-        const orphanResponse = await fetch('/api/promedios?semesterId=null');
-        if (orphanResponse.ok) {
-          const orphanData = await orphanResponse.json();
-          setHasOrphanCursos(orphanData.promedios.length > 0);
-          
-          // If there are orphan cursos and no semesters, show "Sin Semestre"
-          // Otherwise, select first semester if available
-          if (orphanData.promedios.length > 0) {
-            setSelectedSemesterId(null);
-          } else if (data.semesters.length > 0) {
-            setSelectedSemesterId(data.semesters[0].id);
-          }
-        }
-      }
+      if (!response.ok) return;
+      
+      const data = await response.json();
+      setSemesters(data.semesters);
+      
+      // Check if there are orphan cursos (without semester)
+      const orphanResponse = await fetch('/api/promedios?semesterId=null');
+      if (!orphanResponse.ok) return;
+      
+      const orphanData = await orphanResponse.json();
+      setHasOrphanCursos(orphanData.promedios.length > 0);
+      
+      const selectedId = determineInitialSemester(data.semesters, orphanData.promedios);
+      setSelectedSemesterId(selectedId);
     } catch (error) {
       console.error('Error loading semesters:', error);
     } finally {
@@ -342,6 +556,78 @@ export default function Promedio() {
     setNombreSemestreEditado('');
   };
 
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = semesters.findIndex((s) => s.id === active.id);
+      const newIndex = semesters.findIndex((s) => s.id === over.id);
+
+      const newSemesters = arrayMove(semesters, oldIndex, newIndex);
+      const previousSemesters = [...semesters];
+      setSemesters(newSemesters);
+
+      // Save the new order to the backend
+      try {
+        const response = await fetch('/api/semesters/reorder', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            semesters: newSemesters.map((s) => ({ id: s.id })),
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('Error saving semester order');
+          // Revert on error
+          setSemesters(previousSemesters);
+        }
+      } catch (error) {
+        console.error('Error saving semester order:', error);
+        // Revert on error
+        setSemesters(previousSemesters);
+      }
+    }
+  };
+
+  const handleCursoDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = cursos.findIndex((c) => c.id === active.id);
+      const newIndex = cursos.findIndex((c) => c.id === over.id);
+
+      const newCursos = arrayMove(cursos, oldIndex, newIndex);
+      const previousCursos = [...cursos];
+      setCursos(newCursos);
+
+      // Save the new order to the backend
+      try {
+        const response = await fetch('/api/promedios/reorder', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            promedios: newCursos.map((c) => ({ id: c.id })),
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('Error saving curso order');
+          // Revert on error
+          setCursos(previousCursos);
+        }
+      } catch (error) {
+        console.error('Error saving curso order:', error);
+        // Revert on error
+        setCursos(previousCursos);
+      }
+    }
+  };
+
   const moverCursoASemestre = async (cursoId, nuevoSemesterId) => {
     try {
       setSaving(true);
@@ -444,7 +730,7 @@ export default function Promedio() {
   const validarYFormatearNota = (valor) => {
     if (valor === '') return '';
     
-    let numero = parseFloat(valor);
+    let numero = Number.parseFloat(valor);
     
     // Si el número es mayor a 10, asumimos que olvidó el punto decimal
     if (numero >= 10 && numero <= 70) {
@@ -452,8 +738,8 @@ export default function Promedio() {
     }
     
     // Limitar entre 1.0 y 7.0
-    if (numero < 1.0) numero = 1.0;
-    if (numero > 7.0) numero = 7.0;
+    if (numero < 1) numero = 1;
+    if (numero > 7) numero = 7;
     
     return numero.toFixed(1);
   };
@@ -461,7 +747,7 @@ export default function Promedio() {
   const validarPonderacion = (valor) => {
     if (valor === '') return '';
     
-    let numero = parseFloat(valor);
+    let numero = Number.parseFloat(valor);
     
     // No permitir valores negativos o mayores a 100
     if (numero < 0) numero = 0;
@@ -622,14 +908,14 @@ export default function Promedio() {
 
   const esNotaInvalida = (valor) => {
     if (valor === '') return false;
-    const num = parseFloat(valor);
-    return isNaN(num) || num < 1.0 || num > 7.0;
+    const num = Number.parseFloat(valor);
+    return Number.isNaN(num) || num < 1 || num > 7;
   };
 
   const esPonderacionInvalida = (valor) => {
     if (valor === '') return false;
-    const num = parseFloat(valor);
-    return isNaN(num) || num < 0 || num > 100;
+    const num = Number.parseFloat(valor);
+    return Number.isNaN(num) || num < 0 || num > 100;
   };
 
   const eliminarNota = (cursoId, notaId) => {
@@ -652,18 +938,18 @@ export default function Promedio() {
   const calcularPromedioNotasRegulares = (notas) => {
     const notasValidas = notas.filter(
       nota => nota.valor !== '' && nota.ponderacion !== '' && 
-              !isNaN(parseFloat(nota.valor)) && !isNaN(parseFloat(nota.ponderacion))
+              !Number.isNaN(Number.parseFloat(nota.valor)) && !Number.isNaN(Number.parseFloat(nota.ponderacion))
     );
 
     if (notasValidas.length === 0) return null;
 
     let sumaProductos = 0;
 
-    notasValidas.forEach(nota => {
-      const valor = parseFloat(nota.valor);
-      const ponderacion = parseFloat(nota.ponderacion);
+    for (const nota of notasValidas) {
+      const valor = Number.parseFloat(nota.valor);
+      const ponderacion = Number.parseFloat(nota.ponderacion);
       sumaProductos += valor * (ponderacion / 100);
-    });
+    }
 
     return sumaProductos;
   };
@@ -675,9 +961,9 @@ export default function Promedio() {
     if (promedioNotasRegulares === null) {
       // Si no hay notas regulares válidas, solo puede calcularse si hay examen final
       if (examenFinal && examenFinal.valor !== '' && examenFinal.ponderacion !== '' &&
-          !isNaN(parseFloat(examenFinal.valor)) && !isNaN(parseFloat(examenFinal.ponderacion))) {
-        const valorExamen = parseFloat(examenFinal.valor);
-        const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+          !Number.isNaN(Number.parseFloat(examenFinal.valor)) && !Number.isNaN(Number.parseFloat(examenFinal.ponderacion))) {
+        const valorExamen = Number.parseFloat(examenFinal.valor);
+        const ponderacionExamen = Number.parseFloat(examenFinal.ponderacion);
         return (valorExamen * (ponderacionExamen / 100)).toFixed(2);
       }
       return null;
@@ -685,9 +971,9 @@ export default function Promedio() {
 
     // Si hay examen final, calcular promedio combinado
     if (examenFinal && examenFinal.valor !== '' && examenFinal.ponderacion !== '' &&
-        !isNaN(parseFloat(examenFinal.valor)) && !isNaN(parseFloat(examenFinal.ponderacion))) {
-      const valorExamen = parseFloat(examenFinal.valor);
-      const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+        !Number.isNaN(Number.parseFloat(examenFinal.valor)) && !Number.isNaN(Number.parseFloat(examenFinal.ponderacion))) {
+      const valorExamen = Number.parseFloat(examenFinal.valor);
+      const ponderacionExamen = Number.parseFloat(examenFinal.ponderacion);
       const ponderacionNotasRegulares = 100 - ponderacionExamen;
       
       const promedioFinal = (promedioNotasRegulares * (ponderacionNotasRegulares / 100)) + 
@@ -701,26 +987,10 @@ export default function Promedio() {
 
   const calcularPonderacionTotal = (notas) => {
     const notasValidas = notas.filter(
-      nota => nota.ponderacion !== '' && !isNaN(parseFloat(nota.ponderacion))
+      nota => nota.ponderacion !== '' && !Number.isNaN(Number.parseFloat(nota.ponderacion))
     );
 
-    return notasValidas.reduce((sum, nota) => sum + parseFloat(nota.ponderacion), 0).toFixed(0);
-  };
-
-  // Calcula la suma ponderada de las notas regulares (sin dividir por 100)
-  const calcularSumaPonderada = (notas) => {
-    const notasValidas = notas.filter(
-      nota => nota.valor !== '' && nota.ponderacion !== '' && 
-              !isNaN(parseFloat(nota.valor)) && !isNaN(parseFloat(nota.ponderacion))
-    );
-
-    if (notasValidas.length === 0) return 0;
-
-    return notasValidas.reduce((sum, nota) => {
-      const valor = parseFloat(nota.valor);
-      const ponderacion = parseFloat(nota.ponderacion);
-      return sum + valor * (ponderacion / 100);
-    }, 0);
+    return notasValidas.reduce((sum, nota) => sum + Number.parseFloat(nota.ponderacion), 0).toFixed(0);
   };
 
 
@@ -789,94 +1059,35 @@ export default function Promedio() {
                 </button>
               )}
               
-              {/* Semester tabs */}
-              {semesters.map(semester => (
-                <div key={semester.id} className={styles.semesterTabWrapper}>
-                  {editandoSemestre === semester.id ? (
-                    <div className={styles.editarSemestreForm}>
-                      <input
-                        type="text"
-                        value={nombreSemestreEditado}
-                        onChange={(e) => setNombreSemestreEditado(e.target.value)}
-                        className={styles.editarSemestreInput}
-                        autoFocus
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') guardarEdicionSemestre(semester.id);
-                        }}
-                      />
-                      <button
-                        onClick={() => guardarEdicionSemestre(semester.id)}
-                        className={styles.semesterActionButton}
-                        title="Guardar"
-                      >
-                        <FontAwesomeIcon icon={faCheck} />
-                      </button>
-                      <button
-                        onClick={cancelarEdicionSemestre}
-                        className={styles.semesterActionButton}
-                        title="Cancelar"
-                      >
-                        <FontAwesomeIcon icon={faTimes} />
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        className={`${styles.semesterTab} ${selectedSemesterId === semester.id ? styles.semesterTabActive : ''}`}
-                        onClick={() => setSelectedSemesterId(semester.id)}
-                      >
-                        <FontAwesomeIcon icon={faGraduationCap} />
-                        <span>{semester.nombre}</span>
-                      </button>
-                      {selectedSemesterId === semester.id && (
-                        <div className={styles.semesterActions}>
-                          <button
-                            onClick={() => iniciarEdicionSemestre(semester)}
-                            className={styles.semesterActionButton}
-                            title="Editar nombre"
-                          >
-                            <FontAwesomeIcon icon={faEdit} />
-                          </button>
-                          {confirmarEliminarSemestre === semester.id ? (
-                            <div className={styles.confirmDeleteSemestre}>
-                              <span className={styles.confirmSemestreText}>¿Eliminar?</span>
-                              <button
-                                onClick={() => eliminarSemestre(semester.id, false)}
-                                className={styles.confirmSemestreButton}
-                                title="Mover cursos a Sin Semestre"
-                              >
-                                Mantener cursos
-                              </button>
-                              <button
-                                onClick={() => eliminarSemestre(semester.id, true)}
-                                className={styles.deleteSemestreButton}
-                                title="Eliminar cursos también"
-                              >
-                                Eliminar todo
-                              </button>
-                              <button
-                                onClick={() => setConfirmarEliminarSemestre(null)}
-                                className={styles.cancelSemestreButton}
-                                title="Cancelar"
-                              >
-                                <FontAwesomeIcon icon={faTimes} />
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => setConfirmarEliminarSemestre(semester.id)}
-                              className={styles.semesterDeleteButton}
-                              title="Eliminar semestre"
-                            >
-                              <FontAwesomeIcon icon={faTrash} />
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
+              {/* Semester tabs with drag and drop */}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={semesters.map(s => s.id)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  {semesters.map(semester => (
+                    <SortableSemesterTab
+                      key={semester.id}
+                      semester={semester}
+                      isSelected={selectedSemesterId === semester.id}
+                      isEditing={editandoSemestre === semester.id}
+                      nombreEditado={nombreSemestreEditado}
+                      setNombreSemestreEditado={setNombreSemestreEditado}
+                      guardarEdicionSemestre={guardarEdicionSemestre}
+                      cancelarEdicionSemestre={cancelarEdicionSemestre}
+                      setSelectedSemesterId={setSelectedSemesterId}
+                      iniciarEdicionSemestre={iniciarEdicionSemestre}
+                      confirmarEliminarSemestre={confirmarEliminarSemestre}
+                      setConfirmarEliminarSemestre={setConfirmarEliminarSemestre}
+                      eliminarSemestre={eliminarSemestre}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
               
               {/* Add semester button/form */}
               {mostrarFormSemestre ? (
@@ -919,29 +1130,13 @@ export default function Promedio() {
         )}
 
         <div className={styles.content}>
-          {!loading && !loadingSemesters && cursos.length === 0 && !mostrarFormCurso && (
-            <div className={styles.emptyState}>
-              <FontAwesomeIcon icon={faBook} className={styles.emptyIcon} />
-              <p className={styles.emptyText}>
-                {selectedSemesterId === null && !hasOrphanCursos 
-                  ? 'Crea un semestre para comenzar'
-                  : 'No tienes cursos agregados'}
-              </p>
-              <p className={styles.emptySubtext}>
-                {selectedSemesterId === null && !hasOrphanCursos 
-                  ? 'Organiza tus notas por semestre'
-                  : 'Comienza agregando tu primer curso'}
-              </p>
-            </div>
-          )}
-
           {cursos.length > 0 && (
             <div className={styles.resumenSection}>
               <div className={styles.resumenGrid}>
                 {cursos.map(curso => {
                   const promedio = calcularPromedio(curso.notas, curso.examenFinal);
-                  const promedioNum = promedio ? parseFloat(promedio) : null;
-                  const ponderacionTotal = parseFloat(calcularPonderacionTotal(curso.notas));
+                  const promedioNum = promedio ? Number.parseFloat(promedio) : null;
+                  const ponderacionTotal = Number.parseFloat(calcularPonderacionTotal(curso.notas));
                   
                   // Determinar estado y clase
                   let estadoTexto = '';
@@ -950,22 +1145,20 @@ export default function Promedio() {
                   if (promedioNum !== null) {
                     if (ponderacionTotal === 100) {
                       // Curso completo
-                      if (promedioNum >= 4.0) {
+                      if (promedioNum >= 4) {
                         estadoTexto = 'Aprobado';
                         claseEstado = styles.resumenCardAprobado;
                       } else {
                         estadoTexto = 'Reprobado';
                         claseEstado = styles.resumenCardReprobado;
                       }
-                    } else {
+                    } else if (promedioNum >= 4) {
                       // Curso incompleto
-                      if (promedioNum >= 4.0) {
-                        estadoTexto = 'En Progreso';
-                        claseEstado = styles.resumenCardAprobado;
-                      } else {
-                        estadoTexto = 'Bajo 4.0';
-                        claseEstado = styles.resumenCardEnRiesgo;
-                      }
+                      estadoTexto = 'En Progreso';
+                      claseEstado = styles.resumenCardAprobado;
+                    } else {
+                      estadoTexto = 'Bajo 4.0';
+                      claseEstado = styles.resumenCardEnRiesgo;
                     }
                   }
 
@@ -981,7 +1174,7 @@ export default function Promedio() {
                         <div className={styles.resumenPromedioContainer}>
                           <span className={styles.resumenPromedioLabel}>Promedio</span>
                           <span className={styles.resumenPromedioValue}>
-                            {promedioNum !== null ? promedioNum.toFixed(2) : '-'}
+                            {promedioNum === null ? '-' : promedioNum.toFixed(2)}
                           </span>
                         </div>
                         <div className={styles.resumenInfo}>
@@ -1002,169 +1195,170 @@ export default function Promedio() {
             </div>
           )}
 
-          <div className={styles.cursosContainer}>
-            {cursos.map(curso => {
-              const promedio = calcularPromedio(curso.notas, curso.examenFinal);
-              const ponderacionTotal = calcularPonderacionTotal(curso.notas);
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleCursoDragEnd}
+          >
+            <SortableContext
+              items={cursos.map(c => c.id)}
+              strategy={rectSortingStrategy}
+            >
+              <div className={styles.cursosContainer}>
+                {cursos.map(curso => {
+                  const promedio = calcularPromedio(curso.notas, curso.examenFinal);
+                  const ponderacionTotal = calcularPonderacionTotal(curso.notas);
 
-              return (
-                <div key={curso.id} className={styles.cursoCard}>
-                  <div className={styles.cursoHeader}>
-                    <div className={styles.cursoTitleSection}>
-                      {editandoCurso === curso.id ? (
-                        <div className={styles.editarCursoForm}>
-                          <input
-                            type="text"
-                            value={nombreEditado}
-                            onChange={(e) => setNombreEditado(e.target.value)}
-                            className={styles.editarCursoInput}
-                            autoFocus
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter') guardarEdicionCurso(curso.id);
-                            }}
-                          />
-                          <button
-                            onClick={() => guardarEdicionCurso(curso.id)}
-                            className={styles.iconButton}
-                            title="Guardar"
-                          >
-                            <FontAwesomeIcon icon={faCheck} />
-                          </button>
-                          <button
-                            onClick={cancelarEdicionCurso}
-                            className={styles.iconButton}
-                            title="Cancelar"
-                          >
-                            <FontAwesomeIcon icon={faTimes} />
-                          </button>
+                  return (
+                    <SortableCursoCard key={curso.id} curso={curso}>
+                      <div className={styles.cursoHeader}>
+                        <div className={styles.cursoTitleSection}>
+                          {editandoCurso === curso.id ? (
+                            <div className={styles.editarCursoForm}>
+                              <input
+                                type="text"
+                                value={nombreEditado}
+                                onChange={(e) => setNombreEditado(e.target.value)}
+                                className={styles.editarCursoInput}
+                                autoFocus
+                                onKeyPress={(e) => {
+                                  if (e.key === 'Enter') guardarEdicionCurso(curso.id);
+                                }}
+                              />
+                              <button
+                                onClick={() => guardarEdicionCurso(curso.id)}
+                                className={styles.iconButtonSmall}
+                                title="Guardar"
+                              >
+                                <FontAwesomeIcon icon={faCheck} />
+                              </button>
+                              <button
+                                onClick={cancelarEdicionCurso}
+                                className={styles.iconButtonSmall}
+                                title="Cancelar"
+                              >
+                                <FontAwesomeIcon icon={faTimes} />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <h2 className={styles.cursoNombre}>{curso.nombre}</h2>
+                              <button
+                                onClick={() => iniciarEdicionCurso(curso)}
+                                className={styles.iconButtonSmall}
+                                title="Editar nombre"
+                              >
+                                <FontAwesomeIcon icon={faEdit} />
+                              </button>
+                            </>
+                          )}
                         </div>
-                      ) : (
-                        <>
-                          <h2 className={styles.cursoNombre}>{curso.nombre}</h2>
-                          <button
-                            onClick={() => iniciarEdicionCurso(curso)}
-                            className={styles.iconButton}
-                            title="Editar nombre"
-                          >
-                            <FontAwesomeIcon icon={faEdit} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                    <div className={styles.cursoActions}>
-                      <div className={styles.promediosContainer}>
-                        <div className={styles.promedioDisplay}>
-                          <div className={styles.promedioInfo}>
-                            <span className={styles.promedioLabel}>Promedio Acumulado</span>
-                            <span className={styles.promedioSubLabel}>
-                              ({ponderacionTotal}% evaluado)
+                        <div className={styles.cursoHeaderRight}>
+                          <div className={styles.promedioCompact}>
+                            <span className={styles.promedioCompactValue}>
+                              {promedio === null ? '-' : promedio}
+                            </span>
+                            <span className={styles.promedioCompactLabel}>
+                              {ponderacionTotal}% evaluado
                             </span>
                           </div>
-                          <span className={styles.promedioValue}>
-                            {promedio !== null ? promedio : '-'}
-                          </span>
+                          {/* Move to semester select */}
+                          {semesters.length > 0 && (
+                            <select
+                              className={styles.moverSemestreSelectCompact}
+                              value=""
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  moverCursoASemestre(curso.id, e.target.value === 'null' ? null : e.target.value);
+                                }
+                              }}
+                              title="Mover a otro semestre"
+                            >
+                              <option value="">Mover a...</option>
+                              {selectedSemesterId !== null && (
+                                <option value="null">Sin Semestre</option>
+                              )}
+                              {semesters
+                                .filter(s => s.id !== selectedSemesterId)
+                                .map(s => (
+                                  <option key={s.id} value={s.id}>{s.nombre}</option>
+                                ))
+                              }
+                            </select>
+                          )}
+                          {confirmarEliminarCurso === curso.id ? (
+                            <div className={styles.confirmDeleteCompact}>
+                              <button
+                                onClick={() => eliminarCurso(curso.id)}
+                                className={styles.confirmButtonCompact}
+                                title="Confirmar"
+                              >
+                                <FontAwesomeIcon icon={faCheck} />
+                              </button>
+                              <button
+                                onClick={() => setConfirmarEliminarCurso(null)}
+                                className={styles.cancelButtonCompact}
+                                title="Cancelar"
+                              >
+                                <FontAwesomeIcon icon={faTimes} />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setConfirmarEliminarCurso(curso.id)}
+                              className={styles.deleteButtonCompact}
+                              title="Eliminar curso"
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          )}
                         </div>
                       </div>
-                      {/* Move to semester select */}
-                      {semesters.length > 0 && (
-                        <select
-                          className={styles.moverSemestreSelect}
-                          value=""
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              moverCursoASemestre(curso.id, e.target.value === 'null' ? null : e.target.value);
-                            }
-                          }}
-                          title="Mover a otro semestre"
-                        >
-                          <option value="">Mover a...</option>
-                          {selectedSemesterId !== null && (
-                            <option value="null">Sin Semestre</option>
-                          )}
-                          {semesters
-                            .filter(s => s.id !== selectedSemesterId)
-                            .map(s => (
-                              <option key={s.id} value={s.id}>{s.nombre}</option>
-                            ))
-                          }
-                        </select>
-                      )}
-                      {confirmarEliminarCurso === curso.id ? (
-                        <div className={styles.confirmDeleteGroup}>
-                          <span className={styles.confirmText}>¿Eliminar?</span>
-                          <button
-                            onClick={() => eliminarCurso(curso.id)}
-                            className={styles.confirmButton}
-                            title="Confirmar"
-                          >
-                            <FontAwesomeIcon icon={faCheck} />
-                          </button>
-                          <button
-                            onClick={() => setConfirmarEliminarCurso(null)}
-                            className={styles.cancelButton}
-                            title="Cancelar"
-                          >
-                            <FontAwesomeIcon icon={faTimes} />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setConfirmarEliminarCurso(curso.id)}
-                          className={styles.deleteButton}
-                          title="Eliminar curso"
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
 
-                  <div className={styles.notasSection}>
-                    {curso.notas.length > 0 || curso.examenFinal ? (
-                      <>
-                        {curso.notas.length > 0 && (
-                          <>
-                            <div className={styles.notasHeader}>
-                              <span className={styles.notaHeaderItem}>Nota</span>
-                              <span className={styles.notaHeaderItem}>Ponderación (%)</span>
-                              <span className={styles.notaHeaderItem}>Acciones</span>
-                            </div>
-                            {curso.notas.map(nota => (
-                              <div key={nota.id} className={styles.notaRow}>
-                                <input
-                                  type="number"
-                                  value={nota.valor}
-                                  onChange={(e) => actualizarNota(curso.id, nota.id, 'valor', e.target.value)}
-                                  onBlur={(e) => manejarBlurNota(curso.id, nota.id, e.target.value)}
-                                  placeholder="1.0 - 7.0"
-                                  min="1.0"
-                                  max="7.0"
-                                  step="0.1"
-                                  className={`${styles.notaInput} ${esNotaInvalida(nota.valor) ? styles.inputError : ''}`}
-                                />
-                                <input
-                                  type="number"
-                                  value={nota.ponderacion}
-                                  onChange={(e) => actualizarNota(curso.id, nota.id, 'ponderacion', e.target.value)}
-                                  onBlur={(e) => manejarBlurPonderacion(curso.id, nota.id, e.target.value)}
-                                  placeholder="0 - 100"
-                                  min="0"
-                                  max="100"
-                                  step="1"
-                                  className={`${styles.notaInput} ${esPonderacionInvalida(nota.ponderacion) ? styles.inputError : ''}`}
-                                />
+                      <div className={styles.notasSectionCompact}>
+                        {curso.notas.length > 0 || curso.examenFinal ? (
+                          <div className={styles.notasListCompact}>
+                            {curso.notas.map((nota, index) => (
+                              <div key={nota.id} className={styles.notaRowCompact}>
+                                <span className={styles.notaIndexLabel}>#{index + 1}</span>
+                                <div className={styles.notaInputGroup}>
+                                  <input
+                                    type="number"
+                                    value={nota.valor}
+                                    onChange={(e) => actualizarNota(curso.id, nota.id, 'valor', e.target.value)}
+                                    onBlur={(e) => manejarBlurNota(curso.id, nota.id, e.target.value)}
+                                    placeholder="Nota"
+                                    min="1.0"
+                                    max="7.0"
+                                    step="0.1"
+                                    className={`${styles.notaInputCompact} ${esNotaInvalida(nota.valor) ? styles.inputError : ''}`}
+                                  />
+                                  <span className={styles.inputSeparator}>×</span>
+                                  <input
+                                    type="number"
+                                    value={nota.ponderacion}
+                                    onChange={(e) => actualizarNota(curso.id, nota.id, 'ponderacion', e.target.value)}
+                                    onBlur={(e) => manejarBlurPonderacion(curso.id, nota.id, e.target.value)}
+                                    placeholder="%"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    className={`${styles.ponderacionInputCompact} ${esPonderacionInvalida(nota.ponderacion) ? styles.inputError : ''}`}
+                                  />
+                                  <span className={styles.percentSign}>%</span>
+                                </div>
                                 {confirmarEliminarNota === `${curso.id}-${nota.id}` ? (
-                                  <div className={styles.confirmDeleteNotaGroup}>
+                                  <div className={styles.confirmDeleteInline}>
                                     <button
                                       onClick={() => eliminarNota(curso.id, nota.id)}
-                                      className={styles.confirmNotaButton}
+                                      className={styles.confirmInlineBtn}
                                       title="Confirmar"
                                     >
                                       <FontAwesomeIcon icon={faCheck} />
                                     </button>
                                     <button
                                       onClick={() => setConfirmarEliminarNota(null)}
-                                      className={styles.cancelNotaButton}
+                                      className={styles.cancelInlineBtn}
                                       title="Cancelar"
                                     >
                                       <FontAwesomeIcon icon={faTimes} />
@@ -1172,8 +1366,9 @@ export default function Promedio() {
                                   </div>
                                 ) : (
                                   <button
-                                    onClick={() => setConfirmarEliminarNota(`${curso.id}-${nota.id}`)}
-                                    className={styles.deleteNotaButton}
+                                    onClick={() => setConfirmarEliminarNota(`${curso.id}-${nota.id}`)
+                                    }
+                                    className={styles.deleteInlineBtn}
                                     title="Eliminar nota"
                                   >
                                     <FontAwesomeIcon icon={faTrash} />
@@ -1181,150 +1376,150 @@ export default function Promedio() {
                                 )}
                               </div>
                             ))}
-                          </>
-                        )}
-                        {curso.examenFinal && (
-                          <div key="examen-final" className={`${styles.notaRow} ${styles.examenFinalRow}`}>
-                            <div className={styles.examenFinalLabel}>Examen Final</div>
-                            <input
-                              type="number"
-                              value={curso.examenFinal.valor || ''}
-                              onChange={(e) => actualizarExamenFinal(curso.id, 'valor', e.target.value)}
-                              onBlur={(e) => manejarBlurExamenFinalValor(curso.id, e.target.value)}
-                              placeholder="1.0 - 7.0"
-                              min="1.0"
-                              max="7.0"
-                              step="0.1"
-                              className={`${styles.notaInput} ${esNotaInvalida(curso.examenFinal.valor) ? styles.inputError : ''}`}
-                            />
-                            <input
-                              type="number"
-                              value={curso.examenFinal.ponderacion || ''}
-                              onChange={(e) => actualizarExamenFinal(curso.id, 'ponderacion', e.target.value)}
-                              onBlur={(e) => manejarBlurExamenFinalPonderacion(curso.id, e.target.value)}
-                              placeholder="0 - 100"
-                              min="0"
-                              max="100"
-                              step="1"
-                              className={`${styles.notaInput} ${esPonderacionInvalida(curso.examenFinal.ponderacion) ? styles.inputError : ''}`}
-                            />
-                            {confirmarEliminarExamenFinal === curso.id ? (
-                              <div className={styles.confirmDeleteNotaGroup}>
-                                <button
-                                  onClick={() => eliminarExamenFinal(curso.id)}
-                                  className={styles.confirmNotaButton}
-                                  title="Confirmar"
-                                >
-                                  <FontAwesomeIcon icon={faCheck} />
-                                </button>
-                                <button
-                                  onClick={() => setConfirmarEliminarExamenFinal(null)}
-                                  className={styles.cancelNotaButton}
-                                  title="Cancelar"
-                                >
-                                  <FontAwesomeIcon icon={faTimes} />
-                                </button>
+                            {curso.examenFinal && (
+                              <div className={styles.examenFinalRowCompact}>
+                                <span className={styles.examenFinalTag}>Examen</span>
+                                <div className={styles.notaInputGroup}>
+                                  <input
+                                    type="number"
+                                    value={curso.examenFinal.valor || ''}
+                                    onChange={(e) => actualizarExamenFinal(curso.id, 'valor', e.target.value)}
+                                    onBlur={(e) => manejarBlurExamenFinalValor(curso.id, e.target.value)}
+                                    placeholder="Nota"
+                                    min="1.0"
+                                    max="7.0"
+                                    step="0.1"
+                                    className={`${styles.notaInputCompact} ${styles.examenInput} ${esNotaInvalida(curso.examenFinal.valor) ? styles.inputError : ''}`}
+                                  />
+                                  <span className={styles.inputSeparator}>×</span>
+                                  <input
+                                    type="number"
+                                    value={curso.examenFinal.ponderacion || ''}
+                                    onChange={(e) => actualizarExamenFinal(curso.id, 'ponderacion', e.target.value)}
+                                    onBlur={(e) => manejarBlurExamenFinalPonderacion(curso.id, e.target.value)}
+                                    placeholder="%"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    className={`${styles.ponderacionInputCompact} ${styles.examenInput} ${esPonderacionInvalida(curso.examenFinal.ponderacion) ? styles.inputError : ''}`}
+                                  />
+                                  <span className={styles.percentSign}>%</span>
+                                </div>
+                                {confirmarEliminarExamenFinal === curso.id ? (
+                                  <div className={styles.confirmDeleteInline}>
+                                    <button
+                                      onClick={() => eliminarExamenFinal(curso.id)}
+                                      className={styles.confirmInlineBtn}
+                                      title="Confirmar"
+                                    >
+                                      <FontAwesomeIcon icon={faCheck} />
+                                    </button>
+                                    <button
+                                      onClick={() => setConfirmarEliminarExamenFinal(null)}
+                                      className={styles.cancelInlineBtn}
+                                      title="Cancelar"
+                                    >
+                                      <FontAwesomeIcon icon={faTimes} />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => setConfirmarEliminarExamenFinal(curso.id)}
+                                    className={styles.deleteInlineBtn}
+                                    title="Eliminar examen"
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                  </button>
+                                )}
                               </div>
-                            ) : (
+                            )}
+                          </div>
+                        ) : (
+                          <p className={styles.sinNotasCompact}>Sin notas</p>
+                        )}
+
+                        <div className={styles.cursoFooter}>
+                          <div className={styles.ponderacionInfo}>
+                            {Number.parseFloat(ponderacionTotal) !== 100 && Number.parseFloat(ponderacionTotal) > 0 && (
+                              <span className={styles.ponderacionWarningCompact}>
+                                {Number.parseFloat(ponderacionTotal) < 100 
+                                  ? 'Falta ' + (100 - Number.parseFloat(ponderacionTotal)) + '%' 
+                                  : 'Excede ' + (Number.parseFloat(ponderacionTotal) - 100) + '%'}
+                              </span>
+                            )}
+                          </div>
+                          <div className={styles.agregarButtonsCompact}>
+                            {Number.parseFloat(ponderacionTotal) < 100 && (
                               <button
-                                onClick={() => setConfirmarEliminarExamenFinal(curso.id)}
-                                className={styles.deleteNotaButton}
-                                title="Eliminar examen final"
+                                onClick={() => agregarNota(curso.id)}
+                                className={styles.agregarNotaCompact}
                               >
-                                <FontAwesomeIcon icon={faTrash} />
+                                <FontAwesomeIcon icon={faPlus} />
+                                <span>Nota</span>
+                              </button>
+                            )}
+                            {!curso.examenFinal && (
+                              <button
+                                onClick={() => agregarExamenFinal(curso.id)}
+                                className={styles.agregarExamenCompact}
+                              >
+                                <FontAwesomeIcon icon={faPlus} />
+                                <span>Examen</span>
                               </button>
                             )}
                           </div>
-                        )}
-                        <div className={styles.ponderacionTotal}>
-                          {curso.notas.length > 0 && (
-                            <>
-                              <span>Ponderación Total Notas Regulares: {ponderacionTotal}%</span>
-                              {parseFloat(ponderacionTotal) !== 100 && (
-                                <span className={styles.ponderacionWarning}>
-                                  {parseFloat(ponderacionTotal) < 100 
-                                    ? '(Falta ' + (100 - parseFloat(ponderacionTotal)) + '%)' 
-                                    : '(Excede en ' + (parseFloat(ponderacionTotal) - 100) + '%)'}
-                                </span>
-                              )}
-                            </>
-                          )}
-                          {curso.examenFinal && curso.examenFinal.ponderacion && (
-                            <span className={styles.examenFinalPonderacion}>
-                              {curso.notas.length > 0 ? ' | ' : ''}Examen Final: {curso.examenFinal.ponderacion}%
-                            </span>
-                          )}
                         </div>
-                      </>
-                    ) : (
-                      <p className={styles.sinNotas}>No hay notas agregadas</p>
-                    )}
-
-                    <div className={styles.agregarButtons}>
-                      {parseFloat(ponderacionTotal) < 100 && (
-                        <button
-                          onClick={() => agregarNota(curso.id)}
-                          className={styles.agregarNotaButton}
-                        >
-                          <FontAwesomeIcon icon={faPlus} />
-                          Agregar Nota
-                        </button>
-                      )}
-                      {!curso.examenFinal && (
-                        <button
-                          onClick={() => agregarExamenFinal(curso.id)}
-                          className={styles.agregarExamenFinalButton}
-                        >
-                          <FontAwesomeIcon icon={faPlus} />
-                          Agregar Examen Final
-                        </button>
-                      )}
+                      </div>
+                    </SortableCursoCard>
+                  );
+                })}
+                
+                {/* Add New Course Card - Always at the end */}
+                {!loadingSemesters && (
+                  mostrarFormCurso ? (
+                    <div className={styles.addCursoCard}>
+                      <div className={styles.addCursoFormContent}>
+                        <input
+                          type="text"
+                          value={nuevoCursoNombre}
+                          onChange={(e) => setNuevoCursoNombre(e.target.value)}
+                          placeholder="Nombre del curso"
+                          className={styles.addCursoInput}
+                          autoFocus
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') agregarCurso();
+                          }}
+                        />
+                        <div className={styles.addCursoActions}>
+                          <button onClick={agregarCurso} className={styles.addCursoConfirm} disabled={!nuevoCursoNombre.trim()}>
+                            <FontAwesomeIcon icon={faCheck} />
+                            <span>Crear</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setMostrarFormCurso(false);
+                              setNuevoCursoNombre('');
+                            }}
+                            className={styles.addCursoCancel}
+                          >
+                            <FontAwesomeIcon icon={faTimes} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className={styles.agregarCursoSection}>
-            {mostrarFormCurso ? (
-              <div className={styles.agregarCursoForm}>
-                <input
-                  type="text"
-                  value={nuevoCursoNombre}
-                  onChange={(e) => setNuevoCursoNombre(e.target.value)}
-                  placeholder="Nombre del curso"
-                  className={styles.cursoInput}
-                  autoFocus
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') agregarCurso();
-                  }}
-                />
-                <button onClick={agregarCurso} className={styles.confirmarButton}>
-                  <FontAwesomeIcon icon={faCheck} />
-                  Agregar
-                </button>
-                <button
-                  onClick={() => {
-                    setMostrarFormCurso(false);
-                    setNuevoCursoNombre('');
-                  }}
-                  className={styles.cancelarButton}
-                >
-                  <FontAwesomeIcon icon={faTimes} />
-                  Cancelar
-                </button>
+                  ) : (
+                    <button
+                      onClick={() => setMostrarFormCurso(true)}
+                      className={styles.addCursoPlaceholder}
+                    >
+                      <FontAwesomeIcon icon={faPlus} className={styles.addCursoIcon} />
+                      <span className={styles.addCursoText}>Agregar curso</span>
+                    </button>
+                  )
+                )}
               </div>
-            ) : (
-              <button
-                onClick={() => setMostrarFormCurso(true)}
-                className={styles.nuevoCursoButton}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-                Nuevo Curso
-              </button>
-            )}
-          </div>
+            </SortableContext>
+          </DndContext>
 
         </div>
       </div>

@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faGraduationCap, faCalculator, faShieldAlt, faHeart } from '@fortawesome/free-solid-svg-icons';

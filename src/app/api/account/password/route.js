@@ -9,7 +9,7 @@ export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 401 }
@@ -39,7 +39,7 @@ export async function PUT(request) {
       select: { password: true },
     });
 
-    if (!user || !user.password) {
+    if (!user?.password) {
       return NextResponse.json(
         { error: 'Usuario no encontrado' },
         { status: 404 }

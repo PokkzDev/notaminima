@@ -1,26 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { hasCookieConsent } from './CookieConsent';
 
 export default function ConditionalScripts() {
-  const [consent, setConsent] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
     const checkConsent = () => {
       const hasConsent = hasCookieConsent();
-      setConsent(hasConsent);
       
       if (hasConsent) {
         // Load Google Analytics
-        if (!window.dataLayer) {
-          window.dataLayer = [];
-          window.gtag = function() {
-            window.dataLayer.push(arguments);
+        if (!globalThis.dataLayer) {
+          globalThis.dataLayer = [];
+          globalThis.gtag = function() {
+            globalThis.dataLayer.push(arguments);
           };
-          window.gtag('js', new Date());
+          globalThis.gtag('js', new Date());
         }
         
         // Load gtag script if not already loaded
@@ -31,7 +26,7 @@ export default function ConditionalScripts() {
           document.head.appendChild(script1);
           
           script1.onload = () => {
-            window.gtag('config', 'G-5E4XVS6STV', {
+            globalThis.gtag('config', 'G-5E4XVS6STV', {
               'anonymize_ip': true,
               'cookie_flags': 'SameSite=None;Secure'
             });
@@ -46,14 +41,12 @@ export default function ConditionalScripts() {
           script2.crossOrigin = 'anonymous';
           document.head.appendChild(script2);
         }
-      } else {
+      } else if (globalThis.gtag) {
         // If consent is revoked, disable analytics
-        if (window.gtag) {
-          window.gtag('consent', 'update', {
-            'analytics_storage': 'denied',
-            'ad_storage': 'denied',
-          });
-        }
+        globalThis.gtag('consent', 'update', {
+          'analytics_storage': 'denied',
+          'ad_storage': 'denied',
+        });
       }
     };
     
@@ -64,13 +57,13 @@ export default function ConditionalScripts() {
       checkConsent();
     };
     
-    window.addEventListener('storage', handleStorageChange);
+    globalThis.addEventListener('storage', handleStorageChange);
     // Also listen for custom event in case consent is changed in same tab
-    window.addEventListener('cookieConsentChanged', handleStorageChange);
+    globalThis.addEventListener('cookieConsentChanged', handleStorageChange);
     
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('cookieConsentChanged', handleStorageChange);
+      globalThis.removeEventListener('storage', handleStorageChange);
+      globalThis.removeEventListener('cookieConsentChanged', handleStorageChange);
     };
   }, []);
 

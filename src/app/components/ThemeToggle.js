@@ -16,10 +16,19 @@ export default function ThemeToggle() {
 
   // Use a consistent initial icon to prevent hydration mismatch
   // Theme will be synced correctly after mount via ThemeProvider
-  const icon = mounted ? (theme === 'light' ? faMoon : faSun) : faMoon;
-  const ariaLabel = mounted 
-    ? `Switch to ${theme === 'light' ? 'dark' : 'light'} mode`
-    : 'Switch theme';
+  const getIcon = () => {
+    if (!mounted) return faMoon;
+    return theme === 'light' ? faMoon : faSun;
+  };
+
+  const getAriaLabel = () => {
+    if (!mounted) return 'Switch theme';
+    const targetMode = theme === 'light' ? 'dark' : 'light';
+    return `Switch to ${targetMode} mode`;
+  };
+
+  const icon = getIcon();
+  const ariaLabel = getAriaLabel();
 
   return (
     <button

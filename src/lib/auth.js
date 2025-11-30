@@ -1,5 +1,5 @@
 import { compare, hash } from 'bcryptjs';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { prisma } from './prisma';
 import { normalizeEmail } from './validation';
 

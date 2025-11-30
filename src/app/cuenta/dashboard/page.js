@@ -20,11 +20,9 @@ import {
 import styles from './page.module.css';
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [semesters, setSemesters] = useState([]);
-  const [allPromedios, setAllPromedios] = useState([]);
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -55,9 +53,6 @@ export default function DashboardPage() {
       const orphanResponse = await fetch('/api/promedios?semesterId=null');
       const orphanData = orphanResponse.ok ? await orphanResponse.json() : { promedios: [] };
       
-      setSemesters(semestersData.semesters);
-      setAllPromedios(promediosData.promedios);
-      
       // Calculate stats
       calculateStats(semestersData.semesters, promediosData.promedios, orphanData.promedios);
     } catch (error) {
@@ -70,30 +65,30 @@ export default function DashboardPage() {
   const calcularPromedioCurso = (notas, examenFinal) => {
     const notasValidas = notas.filter(
       nota => nota.valor !== '' && nota.ponderacion !== '' &&
-        !isNaN(parseFloat(nota.valor)) && !isNaN(parseFloat(nota.ponderacion))
+        !Number.isNaN(Number.parseFloat(nota.valor)) && !Number.isNaN(Number.parseFloat(nota.ponderacion))
     );
 
     if (notasValidas.length === 0) {
       if (examenFinal && examenFinal.valor !== '' && examenFinal.ponderacion !== '' &&
-        !isNaN(parseFloat(examenFinal.valor)) && !isNaN(parseFloat(examenFinal.ponderacion))) {
-        const valorExamen = parseFloat(examenFinal.valor);
-        const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+        !Number.isNaN(Number.parseFloat(examenFinal.valor)) && !Number.isNaN(Number.parseFloat(examenFinal.ponderacion))) {
+        const valorExamen = Number.parseFloat(examenFinal.valor);
+        const ponderacionExamen = Number.parseFloat(examenFinal.ponderacion);
         return valorExamen * (ponderacionExamen / 100);
       }
       return null;
     }
 
     let sumaProductos = 0;
-    notasValidas.forEach(nota => {
-      const valor = parseFloat(nota.valor);
-      const ponderacion = parseFloat(nota.ponderacion);
+    for (const nota of notasValidas) {
+      const valor = Number.parseFloat(nota.valor);
+      const ponderacion = Number.parseFloat(nota.ponderacion);
       sumaProductos += valor * (ponderacion / 100);
-    });
+    }
 
     if (examenFinal && examenFinal.valor !== '' && examenFinal.ponderacion !== '' &&
-      !isNaN(parseFloat(examenFinal.valor)) && !isNaN(parseFloat(examenFinal.ponderacion))) {
-      const valorExamen = parseFloat(examenFinal.valor);
-      const ponderacionExamen = parseFloat(examenFinal.ponderacion);
+      !Number.isNaN(Number.parseFloat(examenFinal.valor)) && !Number.isNaN(Number.parseFloat(examenFinal.ponderacion))) {
+      const valorExamen = Number.parseFloat(examenFinal.valor);
+      const ponderacionExamen = Number.parseFloat(examenFinal.ponderacion);
       const ponderacionNotasRegulares = 100 - ponderacionExamen;
 
       return (sumaProductos * (ponderacionNotasRegulares / 100)) +
@@ -105,146 +100,160 @@ export default function DashboardPage() {
 
   const calcularPonderacionTotal = (notas) => {
     const notasValidas = notas.filter(
-      nota => nota.ponderacion !== '' && !isNaN(parseFloat(nota.ponderacion))
+      nota => nota.ponderacion !== '' && !Number.isNaN(Number.parseFloat(nota.ponderacion))
     );
-    return notasValidas.reduce((sum, nota) => sum + parseFloat(nota.ponderacion), 0);
+    return notasValidas.reduce((sum, nota) => sum + Number.parseFloat(nota.ponderacion), 0);
   };
 
-  const calculateStats = (semesters, allPromedios, orphanPromedios) => {
-    // Overall stats
-    let totalCursos = allPromedios.length;
-    let cursosAprobados = 0;
-    let cursosReprobados = 0;
-    let cursosEnProgreso = 0;
-    let sumPromedios = 0;
-    let countPromediosValidos = 0;
-    let mejorNota = null;
-    let peorNota = null;
-    let mejorCurso = null;
-    let peorCurso = null;
+  const getCursoStatus = (nota, ponderacion) => {
+    if (nota === null) return 'enProgreso';
+    if (ponderacion < 100) return 'enProgreso';
+    return nota >= 4 ? 'aprobado' : 'reprobado';
+  };
 
-    allPromedios.forEach(promedio => {
+  const calculateOverallStats = (allPromedios) => {
+    const result = {
+      totalCursos: allPromedios.length,
+      cursosAprobados: 0,
+      cursosReprobados: 0,
+      cursosEnProgreso: 0,
+      sumPromedios: 0,
+      countPromediosValidos: 0,
+      mejorNota: null,
+      peorNota: null,
+      mejorCurso: null,
+      peorCurso: null
+    };
+
+    for (const promedio of allPromedios) {
       const nota = calcularPromedioCurso(promedio.notas || [], promedio.examenFinal);
       const ponderacion = calcularPonderacionTotal(promedio.notas || []);
-      
-      if (nota !== null) {
-        sumPromedios += nota;
-        countPromediosValidos++;
+      const status = getCursoStatus(nota, ponderacion);
 
-        if (mejorNota === null || nota > mejorNota) {
-          mejorNota = nota;
-          mejorCurso = promedio.nombre;
-        }
-        if (peorNota === null || nota < peorNota) {
-          peorNota = nota;
-          peorCurso = promedio.nombre;
-        }
-
-        if (ponderacion >= 100) {
-          if (nota >= 4.0) {
-            cursosAprobados++;
-          } else {
-            cursosReprobados++;
-          }
-        } else {
-          cursosEnProgreso++;
-        }
+      if (status === 'enProgreso') {
+        result.cursosEnProgreso++;
+        if (nota === null) continue;
+      } else if (status === 'aprobado') {
+        result.cursosAprobados++;
       } else {
-        cursosEnProgreso++;
+        result.cursosReprobados++;
       }
-    });
 
-    const promedioGeneral = countPromediosValidos > 0 ? sumPromedios / countPromediosValidos : null;
+      result.sumPromedios += nota;
+      result.countPromediosValidos++;
 
-    // Semester-wise stats
-    const semesterStats = semesters.map(semester => {
-      const semesterPromedios = allPromedios.filter(p => p.semesterId === semester.id);
-      let semSum = 0;
-      let semCount = 0;
-      let semAprobados = 0;
-      let semReprobados = 0;
-
-      semesterPromedios.forEach(promedio => {
-        const nota = calcularPromedioCurso(promedio.notas || [], promedio.examenFinal);
-        const ponderacion = calcularPonderacionTotal(promedio.notas || []);
-
-        if (nota !== null) {
-          semSum += nota;
-          semCount++;
-
-          if (ponderacion >= 100) {
-            if (nota >= 4.0) {
-              semAprobados++;
-            } else {
-              semReprobados++;
-            }
-          }
-        }
-      });
-
-      return {
-        id: semester.id,
-        nombre: semester.nombre,
-        orden: semester.orden,
-        totalCursos: semesterPromedios.length,
-        promedio: semCount > 0 ? semSum / semCount : null,
-        aprobados: semAprobados,
-        reprobados: semReprobados
-      };
-    }).sort((a, b) => a.orden - b.orden);
-
-    // Calculate trend (comparing last two semesters)
-    let tendencia = null;
-    if (semesterStats.length >= 2) {
-      const ultimo = semesterStats[semesterStats.length - 1];
-      const penultimo = semesterStats[semesterStats.length - 2];
-      if (ultimo.promedio !== null && penultimo.promedio !== null) {
-        tendencia = ultimo.promedio - penultimo.promedio;
+      if (result.mejorNota === null || nota > result.mejorNota) {
+        result.mejorNota = nota;
+        result.mejorCurso = promedio.nombre;
+      }
+      if (result.peorNota === null || nota < result.peorNota) {
+        result.peorNota = nota;
+        result.peorCurso = promedio.nombre;
       }
     }
 
-    // Orphan stats
+    return result;
+  };
+
+  const calculateSemesterStats = (semester, allPromedios) => {
+    const semesterPromedios = allPromedios.filter(p => p.semesterId === semester.id);
+    let semSum = 0;
+    let semCount = 0;
+    let semAprobados = 0;
+    let semReprobados = 0;
+
+    for (const promedio of semesterPromedios) {
+      const nota = calcularPromedioCurso(promedio.notas || [], promedio.examenFinal);
+      const ponderacion = calcularPonderacionTotal(promedio.notas || []);
+
+      if (nota === null) continue;
+
+      semSum += nota;
+      semCount++;
+
+      const status = getCursoStatus(nota, ponderacion);
+      if (status === 'aprobado') semAprobados++;
+      else if (status === 'reprobado') semReprobados++;
+    }
+
+    return {
+      id: semester.id,
+      nombre: semester.nombre,
+      orden: semester.orden,
+      totalCursos: semesterPromedios.length,
+      promedio: semCount > 0 ? semSum / semCount : null,
+      aprobados: semAprobados,
+      reprobados: semReprobados
+    };
+  };
+
+  const calculateTendencia = (semesterStats) => {
+    if (semesterStats.length < 2) return null;
+    const ultimo = semesterStats[semesterStats.length - 1];
+    const penultimo = semesterStats[semesterStats.length - 2];
+    if (ultimo.promedio === null || penultimo.promedio === null) return null;
+    return ultimo.promedio - penultimo.promedio;
+  };
+
+  const calculateOrphanStats = (orphanPromedios) => {
     let orphanSum = 0;
     let orphanCount = 0;
-    orphanPromedios.forEach(promedio => {
+    for (const promedio of orphanPromedios) {
       const nota = calcularPromedioCurso(promedio.notas || [], promedio.examenFinal);
       if (nota !== null) {
         orphanSum += nota;
         orphanCount++;
       }
-    });
+    }
+    return {
+      total: orphanPromedios.length,
+      promedio: orphanCount > 0 ? orphanSum / orphanCount : null
+    };
+  };
+
+  const calculateStats = (semesters, allPromedios, orphanPromedios) => {
+    const overallStats = calculateOverallStats(allPromedios);
+    const promedioGeneral = overallStats.countPromediosValidos > 0 
+      ? overallStats.sumPromedios / overallStats.countPromediosValidos 
+      : null;
+
+    const semesterStats = semesters
+      .map(semester => calculateSemesterStats(semester, allPromedios))
+      .sort((a, b) => a.orden - b.orden);
 
     setStats({
-      totalCursos,
-      cursosAprobados,
-      cursosReprobados,
-      cursosEnProgreso,
+      totalCursos: overallStats.totalCursos,
+      cursosAprobados: overallStats.cursosAprobados,
+      cursosReprobados: overallStats.cursosReprobados,
+      cursosEnProgreso: overallStats.cursosEnProgreso,
       promedioGeneral,
-      mejorNota,
-      peorNota,
-      mejorCurso,
-      peorCurso,
+      mejorNota: overallStats.mejorNota,
+      peorNota: overallStats.peorNota,
+      mejorCurso: overallStats.mejorCurso,
+      peorCurso: overallStats.peorCurso,
       semesterStats,
-      tendencia,
-      orphanStats: {
-        total: orphanPromedios.length,
-        promedio: orphanCount > 0 ? orphanSum / orphanCount : null
-      }
+      tendencia: calculateTendencia(semesterStats),
+      orphanStats: calculateOrphanStats(orphanPromedios)
     });
   };
 
   const getTendenciaIcon = () => {
-    if (stats?.tendencia === null) return null;
+    if (stats?.tendencia == null) return null;
     if (stats.tendencia > 0.1) return <FontAwesomeIcon icon={faArrowUp} className={styles.tendenciaUp} />;
     if (stats.tendencia < -0.1) return <FontAwesomeIcon icon={faArrowDown} className={styles.tendenciaDown} />;
     return <FontAwesomeIcon icon={faMinus} className={styles.tendenciaNeutral} />;
   };
 
   const getTendenciaText = () => {
-    if (stats?.tendencia === null) return 'Sin datos';
+    if (stats?.tendencia == null) return 'Sin datos';
     if (stats.tendencia > 0.1) return `+${stats.tendencia.toFixed(2)}`;
     if (stats.tendencia < -0.1) return stats.tendencia.toFixed(2);
     return 'Estable';
+  };
+
+  const getPromedioClass = (promedio) => {
+    if (promedio == null) return '';
+    return promedio >= 4 ? styles.promedioAprobado : styles.promedioReprobado;
   };
 
   if (status === 'loading' || loading) {
@@ -264,29 +273,26 @@ export default function DashboardPage() {
     return null;
   }
 
-  return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <div className={styles.headerIcon}>
-            <FontAwesomeIcon icon={faChartLine} />
-          </div>
-          <h1 className={styles.title}>Dashboard Académico</h1>
-          <p className={styles.subtitle}>
-            Resumen de tu rendimiento académico
+  // Determine which content to render
+  const renderDashboardContent = () => {
+    if (stats?.totalCursos === 0) {
+      return (
+        <div className={styles.emptyState}>
+          <FontAwesomeIcon icon={faBook} className={styles.emptyIcon} />
+          <p className={styles.emptyText}>No tienes cursos registrados</p>
+          <p className={styles.emptySubtext}>
+            Agrega tus cursos en la sección de Promedio para ver tus estadísticas
           </p>
-        </header>
+        </div>
+      );
+    }
 
-        {stats && stats.totalCursos === 0 ? (
-          <div className={styles.emptyState}>
-            <FontAwesomeIcon icon={faBook} className={styles.emptyIcon} />
-            <p className={styles.emptyText}>No tienes cursos registrados</p>
-            <p className={styles.emptySubtext}>
-              Agrega tus cursos en la sección de Promedio para ver tus estadísticas
-            </p>
-          </div>
-        ) : stats && (
-          <>
+    if (!stats) {
+      return null;
+    }
+
+    return (
+      <>
             {/* Main Stats Grid */}
             <div className={styles.statsGrid}>
               <div className={styles.statCard}>
@@ -296,7 +302,7 @@ export default function DashboardPage() {
                 <div className={styles.statContent}>
                   <span className={styles.statLabel}>Promedio General</span>
                   <span className={styles.statValue}>
-                    {stats.promedioGeneral !== null ? stats.promedioGeneral.toFixed(2) : '-'}
+                    {stats.promedioGeneral === null ? '-' : stats.promedioGeneral.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -385,14 +391,8 @@ export default function DashboardPage() {
                       <div className={styles.semesterBody}>
                         <div className={styles.semesterStat}>
                           <span className={styles.semesterStatLabel}>Promedio</span>
-                          <span className={`${styles.semesterStatValue} ${
-                            semester.promedio !== null && semester.promedio >= 4.0 
-                              ? styles.promedioAprobado 
-                              : semester.promedio !== null 
-                                ? styles.promedioReprobado 
-                                : ''
-                          }`}>
-                            {semester.promedio !== null ? semester.promedio.toFixed(2) : '-'}
+                          <span className={`${styles.semesterStatValue} ${getPromedioClass(semester.promedio)}`}>
+                            {semester.promedio == null ? '-' : semester.promedio.toFixed(2)}
                           </span>
                         </div>
                         <div className={styles.semesterStats}>
@@ -428,7 +428,23 @@ export default function DashboardPage() {
               </div>
             )}
           </>
-        )}
+    );
+  };
+
+  return (
+    <main className={styles.main}>
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <div className={styles.headerIcon}>
+            <FontAwesomeIcon icon={faChartLine} />
+          </div>
+          <h1 className={styles.title}>Dashboard Académico</h1>
+          <p className={styles.subtitle}>
+            Resumen de tu rendimiento académico
+          </p>
+        </header>
+
+        {renderDashboardContent()}
       </div>
     </main>
   );

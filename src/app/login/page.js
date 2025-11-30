@@ -5,12 +5,34 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faLock, faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-// import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faLock, faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import styles from './page.module.css';
 
+// Extract redirect URL parsing logic
+function getRedirectPath(callbackUrl) {
+  if (!callbackUrl) {
+    return '/';
+  }
+  
+  try {
+    // If callbackUrl is a full URL, extract the pathname
+    const url = new URL(callbackUrl, globalThis.location.origin);
+    // Only allow same-origin redirects for security
+    if (url.origin === globalThis.location.origin) {
+      return url.pathname + url.search + url.hash;
+    }
+  } catch {
+    // If callbackUrl is already a relative path, use it directly
+    if (callbackUrl.startsWith('/')) {
+      return callbackUrl;
+    }
+  }
+  
+  return '/';
+}
+
 function LoginContent() {
-  const router = useRouter();
+  useRouter(); // Keep for future use
   const searchParams = useSearchParams();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -36,53 +58,28 @@ function LoginContent() {
       if (result?.error) {
         setError(result.error);
         setLoading(false);
-      } else if (result?.ok) {
-        // Login successful, redirect to callbackUrl or default to landing page
-        setLoading(false);
-        
-        // Get callbackUrl from query params
-        const callbackUrl = searchParams.get('callbackUrl');
-        let redirectPath = '/'; // Default redirect to landing page
-        
-        if (callbackUrl) {
-          try {
-            // If callbackUrl is a full URL, extract the pathname
-            const url = new URL(callbackUrl, window.location.origin);
-            // Only allow same-origin redirects for security
-            if (url.origin === window.location.origin) {
-              redirectPath = url.pathname + url.search + url.hash;
-            }
-          } catch {
-            // If callbackUrl is already a relative path, use it directly
-            if (callbackUrl.startsWith('/')) {
-              redirectPath = callbackUrl;
-            }
-          }
-        }
-        
-        // Use hard redirect to ensure session cookie is properly loaded
-        window.location.href = redirectPath;
-      } else {
-        // Unexpected result
-        setError('Error al iniciar sesión');
-        setLoading(false);
+        return;
       }
+      
+      if (result?.ok) {
+        setLoading(false);
+        const callbackUrl = searchParams.get('callbackUrl');
+        const redirectPath = getRedirectPath(callbackUrl);
+        globalThis.location.href = redirectPath;
+        return;
+      }
+      
+      // Unexpected result
+      setError('Error al iniciar sesión');
+      setLoading(false);
     } catch (err) {
+      console.error('Login error:', err);
       setError('Error al iniciar sesión');
       setLoading(false);
     }
   };
 
-  // const handleGoogleSignIn = async () => {
-  //   setError('');
-  //   setLoading(true);
-  //   try {
-  //     await signIn('google', { callbackUrl: '/promedio' });
-  //   } catch (err) {
-  //     setError('Error al iniciar sesión con Google');
-  //     setLoading(false);
-  //   }
-  // };
+
 
   return (
     <main className={styles.main}>
@@ -171,19 +168,6 @@ function LoginContent() {
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
           </form>
-
-          {/* <div className={styles.divider}>
-            <span>o</span>
-          </div>
-
-          <button
-            onClick={handleGoogleSignIn}
-            className={styles.googleButton}
-            disabled={loading}
-          >
-            <FontAwesomeIcon icon={faGoogle} />
-            Continuar con Google
-          </button> */}
 
           <div className={styles.footer}>
             <p>

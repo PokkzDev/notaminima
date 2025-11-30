@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const ThemeContext = createContext(undefined);
 
@@ -21,7 +22,7 @@ export function ThemeProvider({ children }) {
       }
     } else {
       // Check system preference
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const systemPrefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
       const initialTheme = systemPrefersDark ? 'dark' : 'light';
       setTheme(initialTheme);
       // Ensure DOM matches system preference
@@ -31,17 +32,22 @@ export function ThemeProvider({ children }) {
     }
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
+  const toggleTheme = useCallback(() => {
+    setTheme((prevTheme) => {
+      const newTheme = prevTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', newTheme);
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+      return newTheme;
+    });
+  }, []);
+
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
 
   // Always provide the context, even during SSR
   // Use the current theme state (defaults to 'light' during SSR)
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );
@@ -54,4 +60,8 @@ export function useTheme() {
   }
   return context;
 }
+
+ThemeProvider.propTypes = {
+  children: PropTypes.node.isRequired
+};
 

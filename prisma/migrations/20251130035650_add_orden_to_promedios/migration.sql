@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `promedios` ADD COLUMN `orden` INTEGER NOT NULL DEFAULT 0;

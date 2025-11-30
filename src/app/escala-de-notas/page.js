@@ -20,15 +20,15 @@ export default function EscalaDeNotas() {
     
     let notaCalculada;
     if (puntaje >= puntajeMinimo) {
-      notaCalculada = 4.0 + 3.0 * ((puntaje - puntajeMinimo) / (total - puntajeMinimo));
+      notaCalculada = 4 + 3 * ((puntaje - puntajeMinimo) / (total - puntajeMinimo));
     } else {
-      notaCalculada = 1.0 + 3.0 * (puntaje / puntajeMinimo);
+      notaCalculada = 1 + 3 * (puntaje / puntajeMinimo);
     }
     
-    notaCalculada = Math.max(1.0, Math.min(7.0, notaCalculada));
+    notaCalculada = Math.max(1, Math.min(7, notaCalculada));
     
     // Determinar decimales según el paso
-    const pasoNum = parseFloat(paso);
+    const pasoNum = Number.parseFloat(paso);
     let decimales;
     if (pasoNum === 0.25) {
       decimales = 2;
@@ -42,24 +42,24 @@ export default function EscalaDeNotas() {
   };
 
   const generarTabla = () => {
-    const total = parseFloat(puntajeTotal);
-    const exig = parseFloat(exigencia);
-    const pasoNum = parseFloat(paso);
+    const total = Number.parseFloat(puntajeTotal);
+    const exig = Number.parseFloat(exigencia);
+    const pasoNum = Number.parseFloat(paso);
 
     // Validaciones
-    if (!puntajeTotal || isNaN(total) || total <= 0) {
+    if (!puntajeTotal || Number.isNaN(total) || total <= 0) {
       setError('Por favor ingresa un puntaje total válido mayor a 0');
       setTablaGenerada(false);
       return;
     }
 
-    if (isNaN(exig) || exig <= 0 || exig > 100) {
+    if (Number.isNaN(exig) || exig <= 0 || exig > 100) {
       setError('La exigencia debe estar entre 1% y 100%');
       setTablaGenerada(false);
       return;
     }
 
-    if (isNaN(pasoNum) || (pasoNum !== 1 && pasoNum !== 0.5 && pasoNum !== 0.25)) {
+    if (Number.isNaN(pasoNum) || (pasoNum !== 1 && pasoNum !== 0.5 && pasoNum !== 0.25)) {
       setError('El paso debe ser 1, 0.5 o 0.25');
       setTablaGenerada(false);
       return;
@@ -74,7 +74,7 @@ export default function EscalaDeNotas() {
     while (puntaje <= total) {
       const porcentaje = (puntaje / total) * 100;
       const nota = calcularNota(puntaje, total, exig);
-      const esAprobado = parseFloat(nota) >= 4.0;
+      const esAprobado = Number.parseFloat(nota) >= 4;
       
       datos.push({
         puntaje: puntaje,
@@ -90,10 +90,10 @@ export default function EscalaDeNotas() {
     }
 
     // Asegurar que el último valor sea exactamente el total
-    if (datos.length > 0 && datos[datos.length - 1].puntaje < total) {
+    if (datos.length > 0 && datos.at(-1).puntaje < total) {
       const porcentaje = 100;
       const nota = calcularNota(total, total, exig);
-      const esAprobado = parseFloat(nota) >= 4.0;
+      const esAprobado = Number.parseFloat(nota) >= 4;
       
       datos.push({
         puntaje: total,
@@ -133,7 +133,7 @@ export default function EscalaDeNotas() {
   };
 
   const formatearPuntaje = (valor) => {
-    const pasoNum = parseFloat(paso);
+    const pasoNum = Number.parseFloat(paso);
     if (pasoNum === 0.25) {
       return valor.toFixed(2);
     } else if (pasoNum === 0.5) {
@@ -221,10 +221,10 @@ export default function EscalaDeNotas() {
                   />
                 </div>
 
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>
+                <fieldset className={styles.formGroup}>
+                  <legend className={styles.label}>
                     Paso de Incremento
-                  </label>
+                  </legend>
                   <div className={styles.stepSelector}>
                     <button
                       type="button"
@@ -248,7 +248,7 @@ export default function EscalaDeNotas() {
                       0.25 puntos
                     </button>
                   </div>
-                </div>
+                </fieldset>
 
                 {error && (
                   <div className={styles.errorMessage}>
@@ -308,12 +308,12 @@ export default function EscalaDeNotas() {
                       <tbody>
                         {organizarDatosEnFilas(filtrarDatos(datosTabla), 10).map((fila, filaIndex) => (
                           <tr 
-                            key={filaIndex}
+                            key={`row-${fila[0]?.puntaje ?? filaIndex}`}
                             className={`${styles.tableRow} ${filaIndex % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}
                           >
-                            {fila.map((item, colIndex) => (
+                            {fila.map((item) => (
                               <td 
-                                key={colIndex}
+                                key={`cell-${item.puntaje}`}
                                 className={`${styles.tableCell} ${item.esAprobado ? styles.rowAprobada : styles.rowReprobada}`}
                               >
                                 <div className={styles.cellData}>

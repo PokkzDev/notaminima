@@ -15,11 +15,11 @@ export default function PuntajeANota() {
 
 
   useEffect(() => {
-    const obtenido = parseFloat(puntajeObtenido);
-    const total = parseFloat(puntajeTotal);
-    const exig = parseFloat(exigencia);
+    const obtenido = Number.parseFloat(puntajeObtenido);
+    const total = Number.parseFloat(puntajeTotal);
+    const exig = Number.parseFloat(exigencia);
 
-    if (isNaN(obtenido) || isNaN(total) || isNaN(exig)) {
+    if (Number.isNaN(obtenido) || Number.isNaN(total) || Number.isNaN(exig)) {
       setNota(null);
       setError('');
       return;
@@ -43,12 +43,12 @@ export default function PuntajeANota() {
     
     let notaCalculada;
     if (obtenido >= puntajeMinimo) {
-      notaCalculada = 4.0 + 3.0 * ((obtenido - puntajeMinimo) / (total - puntajeMinimo));
+      notaCalculada = 4 + 3 * ((obtenido - puntajeMinimo) / (total - puntajeMinimo));
     } else {
-      notaCalculada = 1.0 + 3.0 * (obtenido / puntajeMinimo);
+      notaCalculada = 1 + 3 * (obtenido / puntajeMinimo);
     }
 
-    notaCalculada = Math.max(1.0, Math.min(7.0, notaCalculada));
+    notaCalculada = Math.max(1, Math.min(7, notaCalculada));
     
     // Detectar si los valores tienen decimales
     const tieneDecimales = !Number.isInteger(obtenido) || !Number.isInteger(total);
@@ -106,52 +106,70 @@ export default function PuntajeANota() {
         <div className={styles.content}>
           <div className={styles.formSection}>
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>Ingresa los Datos</h2>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="puntajeObtenido" className={styles.label}>
-                  Puntaje Obtenido
-                </label>
-                <input
-                  type="number"
-                  id="puntajeObtenido"
-                  className={styles.input}
-                  value={puntajeObtenido}
-                  onChange={(e) => setPuntajeObtenido(e.target.value)}
-                  min="0"
-                  step="0.1"
-                />
-              </div>
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="puntajeObtenido" className={styles.label}>
+                    Puntaje Obtenido
+                  </label>
+                  <input
+                    type="number"
+                    id="puntajeObtenido"
+                    className={styles.input}
+                    value={puntajeObtenido}
+                    onChange={(e) => setPuntajeObtenido(e.target.value)}
+                    min="0"
+                    step="0.1"
+                    placeholder="Ej: 60"
+                  />
+                </div>
 
-              <div className={styles.formGroup}>
-                <label htmlFor="puntajeTotal" className={styles.label}>
-                  Puntaje Total
-                </label>
-                <input
-                  type="number"
-                  id="puntajeTotal"
-                  className={styles.input}
-                  value={puntajeTotal}
-                  onChange={(e) => setPuntajeTotal(e.target.value)}
-                  min="1"
-                  step="0.1"
-                />
-              </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="puntajeTotal" className={styles.label}>
+                    Puntaje Total
+                  </label>
+                  <input
+                    type="number"
+                    id="puntajeTotal"
+                    className={styles.input}
+                    value={puntajeTotal}
+                    onChange={(e) => setPuntajeTotal(e.target.value)}
+                    min="1"
+                    step="0.1"
+                    placeholder="Ej: 100"
+                  />
+                </div>
 
-              <div className={styles.formGroup}>
-                <label htmlFor="exigencia" className={styles.label}>
-                  Exigencia (%)
-                </label>
-                <input
-                  type="number"
-                  id="exigencia"
-                  className={styles.input}
-                  value={exigencia}
-                  onChange={(e) => setExigencia(e.target.value)}
-                  min="1"
-                  max="100"
-                  step="1"
-                />
+                <div className={styles.formGroup}>
+                  <label htmlFor="exigencia" className={styles.label}>
+                    Exigencia (%)
+                  </label>
+                  <input
+                    type="number"
+                    id="exigencia"
+                    className={styles.input}
+                    value={exigencia}
+                    onChange={(e) => setExigencia(e.target.value)}
+                    min="1"
+                    max="100"
+                    step="1"
+                    placeholder="60"
+                  />
+                </div>
+
+                <div className={styles.resultDisplay}>
+                  {nota === null ? (
+                    <span className={styles.notaPlaceholder}>—</span>
+                  ) : (
+                    <>
+                      <span className={`${styles.notaValue} ${Number.parseFloat(nota) >= 4 ? styles.notaAprobada : styles.notaReprobada}`}>
+                        {nota}
+                      </span>
+                      <span className={`${styles.notaStatus} ${Number.parseFloat(nota) >= 4 ? styles.statusAprobado : styles.statusReprobado}`}>
+                        {Number.parseFloat(nota) >= 4 ? 'Aprobado' : 'Reprobado'}
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
 
               {error && (
@@ -160,68 +178,42 @@ export default function PuntajeANota() {
                 </div>
               )}
 
-              <div className={styles.buttonGroup}>
-                <button 
-                  onClick={limpiarFormulario} 
-                  className={styles.resetButton}
-                >
-                  <FontAwesomeIcon icon={faRotateRight} />
-                  Restablecer valores
-                </button>
-              </div>
+              <button 
+                onClick={limpiarFormulario} 
+                className={styles.resetButton}
+              >
+                <FontAwesomeIcon icon={faRotateRight} />
+                Restablecer
+              </button>
             </div>
           </div>
 
-          <div className={styles.resultSection}>
-            <div className={styles.card}>
-              <h2 className={styles.cardTitle}>Resultado</h2>
-              
-              {nota !== null ? (
-                <div className={styles.resultContent}>
-                  <div className={styles.notaDisplay}>
-                    <span className={styles.notaValue}>{nota}</span>
-                    <span className={styles.notaLabel}>Nota</span>
-                  </div>
-                  
-                  <div className={styles.resultDetails}>
-                    <div className={styles.detailItem}>
-                      <span className={styles.detailLabel}>Puntaje Obtenido:</span>
-                      <span className={styles.detailValue}>{puntajeObtenido}</span>
-                    </div>
-                    <div className={styles.detailItem}>
-                      <span className={styles.detailLabel}>Puntaje Total:</span>
-                      <span className={styles.detailValue}>{puntajeTotal}</span>
-                    </div>
-                    <div className={styles.detailItem}>
-                      <span className={styles.detailLabel}>Porcentaje:</span>
-                      <span className={styles.detailValue}>
-                        {(() => {
-                          const obtenido = parseFloat(puntajeObtenido);
-                          const total = parseFloat(puntajeTotal);
-                          const tieneDecimales = !Number.isInteger(obtenido) || !Number.isInteger(total);
-                          const decimales = tieneDecimales ? 2 : 1;
-                          return ((obtenido / total) * 100).toFixed(decimales);
-                        })()}%
-                      </span>
-                    </div>
-                    <div className={styles.detailItem}>
-                      <span className={styles.detailLabel}>Estado:</span>
-                      <span className={`${styles.detailValue} ${parseFloat(nota) >= 4.0 ? styles.aprobado : styles.reprobado}`}>
-                        {parseFloat(nota) >= 4.0 ? 'Aprobado' : 'Reprobado'}
-                      </span>
-                    </div>
-                  </div>
+          {nota !== null && (
+            <div className={styles.detailsSection}>
+              <div className={styles.detailsCard}>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Puntaje</span>
+                  <span className={styles.detailValue}>{puntajeObtenido} / {puntajeTotal}</span>
                 </div>
-              ) : (
-                <div className={styles.emptyState}>
-                  <FontAwesomeIcon icon={faCalculator} className={styles.emptyIcon} />
-                  <p className={styles.emptyText}>
-                    Ingresa valores válidos para calcular tu nota
-                  </p>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Porcentaje</span>
+                  <span className={styles.detailValue}>
+                    {(() => {
+                      const obtenido = Number.parseFloat(puntajeObtenido);
+                      const total = Number.parseFloat(puntajeTotal);
+                      const tieneDecimales = !Number.isInteger(obtenido) || !Number.isInteger(total);
+                      const decimales = tieneDecimales ? 2 : 1;
+                      return ((obtenido / total) * 100).toFixed(decimales);
+                    })()}%
+                  </span>
                 </div>
-              )}
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Exigencia</span>
+                  <span className={styles.detailValue}>{exigencia}%</span>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       </main>
