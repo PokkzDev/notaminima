@@ -41,6 +41,7 @@ export const authOptions = {
           id: user.id,
           email: user.email,
           name: user.username,
+          role: user.role,
           rememberMe: credentials.rememberMe === 'true',
         };
       },
@@ -62,6 +63,7 @@ export const authOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
         // Store rememberMe preference in token
         if (user.rememberMe !== undefined) {
           token.rememberMe = user.rememberMe;
@@ -72,6 +74,7 @@ export const authOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },

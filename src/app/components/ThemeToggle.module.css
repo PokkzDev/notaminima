@@ -23,6 +23,12 @@
   transition: transform 0.2s ease;
 }
 
+.iconPlaceholder {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
 .toggleButton:hover .icon {
   transform: rotate(15deg);
 }

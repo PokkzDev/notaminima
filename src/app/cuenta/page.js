@@ -544,16 +544,18 @@ export default function CuentaPage() {
           </p>
         </div>
 
-        <EmailChangeSection 
-          session={session} 
-          emailForm={emailForm} 
-          setEmailForm={setEmailForm} 
-        />
+        <div className={styles.sectionsGrid}>
+          <EmailChangeSection 
+            session={session} 
+            emailForm={emailForm} 
+            setEmailForm={setEmailForm} 
+          />
 
-        <PasswordChangeSection 
-          passwordForm={passwordForm} 
-          setPasswordForm={setPasswordForm} 
-        />
+          <PasswordChangeSection 
+            passwordForm={passwordForm} 
+            setPasswordForm={setPasswordForm} 
+          />
+        </div>
 
         <DeleteAccountSection 
           deleteForm={deleteForm} 

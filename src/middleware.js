@@ -3,6 +3,16 @@ import { NextResponse } from 'next/server';
 
 export default withAuth(
   function middleware(req) {
+    const { pathname } = req.nextUrl;
+    const token = req.nextauth.token;
+
+    // Check admin routes - require ADMIN role
+    if (pathname.startsWith('/admin')) {
+      if (token?.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/', req.url));
+      }
+    }
+
     return NextResponse.next();
   },
   {
@@ -13,7 +23,7 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/cuenta'],
+  matcher: ['/cuenta', '/admin/:path*'],
 };
 
 

@@ -72,9 +72,18 @@
   margin-top: 1rem;
 }
 
-.formSection {
+/* Calculator Grid Layout */
+.calculatorGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.inputSection {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .card {
@@ -90,13 +99,261 @@
   box-shadow: 0 4px 12px var(--shadow-color-hover);
 }
 
-.formRow {
+.cardTitle {
   display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
 }
 
+.cardIcon {
+  color: var(--accent-color);
+  font-size: 0.875rem;
+}
+
+.inputGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.exigenciaGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inputWithIcon {
+  position: relative;
+}
+
+.inputWithIcon .input {
+  padding-right: 2.5rem;
+}
+
+.inputIcon {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+}
+
+.presets {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.presetsLabel {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.presetButton {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.presetButton:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.presetActive {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.presetActive:hover {
+  color: white;
+}
+
+/* Progress Bar */
+.progressContainer {
+  margin-top: 1rem;
+}
+
+.progressBar {
+  position: relative;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: visible;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.progressAprobado {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.progressReprobado {
+  background: linear-gradient(90deg, #dc2626 0%, #f87171 100%);
+}
+
+.progressMarker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  background: var(--text-secondary);
+  border-radius: 1px;
+  transform: translateX(-50%);
+}
+
+.progressMarker::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.375rem;
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+
+.progressPercentage {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Result Section */
+.resultSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 5rem;
+}
+
+.resultCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: var(--bg-primary);
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  min-height: 180px;
+  transition: all 0.3s ease;
+}
+
+.resultAprobado {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(16, 185, 129, 0.05) 100%);
+}
+
+.resultReprobado {
+  border-color: rgba(220, 38, 38, 0.3);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(220, 38, 38, 0.05) 100%);
+}
+
+.resultLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.notaValue {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.notaAprobada {
+  color: #10b981;
+}
+
+.notaReprobada {
+  color: #dc2626;
+}
+
+.notaPlaceholder {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  line-height: 1;
+}
+
+.notaStatus {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
+}
+
+.statusAprobado {
+  color: #10b981;
+}
+
+.statusReprobado {
+  color: #dc2626;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.875rem 0.5rem;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.statValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+/* Form elements */
 .formGroup {
   flex: 1;
   min-width: 120px;
@@ -107,13 +364,13 @@
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: var(--text-secondary);
-  font-size: 0.813rem;
+  font-size: 0.8125rem;
   transition: color 0.3s ease;
 }
 
 .input {
   width: 100%;
-  padding: 0.625rem 0.875rem;
+  padding: 0.75rem 1rem;
   font-size: 1rem;
   border: 2px solid var(--border-color);
   border-radius: 8px;
@@ -134,126 +391,60 @@
   opacity: 0.6;
 }
 
-.resultDisplay {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 100px;
-  padding: 0.5rem 1.25rem;
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-  border-radius: 8px;
-  border: 2px solid var(--border-color);
-  gap: 0.25rem;
-}
-
-.notaValue {
-  font-size: 1.75rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.notaAprobada {
-  color: #10b981;
-}
-
-.notaReprobada {
-  color: #dc2626;
-}
-
-.notaPlaceholder {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text-tertiary);
-  line-height: 1;
-}
-
-.notaStatus {
-  font-size: 0.688rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.statusAprobado {
-  color: #10b981;
-}
-
-.statusReprobado {
-  color: #dc2626;
-}
-
 .errorMessage {
-  background: #fee;
-  border: 2px solid #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
   border-radius: 8px;
-  padding: 0.625rem 1rem;
-  color: #991b1b;
+  padding: 0.75rem 1rem;
+  color: #dc2626;
   font-size: 0.875rem;
   font-weight: 500;
-  margin-top: 0.75rem;
 }
 
 .resetButton {
-  margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
-  border: none;
-  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  background: transparent;
+  gap: 0.5rem;
+  background: var(--bg-primary);
   color: var(--text-secondary);
+  width: fit-content;
 }
 
 .resetButton:hover {
   background: var(--bg-secondary);
   color: var(--text-primary);
+  border-color: var(--text-tertiary);
 }
 
-/* Details Section */
-.detailsSection {
-  display: flex;
-  flex-direction: column;
-}
+@media (max-width: 900px) {
+  .calculatorGrid {
+    grid-template-columns: 1fr;
+  }
 
-.detailsCard {
-  display: flex;
-  gap: 2rem;
-  padding: 1rem 1.5rem;
-  background: var(--bg-primary);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 8px var(--shadow-color);
-  justify-content: center;
-  flex-wrap: wrap;
-}
+  .resultSection {
+    position: static;
+    order: -1;
+  }
 
-.detailItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
+  .resultCard {
+    min-height: 140px;
+    padding: 1.5rem;
+  }
 
-.detailLabel {
-  font-weight: 500;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: color 0.3s ease;
-}
+  .notaValue {
+    font-size: 3rem;
+  }
 
-.detailValue {
-  font-weight: 600;
-  color: var(--text-primary);
-  font-size: 1rem;
-  transition: color 0.3s ease;
+  .notaPlaceholder {
+    font-size: 3rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -280,39 +471,20 @@
     font-size: 1.05rem;
   }
 
-  .formRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+  .inputGroup {
+    grid-template-columns: 1fr;
   }
 
-  .formGroup {
-    min-width: 100%;
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .resultDisplay {
-    flex-direction: row;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    min-width: 100%;
+  .statItem {
+    padding: 0.75rem 0.25rem;
   }
 
-  .notaValue {
-    font-size: 1.5rem;
-  }
-
-  .notaPlaceholder {
-    font-size: 1.5rem;
-  }
-
-  .detailsCard {
-    gap: 1.5rem;
-    padding: 1rem;
-  }
-
-  .card {
-    padding: 1.25rem;
+  .statValue {
+    font-size: 0.9375rem;
   }
 }
 
@@ -336,17 +508,27 @@
     font-size: 1rem;
   }
 
-  .detailsCard {
-    gap: 1rem;
-    justify-content: space-between;
+  .card {
+    padding: 1rem 1.25rem;
   }
 
-  .detailItem {
-    flex: 1;
-    min-width: auto;
+  .presets {
+    flex-wrap: wrap;
   }
 
-  .detailValue {
-    font-size: 0.938rem;
+  .statsGrid {
+    gap: 0.375rem;
+  }
+
+  .statItem {
+    padding: 0.625rem 0.25rem;
+  }
+
+  .statValue {
+    font-size: 0.875rem;
+  }
+
+  .statLabel {
+    font-size: 0.625rem;
   }
 }
