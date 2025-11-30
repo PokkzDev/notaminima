@@ -298,18 +298,15 @@ export default function EscalaDeNotas() {
                     <table className={styles.conversionTable}>
                       <thead>
                         <tr>
-                          {Array.from({ length: 8 }, (_, i) => (
+                          {Array.from({ length: 10 }, (_, i) => (
                             <th key={i} className={styles.thColumn}>
-                              <div className={styles.headerCell}>
-                                <span className={styles.headerLabel}>Puntaje</span>
-                                <span className={styles.headerLabel}>Nota</span>
-                              </div>
+                              <span className={styles.headerLabel}>Pts → Nota</span>
                             </th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
-                        {organizarDatosEnFilas(filtrarDatos(datosTabla), 8).map((fila, filaIndex) => (
+                        {organizarDatosEnFilas(filtrarDatos(datosTabla), 10).map((fila, filaIndex) => (
                           <tr 
                             key={filaIndex}
                             className={`${styles.tableRow} ${filaIndex % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}
@@ -320,17 +317,18 @@ export default function EscalaDeNotas() {
                                 className={`${styles.tableCell} ${item.esAprobado ? styles.rowAprobada : styles.rowReprobada}`}
                               >
                                 <div className={styles.cellData}>
-                                  <span className={item.esAprobado ? styles.puntajeAprobado : styles.puntajeReprobado}>
+                                  <span className={styles.puntajeValue}>
                                     {formatearPuntaje(item.puntaje)}
                                   </span>
-                                  <span className={`${styles.notaCell} ${item.esAprobado ? styles.notaAprobada : styles.notaReprobada}`}>
+                                  <span className={styles.separator}>→</span>
+                                  <span className={`${styles.notaValue} ${item.esAprobado ? styles.notaAprobada : styles.notaReprobada}`}>
                                     {item.nota}
                                   </span>
                                 </div>
                               </td>
                             ))}
-                            {/* Rellenar celdas vacías si la fila no tiene 8 columnas */}
-                            {Array.from({ length: 8 - fila.length }, (_, i) => (
+                            {/* Rellenar celdas vacías si la fila no tiene 10 columnas */}
+                            {Array.from({ length: 10 - fila.length }, (_, i) => (
                               <td key={`empty-${i}`} className={styles.tableCellEmpty}></td>
                             ))}
                           </tr>

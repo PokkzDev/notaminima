@@ -143,6 +143,11 @@ function LoginContent() {
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
               </div>
+              <div className={styles.forgotPassword}>
+                <Link href="/login/forgot-password" className={styles.forgotPasswordLink}>
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
             </div>
 
             <div className={styles.rememberMe}>

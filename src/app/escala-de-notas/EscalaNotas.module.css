@@ -477,25 +477,21 @@
 }
 
 .thColumn {
-  min-width: 90px;
-  width: 12.5%;
+  min-width: 80px;
+  width: 10%;
+  padding: 0.4rem 0.5rem;
 }
 
 .thColumn:last-child {
   border-right: none;
 }
 
-.headerCell {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  align-items: center;
-}
-
 .headerLabel {
-  font-size: 0.813rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .conversionTable tbody tr {
@@ -543,18 +539,18 @@
 }
 
 .tableCell {
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.875rem;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
   transition: color 0.3s ease, border-color 0.3s ease;
   text-align: center;
-  min-width: 90px;
-  width: 12.5%;
+  min-width: 80px;
+  width: 10%;
 }
 
 .tableCellEmpty {
-  padding: 0.5rem 0.75rem;
+  padding: 0.35rem 0.5rem;
   border-bottom: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
   background: var(--bg-primary);
@@ -562,26 +558,47 @@
 
 .cellData {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.25rem;
   align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.puntajeValue {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.separator {
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.notaValue {
+  font-weight: 700;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .puntajeAprobado {
   color: #059669;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.875rem;
 }
 
 .puntajeReprobado {
   color: #dc2626;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.875rem;
 }
 
 .notaCell {
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
 }
 
 .notaAprobada {
@@ -660,31 +677,40 @@
   }
 
   .conversionTable th {
-    font-size: 0.875rem;
-    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.4rem;
   }
 
   .headerLabel {
-    font-size: 0.75rem;
+    font-size: 0.688rem;
   }
 
   .tableCell {
-    padding: 0.4rem 0.5rem;
-    font-size: 0.938rem;
-    min-width: 80px;
+    padding: 0.3rem 0.35rem;
+    font-size: 0.813rem;
+    min-width: 70px;
   }
 
   .thColumn {
-    min-width: 80px;
+    min-width: 70px;
+  }
+
+  .puntajeValue,
+  .notaValue {
+    font-size: 0.813rem;
+  }
+
+  .separator {
+    font-size: 0.625rem;
   }
 
   .puntajeAprobado,
   .puntajeReprobado {
-    font-size: 0.938rem;
+    font-size: 0.813rem;
   }
 
   .notaCell {
-    font-size: 0.938rem;
+    font-size: 0.813rem;
   }
 }
 
@@ -743,31 +769,40 @@
   }
 
   .conversionTable th {
-    font-size: 0.813rem;
-    padding: 0.35rem 0.4rem;
+    font-size: 0.688rem;
+    padding: 0.3rem 0.3rem;
   }
 
   .headerLabel {
-    font-size: 0.688rem;
+    font-size: 0.625rem;
   }
 
   .tableCell {
-    padding: 0.35rem 0.4rem;
-    font-size: 0.875rem;
-    min-width: 70px;
+    padding: 0.25rem 0.25rem;
+    font-size: 0.75rem;
+    min-width: 60px;
   }
 
   .thColumn {
-    min-width: 70px;
+    min-width: 60px;
+  }
+
+  .puntajeValue,
+  .notaValue {
+    font-size: 0.75rem;
+  }
+
+  .separator {
+    font-size: 0.563rem;
   }
 
   .puntajeAprobado,
   .puntajeReprobado {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
   }
 
   .notaCell {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
   }
 
   .tableWrapper {

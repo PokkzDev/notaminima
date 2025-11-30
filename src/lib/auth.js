@@ -258,4 +258,100 @@ export async function getPendingEmailChangeToken(userId, newEmail) {
   return verificationToken;
 }
 
+/**
+ * Creates a password reset token
+ * @param {string} email - Email of the user requesting password reset
+ * @returns {Promise<string>} - The generated token
+ */
+export async function createPasswordResetToken(email) {
+  const normalizedEmail = normalizeEmail(email);
+  const identifier = `passwordReset|${normalizedEmail}`;
+  const token = randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
+  // Delete any existing password reset tokens for this email
+  await prisma.verificationToken.deleteMany({
+    where: {
+      identifier,
+    },
+  });
+
+  await prisma.verificationToken.create({
+    data: {
+      identifier,
+      token,
+      expires,
+    },
+  });
+
+  return token;
+}
+
+/**
+ * Verifies a password reset token and returns the email
+ * @param {string} token - Token to verify
+ * @returns {Promise<string|null>} - Email if token is valid, null otherwise
+ */
+export async function verifyPasswordResetToken(token) {
+  const verificationToken = await prisma.verificationToken.findUnique({
+    where: { token },
+  });
+
+  if (!verificationToken) {
+    return null;
+  }
+
+  // Check if this is a password reset token
+  if (!verificationToken.identifier.startsWith('passwordReset|')) {
+    return null;
+  }
+
+  // Check if token has expired
+  if (verificationToken.expires < new Date()) {
+    // Delete expired token
+    await prisma.verificationToken.delete({
+      where: { token },
+    });
+    return null;
+  }
+
+  // Extract email from identifier
+  const email = verificationToken.identifier.replace('passwordReset|', '');
+  return email;
+}
+
+/**
+ * Gets a pending password reset token for an email
+ * @param {string} email - Email to check
+ * @returns {Promise<object|null>} - Token object if exists and not expired, null otherwise
+ */
+export async function getPendingPasswordResetToken(email) {
+  const normalizedEmail = normalizeEmail(email);
+  const identifier = `passwordReset|${normalizedEmail}`;
+  
+  const verificationToken = await prisma.verificationToken.findFirst({
+    where: {
+      identifier,
+      expires: {
+        gt: new Date(), // Not expired
+      },
+    },
+  });
+
+  return verificationToken;
+}
+
+/**
+ * Deletes a password reset token
+ * @param {string} token - Token to delete
+ */
+export async function deletePasswordResetToken(token) {
+  try {
+    await prisma.verificationToken.delete({
+      where: { token },
+    });
+  } catch (error) {
+    // Token might not exist, ignore error
+    console.log('Password reset token deletion error (ignored):', error.message);
+  }
+}
