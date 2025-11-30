@@ -266,11 +266,25 @@
   transition: all 0.3s ease;
 }
 
-.resultAprobado {
+/* Excelente (7.0 - 6.0) - Verde */
+.resultExcelente {
   border-color: rgba(16, 185, 129, 0.3);
   background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(16, 185, 129, 0.05) 100%);
 }
 
+/* Muy Bueno (5.9 - 5.0) - Azul */
+.resultMuyBueno {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(59, 130, 246, 0.05) 100%);
+}
+
+/* Aprobado (4.9 - 4.0) - Amarillo */
+.resultAprobado {
+  border-color: rgba(234, 179, 8, 0.3);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(234, 179, 8, 0.05) 100%);
+}
+
+/* Reprobado (3.9 - 1.0) - Rojo */
 .resultReprobado {
   border-color: rgba(220, 38, 38, 0.3);
   background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(220, 38, 38, 0.05) 100%);
@@ -291,11 +305,20 @@
   line-height: 1;
 }
 
-.notaAprobada {
+/* Colores de texto para las notas */
+.notaExcelente {
   color: #10b981;
 }
 
-.notaReprobada {
+.notaMuyBueno {
+  color: #3b82f6;
+}
+
+.notaAprobado {
+  color: #eab308;
+}
+
+.notaReprobado {
   color: #dc2626;
 }
 
@@ -314,8 +337,17 @@
   margin-top: 0.5rem;
 }
 
-.statusAprobado {
+/* Colores de estado */
+.statusExcelente {
   color: #10b981;
+}
+
+.statusMuyBueno {
+  color: #3b82f6;
+}
+
+.statusAprobado {
+  color: #eab308;
 }
 
 .statusReprobado {

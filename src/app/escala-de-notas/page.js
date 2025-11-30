@@ -391,6 +391,14 @@ export default function EscalaDeNotas() {
     return { aprobados, reprobados, puntajeMinimo, total: datosTabla.length };
   };
 
+  const getNotaCategoria = (nota) => {
+    const notaNum = Number.parseFloat(nota);
+    if (notaNum >= 6.0) return 'excelente';
+    if (notaNum >= 5.0) return 'muyBueno';
+    if (notaNum >= 4.0) return 'aprobado';
+    return 'reprobado';
+  };
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -623,22 +631,25 @@ export default function EscalaDeNotas() {
                             key={`row-${fila[0]?.puntaje ?? filaIndex}`}
                             className={`${styles.tableRow} ${filaIndex % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}
                           >
-                            {fila.map((item) => (
-                              <td 
-                                key={`cell-${item.puntaje}`}
-                                className={`${styles.tableCell} ${item.esAprobado ? styles.rowAprobada : styles.rowReprobada}`}
-                              >
-                                <div className={styles.cellData}>
-                                  <span className={styles.puntajeValue}>
-                                    {formatearPuntaje(item.puntaje)}
-                                  </span>
-                                  <span className={styles.separator}>→</span>
-                                  <span className={`${styles.notaValue} ${item.esAprobado ? styles.notaAprobada : styles.notaReprobada}`}>
-                                    {item.nota}
-                                  </span>
-                                </div>
-                              </td>
-                            ))}
+                            {fila.map((item) => {
+                              const categoria = getNotaCategoria(item.nota);
+                              return (
+                                <td 
+                                  key={`cell-${item.puntaje}`}
+                                  className={`${styles.tableCell} ${styles[`row${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`]}`}
+                                >
+                                  <div className={styles.cellData}>
+                                    <span className={styles.puntajeValue}>
+                                      {formatearPuntaje(item.puntaje)}
+                                    </span>
+                                    <span className={styles.separator}>→</span>
+                                    <span className={`${styles.notaValue} ${styles[`nota${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`]}`}>
+                                      {item.nota}
+                                    </span>
+                                  </div>
+                                </td>
+                              );
+                            })}
                             {/* Rellenar celdas vacías si la fila no tiene 10 columnas */}
                             {Array.from({ length: 10 - fila.length }, (_, i) => (
                               <td key={`empty-${i}`} className={styles.tableCellEmpty}></td>

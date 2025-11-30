@@ -1150,15 +1150,27 @@ export default function Promedio() {
                   if (promedioNum !== null) {
                     if (ponderacionTotal === 100) {
                       // Curso completo
-                      if (promedioNum >= 4) {
+                      if (promedioNum >= 6.0) {
+                        estadoTexto = 'Excelente';
+                        claseEstado = styles.resumenCardExcelente;
+                      } else if (promedioNum >= 5.0) {
+                        estadoTexto = 'Muy Bueno';
+                        claseEstado = styles.resumenCardMuyBueno;
+                      } else if (promedioNum >= 4.0) {
                         estadoTexto = 'Aprobado';
                         claseEstado = styles.resumenCardAprobado;
                       } else {
                         estadoTexto = 'Reprobado';
                         claseEstado = styles.resumenCardReprobado;
                       }
-                    } else if (promedioNum >= 4) {
+                    } else if (promedioNum >= 6.0) {
                       // Curso incompleto
+                      estadoTexto = 'En Progreso';
+                      claseEstado = styles.resumenCardExcelente;
+                    } else if (promedioNum >= 5.0) {
+                      estadoTexto = 'En Progreso';
+                      claseEstado = styles.resumenCardMuyBueno;
+                    } else if (promedioNum >= 4.0) {
                       estadoTexto = 'En Progreso';
                       claseEstado = styles.resumenCardAprobado;
                     } else {

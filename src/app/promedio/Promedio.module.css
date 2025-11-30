@@ -669,16 +669,28 @@
   box-shadow: 0 4px 16px var(--shadow-color-hover);
 }
 
-.resumenCardAprobado {
-  border-color: var(--border-color);
+/* Excelente (7.0 - 6.0) - Verde */
+.resumenCardExcelente {
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
+/* Muy Bueno (5.9 - 5.0) - Azul */
+.resumenCardMuyBueno {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Aprobado (4.9 - 4.0) - Amarillo */
+.resumenCardAprobado {
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+/* Reprobado (3.9 - 1.0) - Rojo */
 .resumenCardReprobado {
-  border-color: var(--border-color);
+  border-color: rgba(220, 38, 38, 0.3);
 }
 
 .resumenCardEnRiesgo {
-  border-color: var(--border-color);
+  border-color: rgba(220, 38, 38, 0.3);
 }
 
 .resumenCardNeutral {
@@ -727,16 +739,28 @@
   line-height: 1;
 }
 
-.resumenCardAprobado .resumenPromedioValue {
-  color: #047857;
+/* Excelente - Verde */
+.resumenCardExcelente .resumenPromedioValue {
+  color: #10b981;
 }
 
+/* Muy Bueno - Azul */
+.resumenCardMuyBueno .resumenPromedioValue {
+  color: #3b82f6;
+}
+
+/* Aprobado - Amarillo */
+.resumenCardAprobado .resumenPromedioValue {
+  color: #eab308;
+}
+
+/* Reprobado - Rojo */
 .resumenCardReprobado .resumenPromedioValue {
-  color: #991b1b;
+  color: #dc2626;
 }
 
 .resumenCardEnRiesgo .resumenPromedioValue {
-  color: #d97706;
+  color: #dc2626;
 }
 
 .resumenCardNeutral .resumenPromedioValue {
@@ -765,19 +789,33 @@
   border-radius: 12px;
 }
 
-.resumenCardAprobado .resumenEstado {
-  background: #d1fae5;
-  color: #065f46;
+/* Excelente - Verde */
+.resumenCardExcelente .resumenEstado {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
 }
 
+/* Muy Bueno - Azul */
+.resumenCardMuyBueno .resumenEstado {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+/* Aprobado - Amarillo */
+.resumenCardAprobado .resumenEstado {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+/* Reprobado - Rojo */
 .resumenCardReprobado .resumenEstado {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
 }
 
 .resumenCardEnRiesgo .resumenEstado {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
 }
 
 /* Empty State */
