@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileContract } from '@fortawesome/free-solid-svg-icons';
 import styles from './Terminos.module.css';
 
 export const metadata = {
@@ -43,8 +45,13 @@ export default function TerminosDeUso() {
     <main className={styles.main}>
       <div className={styles.container}>
         <header className={styles.header}>
+          <div className={styles.headerIcon}>
+            <FontAwesomeIcon icon={faFileContract} />
+          </div>
           <h1 className={styles.title}>Términos de Uso</h1>
-          <p className={styles.lastUpdated}>Última actualización: 9 de noviembre de 2025</p>
+          <p className={styles.subtitle}>
+            Última actualización: 9 de noviembre de 2025
+          </p>
         </header>
 
         <div className={styles.content}>
@@ -296,12 +303,15 @@ export default function TerminosDeUso() {
               página web en <a href="https://pokkz.dev" target="_blank" rel="noopener noreferrer" className={styles.link}>pokkz.dev</a>.
             </p>
           </section>
-        </div>
 
-        <div className={styles.footer}>
-          <Link href="/" className={styles.backButton}>
-            Volver al Inicio
-          </Link>
+          <div className={styles.highlight}>
+            <h3 className={styles.highlightTitle}>¿Necesitas más información?</h3>
+            <p className={styles.highlightText}>
+              Si tienes preguntas sobre estos términos o sobre cómo funciona NotaMinima, puedes visitar nuestra 
+              página de <Link href="/ayuda" className={styles.link}>Ayuda</Link> o nuestra{' '}
+              <Link href="/privacidad" className={styles.link}>Política de Privacidad</Link>.
+            </p>
+          </div>
         </div>
       </div>
     </main>

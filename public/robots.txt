@@ -1,31 +1,65 @@
+# NotaMinima - robots.txt
+# https://notaminima.cl
+
+# Default rules for all crawlers
 User-Agent: *
 Allow: /
+Allow: /promedio
+Allow: /puntaje-a-nota
+Allow: /escala-de-notas
+Allow: /ayuda
+Allow: /acerca
+Allow: /login
+Allow: /register
+Allow: /privacidad
+Allow: /terminos
+
+# Disallow internal and API routes
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
-Disallow: /private/
+Disallow: /cuenta/
+Disallow: /login/forgot-password
+Disallow: /login/reset-password
+Disallow: /register/verify
 
-# Specific rules for search engines
+# Specific rules for Googlebot
 User-Agent: Googlebot
 Allow: /
 Crawl-delay: 1
 
+# Specific rules for Bingbot
 User-Agent: Bingbot
 Allow: /
 Crawl-delay: 2
 
+# Specific rules for Yandex
+User-Agent: Yandex
+Allow: /
+Crawl-delay: 2
+
+# Allow social media crawlers
 User-Agent: facebookexternalhit
 Allow: /
 
 User-Agent: Twitterbot
 Allow: /
 
+User-Agent: LinkedInBot
+Allow: /
+
+User-Agent: WhatsApp
+Allow: /
+
+User-Agent: TelegramBot
+Allow: /
+
 # Host directive
-Host: notaminima.cl
+Host: https://notaminima.cl
 
 # Sitemap location
 Sitemap: https://notaminima.cl/sitemap.xml
 
 # Clean URL parameters to avoid duplicate content
 Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content
-Clean-param: fbclid&gclid&ref_src&ref_url
+Clean-param: fbclid&gclid&ref_src&ref_url&ref

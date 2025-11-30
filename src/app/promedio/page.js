@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Script from 'next/script';
 import PropTypes from 'prop-types';
@@ -243,6 +243,48 @@ export default function Promedio() {
     })
   );
 
+  // Helper to determine initial semester selection
+  const determineInitialSemester = useCallback((semesters, orphanPromedios) => {
+    const lastSelectedId = localStorage.getItem('lastSelectedSemesterId');
+    const hasOrphans = orphanPromedios.length > 0;
+    
+    if (lastSelectedId) {
+      const semesterExists = semesters.some(s => s.id === lastSelectedId);
+      if (semesterExists) return lastSelectedId;
+      if (lastSelectedId === 'null' && hasOrphans) return null;
+    }
+    
+    // Fallback: orphans exist -> null, otherwise first semester
+    if (hasOrphans) return null;
+    if (semesters.length > 0) return semesters[0].id;
+    return null;
+  }, []);
+
+  const loadSemesters = useCallback(async () => {
+    try {
+      setLoadingSemesters(true);
+      const response = await fetch('/api/semesters');
+      if (!response.ok) return;
+      
+      const data = await response.json();
+      setSemesters(data.semesters);
+      
+      // Check if there are orphan cursos (without semester)
+      const orphanResponse = await fetch('/api/promedios?semesterId=null');
+      if (!orphanResponse.ok) return;
+      
+      const orphanData = await orphanResponse.json();
+      setHasOrphanCursos(orphanData.promedios.length > 0);
+      
+      const selectedId = determineInitialSemester(data.semesters, orphanData.promedios);
+      setSelectedSemesterId(selectedId);
+    } catch (error) {
+      console.error('Error loading semesters:', error);
+    } finally {
+      setLoadingSemesters(false);
+    }
+  }, [determineInitialSemester]);
+
   // Redirect if not authenticated
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -255,7 +297,7 @@ export default function Promedio() {
     if (status === 'authenticated') {
       loadSemesters();
     }
-  }, [status]);
+  }, [status, loadSemesters]);
 
   // Load cursos when semester selection changes
   useEffect(() => {
@@ -286,48 +328,6 @@ export default function Promedio() {
       abortControllersRef.current = {};
     };
   }, []);
-
-  // Helper to determine initial semester selection
-  const determineInitialSemester = (semesters, orphanPromedios) => {
-    const lastSelectedId = localStorage.getItem('lastSelectedSemesterId');
-    const hasOrphans = orphanPromedios.length > 0;
-    
-    if (lastSelectedId) {
-      const semesterExists = semesters.some(s => s.id === lastSelectedId);
-      if (semesterExists) return lastSelectedId;
-      if (lastSelectedId === 'null' && hasOrphans) return null;
-    }
-    
-    // Fallback: orphans exist -> null, otherwise first semester
-    if (hasOrphans) return null;
-    if (semesters.length > 0) return semesters[0].id;
-    return null;
-  };
-
-  const loadSemesters = async () => {
-    try {
-      setLoadingSemesters(true);
-      const response = await fetch('/api/semesters');
-      if (!response.ok) return;
-      
-      const data = await response.json();
-      setSemesters(data.semesters);
-      
-      // Check if there are orphan cursos (without semester)
-      const orphanResponse = await fetch('/api/promedios?semesterId=null');
-      if (!orphanResponse.ok) return;
-      
-      const orphanData = await orphanResponse.json();
-      setHasOrphanCursos(orphanData.promedios.length > 0);
-      
-      const selectedId = determineInitialSemester(data.semesters, orphanData.promedios);
-      setSelectedSemesterId(selectedId);
-    } catch (error) {
-      console.error('Error loading semesters:', error);
-    } finally {
-      setLoadingSemesters(false);
-    }
-  };
 
   const loadCursos = async (semesterId) => {
     try {

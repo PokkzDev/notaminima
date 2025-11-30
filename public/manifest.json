@@ -1,27 +1,35 @@
 {
-  "name": "Nota Mínima - Calculadora de Notas Chile",
-  "short_name": "Nota Mínima",
+  "name": "NotaMinima - Calculadora de Notas Chile",
+  "short_name": "NotaMinima",
   "description": "Calculadora gratuita de notas para estudiantes chilenos. Promedio ponderado, nota mínima y conversión de puntajes en escala 1.0-7.0",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#16a34a",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "es-CL",
+  "dir": "ltr",
   "categories": ["education", "utilities", "productivity"],
   "icons": [
     {
       "src": "/logo.png",
-      "sizes": "any",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/logo-256.png",
       "sizes": "256x256",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
@@ -33,12 +41,28 @@
       "label": "Calculadora de Notas Chile"
     }
   ],
-  "features": [
-    "Calculadora de promedio ponderado",
-    "Conversor de puntaje a nota",
-    "Gestión de múltiples cursos",
-    "Almacenamiento local",
-    "Sin registro requerido"
+  "shortcuts": [
+    {
+      "name": "Calcular Promedio",
+      "short_name": "Promedio",
+      "description": "Calcula tu promedio ponderado de notas",
+      "url": "/promedio",
+      "icons": [{ "src": "/logo-256.png", "sizes": "256x256" }]
+    },
+    {
+      "name": "Puntaje a Nota",
+      "short_name": "Puntaje",
+      "description": "Convierte puntajes a notas",
+      "url": "/puntaje-a-nota",
+      "icons": [{ "src": "/logo-256.png", "sizes": "256x256" }]
+    },
+    {
+      "name": "Escala de Notas",
+      "short_name": "Escala",
+      "description": "Genera tabla de conversión de puntajes",
+      "url": "/escala-de-notas",
+      "icons": [{ "src": "/logo-256.png", "sizes": "256x256" }]
+    }
   ],
   "prefer_related_applications": false
 }
