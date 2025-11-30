@@ -63,6 +63,14 @@ export default function PuntajeANota() {
     setExigencia('60');
   };
 
+  const getNotaCategoria = (notaValue) => {
+    const notaNum = Number.parseFloat(notaValue);
+    if (notaNum >= 6.0) return 'excelente';
+    if (notaNum >= 5.0) return 'muyBueno';
+    if (notaNum >= 4.0) return 'aprobado';
+    return 'reprobado';
+  };
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -230,17 +238,17 @@ export default function PuntajeANota() {
 
             {/* Result Section */}
             <div className={styles.resultSection}>
-              <div className={`${styles.resultCard} ${nota !== null ? (Number(nota) >= 4 ? styles.resultAprobado : styles.resultReprobado) : ''}`}>
+              <div className={`${styles.resultCard} ${nota !== null ? styles[`result${getNotaCategoria(nota).charAt(0).toUpperCase() + getNotaCategoria(nota).slice(1)}`] : ''}`}>
                 <span className={styles.resultLabel}>Tu nota</span>
                 {nota === null ? (
                   <span className={styles.notaPlaceholder}>—</span>
                 ) : (
                   <>
-                    <span className={`${styles.notaValue} ${Number.parseFloat(nota) >= 4 ? styles.notaAprobada : styles.notaReprobada}`}>
+                    <span className={`${styles.notaValue} ${styles[`nota${getNotaCategoria(nota).charAt(0).toUpperCase() + getNotaCategoria(nota).slice(1)}`]}`}>
                       {nota}
                     </span>
-                    <span className={`${styles.notaStatus} ${Number.parseFloat(nota) >= 4 ? styles.statusAprobado : styles.statusReprobado}`}>
-                      {Number.parseFloat(nota) >= 4 ? 'Aprobado' : 'Reprobado'}
+                    <span className={`${styles.notaStatus} ${styles[`status${getNotaCategoria(nota).charAt(0).toUpperCase() + getNotaCategoria(nota).slice(1)}`]}`}>
+                      {Number.parseFloat(nota) >= 6.0 ? 'Excelente' : Number.parseFloat(nota) >= 5.0 ? 'Muy Bueno' : Number.parseFloat(nota) >= 4.0 ? 'Aprobado' : 'Reprobado'}
                     </span>
                   </>
                 )}

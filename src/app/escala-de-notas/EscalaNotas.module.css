@@ -761,27 +761,55 @@
   background: var(--bg-secondary);
 }
 
-.rowAprobada {
+/* Excelente (7.0 - 6.0) - Verde */
+.rowExcelente {
   background: rgba(16, 185, 129, 0.04) !important;
 }
 
-.tableRowOdd .rowAprobada {
+.tableRowOdd .rowExcelente {
   background: rgba(16, 185, 129, 0.06) !important;
 }
 
-.rowReprobada {
-  background: rgba(220, 38, 38, 0.02) !important;
-}
-
-.tableRowOdd .rowReprobada {
-  background: rgba(220, 38, 38, 0.04) !important;
-}
-
-.conversionTable tbody tr:hover td.rowAprobada {
+.conversionTable tbody tr:hover td.rowExcelente {
   background: rgba(16, 185, 129, 0.1) !important;
 }
 
-.conversionTable tbody tr:hover td.rowReprobada {
+/* Muy Bueno (5.9 - 5.0) - Azul */
+.rowMuyBueno {
+  background: rgba(59, 130, 246, 0.04) !important;
+}
+
+.tableRowOdd .rowMuyBueno {
+  background: rgba(59, 130, 246, 0.06) !important;
+}
+
+.conversionTable tbody tr:hover td.rowMuyBueno {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Aprobado (4.9 - 4.0) - Amarillo */
+.rowAprobado {
+  background: rgba(234, 179, 8, 0.04) !important;
+}
+
+.tableRowOdd .rowAprobado {
+  background: rgba(234, 179, 8, 0.06) !important;
+}
+
+.conversionTable tbody tr:hover td.rowAprobado {
+  background: rgba(234, 179, 8, 0.1) !important;
+}
+
+/* Reprobado (3.9 - 1.0) - Rojo */
+.rowReprobado {
+  background: rgba(220, 38, 38, 0.02) !important;
+}
+
+.tableRowOdd .rowReprobado {
+  background: rgba(220, 38, 38, 0.04) !important;
+}
+
+.conversionTable tbody tr:hover td.rowReprobado {
   background: rgba(220, 38, 38, 0.06) !important;
 }
 
@@ -848,11 +876,20 @@
   font-size: 0.875rem;
 }
 
-.notaAprobada {
-  color: #059669;
+/* Colores de texto para las notas */
+.notaExcelente {
+  color: #10b981;
 }
 
-.notaReprobada {
+.notaMuyBueno {
+  color: #3b82f6;
+}
+
+.notaAprobado {
+  color: #eab308;
+}
+
+.notaReprobado {
   color: #dc2626;
 }
 
