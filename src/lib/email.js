@@ -324,4 +324,107 @@ export async function sendEmailChangeVerificationEmail(newEmail, token) {
   }
 }
 
+export async function sendPasswordResetEmail(email, token) {
+  // Check if Resend is properly initialized
+  if (!resend) {
+    const error = new Error('Resend API key is not configured');
+    console.error('Failed to send password reset email:', error.message);
+    return { success: false, error: { message: error.message } };
+  }
 
+  try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'NotaMinima <onboarding@resend.dev>';
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const resetUrl = `${baseUrl}/login/reset-password?token=${token}`;
+
+    const { data, error } = await resend.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: 'Restablecer contraseña - NotaMinima',
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Restablecer contraseña - NotaMinima</title>
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #f9fafb; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #111827;">
+            <div style="background: #1f2937; padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">Restablecer contraseña</h1>
+            </div>
+            <div style="background: #111827; padding: 30px; border: 2px solid #374151; border-top: none; border-radius: 0 0 12px 12px;">
+              <p style="font-size: 16px; margin-bottom: 20px; color: #f9fafb;">
+                Hola,
+              </p>
+              <p style="font-size: 16px; margin-bottom: 20px; color: #f9fafb;">
+                Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en NotaMinima. Haz clic en el botón de abajo para crear una nueva contraseña.
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${resetUrl}" 
+                   style="display: inline-block; background: #3b82f6; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  Restablecer mi contraseña
+                </a>
+              </div>
+              <p style="font-size: 14px; color: #9ca3af; margin-top: 20px;">
+                O copia y pega este enlace en tu navegador:
+              </p>
+              <p style="font-size: 12px; color: #60a5fa; word-break: break-all; margin-bottom: 20px;">
+                ${resetUrl}
+              </p>
+              <p style="font-size: 14px; color: #ef4444; margin-top: 20px; padding-top: 20px; border-top: 1px solid #374151;">
+                Este enlace expirara en 15 minutos por seguridad.
+              </p>
+              <p style="font-size: 14px; color: #9ca3af; margin-top: 20px;">
+                Si no solicitaste restablecer tu contraseña, puedes ignorar este email de forma segura. Tu contraseña actual permanecera sin cambios.
+              </p>
+              <p style="font-size: 14px; color: #9ca3af; margin-top: 10px;">
+                El equipo de NotaMinima
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
+      text: `
+        Restablecer contraseña - NotaMinima
+        
+        Hola,
+        
+        Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en NotaMinima. Visita el siguiente enlace para crear una nueva contraseña:
+        
+        ${resetUrl}
+        
+        Este enlace expirará en 15 minutos por seguridad.
+        
+        Si no solicitaste restablecer tu contraseña, puedes ignorar este email de forma segura. Tu contraseña actual permanecerá sin cambios.
+        
+        El equipo de NotaMinima
+      `,
+    });
+
+    if (error) {
+      console.error('Resend API error sending password reset email:', {
+        message: error.message,
+        statusCode: error.statusCode,
+        email: email,
+        error: error,
+      });
+      return { success: false, error };
+    }
+
+    console.log('Password reset email sent successfully:', {
+      email: email,
+      messageId: data?.id,
+    });
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Unexpected error sending password reset email:', {
+      message: error.message,
+      stack: error.stack,
+      email: email,
+      error: error,
+    });
+    return { success: false, error: { message: error.message, stack: error.stack } };
+  }
+}

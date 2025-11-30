@@ -23,6 +23,13 @@
   transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
+.successIcon {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #22c55e;
+  font-size: 3rem;
+}
+
 .header {
   text-align: center;
   margin-bottom: 2rem;
@@ -42,6 +49,11 @@
   color: var(--text-secondary);
   font-weight: 400;
   transition: color 0.3s ease;
+  line-height: 1.5;
+}
+
+.subtitle strong {
+  color: var(--text-primary);
 }
 
 .errorMessage {
@@ -52,6 +64,29 @@
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
+}
+
+.infoBox {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.infoBox p {
+  margin: 0;
+}
+
+.infoBox p + p {
+  margin-top: 0.5rem;
+}
+
+.infoBox strong {
+  color: var(--text-primary);
 }
 
 .form {
@@ -103,96 +138,6 @@
   cursor: not-allowed;
 }
 
-.passwordInputWrapper {
-  position: relative;
-  width: 100%;
-}
-
-.passwordInputWrapper .input {
-  padding-right: 3rem;
-}
-
-.passwordToggle {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s ease;
-  z-index: 1;
-}
-
-.passwordToggle:hover:not(:disabled) {
-  color: var(--text-primary);
-}
-
-.passwordToggle:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.passwordToggle svg {
-  font-size: 1rem;
-}
-
-.forgotPassword {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.25rem;
-}
-
-.forgotPasswordLink {
-  font-size: 0.85rem;
-  color: var(--accent-color);
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
-
-.forgotPasswordLink:hover {
-  opacity: 0.8;
-}
-
-.rememberMe {
-  display: flex;
-  align-items: center;
-  margin-top: -0.5rem;
-}
-
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  transition: color 0.3s ease;
-  user-select: none;
-}
-
-.checkboxLabel:hover {
-  color: var(--text-primary);
-}
-
-.checkbox {
-  width: 1.125rem;
-  height: 1.125rem;
-  cursor: pointer;
-  accent-color: var(--accent-color);
-  transition: opacity 0.3s ease;
-}
-
-.checkbox:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .submitButton {
   width: 100%;
   padding: 0.875rem 1.5rem;
@@ -215,27 +160,11 @@
   cursor: not-allowed;
 }
 
-.divider {
+.backButton {
   display: flex;
   align-items: center;
-  text-align: center;
-  margin: 1.5rem 0;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.divider span {
-  padding: 0 1rem;
-}
-
-.googleButton {
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
   padding: 0.875rem 1.5rem;
   background: var(--bg-secondary);
@@ -244,41 +173,37 @@
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
 }
 
-.googleButton:hover:not(:disabled) {
+.backButton:hover {
   border-color: var(--accent-color);
   background: var(--bg-tertiary);
-}
-
-.googleButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .footer {
   margin-top: 1.5rem;
   text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  transition: color 0.3s ease;
 }
 
 .link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--accent-color);
   text-decoration: none;
   font-weight: 500;
+  font-size: 0.9rem;
   transition: opacity 0.2s ease;
 }
 
 .link:hover {
   opacity: 0.8;
+}
+
+.linkIcon {
+  font-size: 0.8rem;
 }
 
 @media (max-width: 640px) {
@@ -290,5 +215,3 @@
     font-size: 1.75rem;
   }
 }
-
-

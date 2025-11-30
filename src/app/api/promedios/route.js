@@ -14,10 +14,23 @@ export async function GET(request) {
       );
     }
 
+    const { searchParams } = new URL(request.url);
+    const semesterId = searchParams.get('semesterId');
+
+    const whereClause = {
+      userId: session.user.id,
+    };
+
+    // Filter by semester if specified
+    if (semesterId === 'null') {
+      // Get promedios without a semester (orphans)
+      whereClause.semesterId = null;
+    } else if (semesterId) {
+      whereClause.semesterId = semesterId;
+    }
+
     const promedios = await prisma.promedio.findMany({
-      where: {
-        userId: session.user.id,
-      },
+      where: whereClause,
       orderBy: {
         createdAt: 'desc',
       },
@@ -44,7 +57,7 @@ export async function POST(request) {
       );
     }
 
-    const { nombre, notas, examenFinal } = await request.json();
+    const { nombre, notas, examenFinal, semesterId } = await request.json();
 
     if (!nombre || !notas) {
       return NextResponse.json(
@@ -53,12 +66,30 @@ export async function POST(request) {
       );
     }
 
+    // Verify semester belongs to user if provided
+    if (semesterId) {
+      const semester = await prisma.semester.findFirst({
+        where: {
+          id: semesterId,
+          userId: session.user.id,
+        },
+      });
+
+      if (!semester) {
+        return NextResponse.json(
+          { error: 'Semestre no encontrado' },
+          { status: 404 }
+        );
+      }
+    }
+
     const promedio = await prisma.promedio.create({
       data: {
         userId: session.user.id,
         nombre,
         notas,
         examenFinal: examenFinal || null,
+        semesterId: semesterId || null,
       },
     });
 

@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faX, faUser, faSignOutAlt, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faX, faUser, faSignOutAlt, faCog, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import ThemeToggle from "./ThemeToggle";
 import styles from "./Navbar.module.css";
 
@@ -157,6 +157,17 @@ export default function Navbar() {
                           <p className={styles.userName}>{session.user.name || session.user.email}</p>
                           <p className={styles.userEmailSmall}>{session.user.email}</p>
                         </div>
+                        <Link
+                          href="/cuenta/dashboard"
+                          className={styles.menuLink}
+                          onClick={() => {
+                            setIsUserMenuOpen(false);
+                            closeMenu();
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faChartLine} />
+                          Dashboard
+                        </Link>
                         <Link
                           href="/cuenta"
                           className={styles.menuLink}
