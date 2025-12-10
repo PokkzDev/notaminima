@@ -125,6 +125,9 @@
 
 .authItem {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .loginButton {
@@ -140,6 +143,23 @@
 
 .loginButton:hover {
   opacity: 0.9;
+}
+
+.registerButton {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--accent-color);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border: 1px solid var(--accent-color);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.registerButton:hover {
+  background: var(--accent-color);
+  color: white;
 }
 
 .userMenuContainer {
@@ -465,6 +485,14 @@
     width: 100%;
     text-align: center;
     padding: 0.75rem 1rem;
+  }
+
+  .registerButton {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
   }
 
   /* Hide desktop elements on mobile */

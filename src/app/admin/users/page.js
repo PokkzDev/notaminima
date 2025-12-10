@@ -21,7 +21,8 @@ import {
   faCheckCircle,
   faTimesCircle,
   faGraduationCap,
-  faChalkboardTeacher
+  faChalkboardTeacher,
+  faLightbulb
 } from '@fortawesome/free-solid-svg-icons';
 import styles from '../Admin.module.css';
 
@@ -223,19 +224,22 @@ export default function AdminUsersPage() {
             <FontAwesomeIcon icon={faUsers} />
             Usuarios
           </Link>
+          <Link href="/admin/sugerencias" className={styles.navTab}>
+            <FontAwesomeIcon icon={faLightbulb} />
+            Sugerencias
+          </Link>
         </div>
 
         {/* Table Controls */}
         <div className={styles.tableControls}>
-          <div className={styles.searchInput}>
-            <FontAwesomeIcon icon={faSearch} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
+          <div className={styles.searchWrapper}>
+            <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
             <input
               type="text"
               placeholder="Buscar por email o username..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={styles.searchInput}
-              style={{ paddingLeft: '2.5rem' }}
             />
           </div>
           <select

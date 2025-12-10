@@ -148,11 +148,14 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile: Login button at top for guests */}
+            {/* Mobile: Login/Register buttons at top for guests */}
             {mounted && status === 'unauthenticated' && (
               <div className={styles.mobileLoginSection}>
                 <Link href="/login" className={styles.loginButton} onClick={closeMenu}>
                   Iniciar Sesión
+                </Link>
+                <Link href="/register" className={styles.registerButton} onClick={closeMenu}>
+                  Registrarse
                 </Link>
                 <div className={styles.separator}></div>
               </div>
@@ -297,6 +300,9 @@ export default function Navbar() {
                 <li className={styles.authItem}>
                   <Link href="/login" className={styles.loginButton} onClick={closeMenu}>
                     Iniciar Sesión
+                  </Link>
+                  <Link href="/register" className={styles.registerButton} onClick={closeMenu}>
+                    Registrarse
                   </Link>
                 </li>
               )}

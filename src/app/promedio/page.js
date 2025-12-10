@@ -1491,9 +1491,18 @@ export default function Promedio() {
                   );
                 })}
                 
-                {/* Add New Course Card - Always at the end */}
+                {/* Add New Course Card - Only show if a semester is selected */}
                 {!loadingSemesters && (
-                  mostrarFormCurso ? (
+                  semesters.length === 0 || selectedSemesterId === null ? (
+                    <div className={styles.addCursoPlaceholderDisabled}>
+                      <FontAwesomeIcon icon={faGraduationCap} className={styles.addCursoIconDisabled} />
+                      <span className={styles.addCursoTextDisabled}>
+                        {semesters.length === 0 
+                          ? 'Crea un semestre para agregar cursos'
+                          : 'Selecciona un semestre para agregar cursos'}
+                      </span>
+                    </div>
+                  ) : mostrarFormCurso ? (
                     <div className={styles.addCursoCard}>
                       <div className={styles.addCursoFormContent}>
                         <input

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createUser, getUserByEmail, verifyToken, deleteVerificationToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { sendWelcomeEmail } from '@/lib/email';
 import { isValidPassword } from '@/lib/validation';
 
 export async function POST(request) {
@@ -75,26 +74,6 @@ export async function POST(request) {
 
     // Delete verification token after successful registration
     await deleteVerificationToken(verificationToken);
-
-    // Send welcome email (don't fail registration if email fails)
-    try {
-      const emailResult = await sendWelcomeEmail(email, trimmedUsername);
-      if (emailResult.success) {
-        console.log('Welcome email sent successfully to:', email);
-      } else {
-        console.error('Failed to send welcome email:', {
-          email: email,
-          error: emailResult.error,
-        });
-        // Continue with registration even if email fails
-      }
-    } catch (emailError) {
-      console.error('Exception while sending welcome email:', {
-        email: email,
-        error: emailError,
-      });
-      // Continue with registration even if email fails
-    }
 
     return NextResponse.json(
       { 

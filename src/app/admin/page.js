@@ -17,7 +17,8 @@ import {
   faGraduationCap,
   faChalkboardTeacher,
   faUserPlus,
-  faListAlt
+  faListAlt,
+  faLightbulb
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './Admin.module.css';
 
@@ -106,6 +107,10 @@ export default function AdminDashboardPage() {
           <Link href="/admin/users" className={styles.navTab}>
             <FontAwesomeIcon icon={faUsers} />
             Usuarios
+          </Link>
+          <Link href="/admin/sugerencias" className={styles.navTab}>
+            <FontAwesomeIcon icon={faLightbulb} />
+            Sugerencias
           </Link>
         </div>
 

@@ -1162,6 +1162,34 @@
   color: var(--text-primary);
 }
 
+/* Add Course Placeholder - Disabled State */
+.addCursoPlaceholderDisabled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 120px;
+  background: var(--bg-secondary);
+  border: 2px dashed var(--border-color);
+  border-radius: 10px;
+  padding: 1.5rem;
+  opacity: 0.7;
+}
+
+.addCursoIconDisabled {
+  font-size: 1.5rem;
+  color: var(--text-tertiary);
+}
+
+.addCursoTextDisabled {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-align: center;
+  line-height: 1.4;
+}
+
 /* Curso Card - Compact Design */
 .cursoCard {
   background: var(--bg-primary);

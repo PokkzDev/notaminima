@@ -167,6 +167,20 @@ export default function Acerca() {
                 feedback que recibimos de nuestra comunidad de usuarios. Si tienes sugerencias o encuentras algún problema, 
                 no dudes en contactarnos.
               </p>
+                <div className={styles.supportSection}>
+                  <p className={styles.supportText}>
+                    Si NotaMinima te ha sido útil, considera apoyar el proyecto para mantenerlo gratuito y seguir mejorando.
+                  </p>
+                  <a 
+                    href="https://www.flow.cl/btn.php?token=j40f75b03173c6d0b66ce5756c235f2ccebf1002" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.donateButton}
+                  >
+                    <FontAwesomeIcon icon={faHeart} />
+                    Apoyar NotaMinima
+                  </a>
+                </div>
               </div>
             </section>
 

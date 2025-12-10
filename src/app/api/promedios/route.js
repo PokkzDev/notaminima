@@ -66,21 +66,27 @@ export async function POST(request) {
       );
     }
 
-    // Verify semester belongs to user if provided
-    if (semesterId) {
-      const semester = await prisma.semester.findFirst({
-        where: {
-          id: semesterId,
-          userId: session.user.id,
-        },
-      });
+    // Require semesterId - user must create a semester first
+    if (!semesterId) {
+      return NextResponse.json(
+        { error: 'Debes crear un semestre antes de agregar un ramo' },
+        { status: 400 }
+      );
+    }
 
-      if (!semester) {
-        return NextResponse.json(
-          { error: 'Semestre no encontrado' },
-          { status: 404 }
-        );
-      }
+    // Verify semester belongs to user
+    const semester = await prisma.semester.findFirst({
+      where: {
+        id: semesterId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!semester) {
+      return NextResponse.json(
+        { error: 'Semestre no encontrado' },
+        { status: 404 }
+      );
     }
 
     const promedio = await prisma.promedio.create({
@@ -89,7 +95,7 @@ export async function POST(request) {
         nombre,
         notas,
         examenFinal: examenFinal || null,
-        semesterId: semesterId || null,
+        semesterId,
       },
     });
 

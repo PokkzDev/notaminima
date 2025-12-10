@@ -4,15 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:all": "docker compose -f docker-compose.dev.yml --env-file .env.dev up -d && npm run dev",
+    "db:up": "docker compose -f docker-compose.dev.yml --env-file .env.dev up -d",
+    "db:down": "docker compose -f docker-compose.dev.yml down",
+    "db:logs": "docker compose -f docker-compose.dev.yml logs -f",
     "prebuild": "prisma generate",
     "build": "next build --turbopack",
     "prestart": "prisma db push",
     "start": "next start -p 3002",
     "lint": "eslint",
-    "sonar": "sonar-scanner",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio",
+    "prisma:generate": "dotenv -e .env.local -- prisma generate",
+    "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
+    "prisma:push": "dotenv -e .env.local -- prisma db push",
+    "prisma:studio": "dotenv -e .env.local -- prisma studio",
     "prisma:seed": "node prisma/seed.js"
   },
   "prisma": {
@@ -39,6 +43,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/bcryptjs": "^2.4.6",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "prisma": "5.22.0",

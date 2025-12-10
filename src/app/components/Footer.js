@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -12,6 +14,15 @@ export default function Footer() {
           <p className={styles.description}>
             Portal para estudiantes chilenos para calcular promedios y convertir puntajes a notas.
           </p>
+          <a 
+            href="https://www.flow.cl/btn.php?token=j40f75b03173c6d0b66ce5756c235f2ccebf1002" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={styles.donateButton}
+          >
+            <FontAwesomeIcon icon={faHeart} className={styles.donateIcon} />
+            Apoyar el proyecto
+          </a>
         </div>
 
         <div className={styles.section}>
@@ -46,6 +57,11 @@ export default function Footer() {
             <li>
               <Link href="/ayuda" className={styles.link}>
                 Ayuda
+              </Link>
+            </li>
+            <li>
+              <Link href="/sugerencias" className={styles.link}>
+                Buzón de Sugerencias
               </Link>
             </li>
             <li>
