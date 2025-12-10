@@ -359,6 +359,7 @@
   width: 100%;
   flex-direction: column;
   margin-top: auto;
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* Extra padding for system navigation bars */
 }
 
 .mobileBottomActions {
@@ -367,6 +368,7 @@
   justify-content: space-between;
   width: 100%;
   padding-top: 0.5rem;
+  padding-bottom: 1rem; /* Additional breathing room above system bars */
 }
 
 .mobileSignOutButton {
@@ -408,6 +410,7 @@
   left: 0;
   width: 100%;
   height: 100%;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
   animation: fadeIn 0.3s ease;
@@ -435,11 +438,13 @@
     right: 0;
     width: 280px;
     height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
     background-color: var(--bg-primary);
     border-left: 1px solid var(--border-color);
     flex-direction: column;
     align-items: flex-start;
     padding: 5rem 2rem 2rem;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); /* Account for Android/iOS bottom bars */
     gap: 0;
     transform: translateX(100%);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -556,5 +561,9 @@
   .navLink {
     font-size: 0.9375rem;
     padding: 0.875rem 0;
+  }
+
+  .mobileBottomActions {
+    padding-bottom: 1.5rem; /* More padding on smaller devices */
   }
 }

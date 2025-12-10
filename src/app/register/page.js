@@ -286,6 +286,9 @@ function RegisterContent() {
                 <p className={styles.emailSentDescription}>
                   Por favor revisa tu bandeja de entrada y haz clic en el enlace de verificación para continuar con el registro.
                 </p>
+                <p className={styles.emailSentDescription}>
+                  Si no encuentras el email, revisa también tu carpeta de spam o correo no deseado.
+                </p>
                 <div className={styles.resendContainer}>
                   <button
                     type="button"

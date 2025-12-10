@@ -157,7 +157,7 @@ export default function RootLayout({ children }) {
     <html lang="es-CL" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#16a34a" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <link rel="apple-touch-icon" href="/logo-256.png" />
         <link rel="icon" type="image/png" href="/logo-256.png" />
         <script
