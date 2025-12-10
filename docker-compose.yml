@@ -1,31 +1,32 @@
 services:
-  notaminima_app:
-    image: pokkzdev/notaminima:latest
-    container_name: notaminima
-    restart: always
-    environment:
-      # Prisma requires DATABASE_URL format
-      - DATABASE_URL=mysql://${DB_USER}:${DB_PASS}@notaminima_db:3306/notaminima_prod
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL}
-    depends_on:
-      notaminima_db:
-        condition: service_healthy
-    networks:
-      - web_gateway
-      - notaminima_internal
+  # --- PRODUCTION ONLY: Uncomment for deployment ---
+  # notaminima_app:
+  #   image: pokkzdev/notaminima:latest
+  #   container_name: notaminima
+  #   restart: always
+  #   env_file: .env
+  #   environment:
+  #     - DATABASE_URL=mysql://${DB_USER}:${DB_PASS_ENCODED}@notaminima_db:3306/notaminima_prod
+  #   depends_on:
+  #     notaminima_db:
+  #       condition: service_healthy
+  #   networks:
+  #     - web_gateway
+  #     - notaminima_internal
 
   notaminima_db:
-    image: mysql:9.0
+    image: mysql:8.0
     container_name: notaminima_db
+    command: --default-authentication-plugin=mysql_native_password
     restart: always
+    env_file: .env
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASS}
       - MYSQL_DATABASE=notaminima_prod
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASS}
+    ports:
+      - "3306:3306"
     volumes:
       - notaminima_data:/var/lib/mysql
     healthcheck:
@@ -33,17 +34,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - notaminima_internal
 
 # --- NETWORKS & VOLUMES ---
-networks:
-  web_gateway:
-    external: true
-  
-  notaminima_internal:
-    driver: bridge
-    internal: true
-
 volumes:
   notaminima_data:

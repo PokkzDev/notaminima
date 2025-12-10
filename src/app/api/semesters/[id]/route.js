@@ -15,18 +15,36 @@ export async function PUT(request, { params }) {
     }
 
     const { id } = await params;
-    const { nombre, orden } = await request.json();
+    const { nombre, orden, carreraId } = await request.json();
 
-    if (!nombre && orden === undefined) {
+    if (!nombre && orden === undefined && carreraId === undefined) {
       return NextResponse.json(
-        { error: 'Nombre u orden son requeridos' },
+        { error: 'Nombre, orden o carreraId son requeridos' },
         { status: 400 }
       );
+    }
+
+    // If carreraId is provided (and not null), verify ownership
+    if (carreraId !== undefined && carreraId !== null) {
+      const carrera = await prisma.carrera.findFirst({
+        where: {
+          id: carreraId,
+          userId: session.user.id,
+        },
+      });
+
+      if (!carrera) {
+        return NextResponse.json(
+          { error: 'Carrera no encontrada' },
+          { status: 404 }
+        );
+      }
     }
 
     const updateData = {};
     if (nombre) updateData.nombre = nombre;
     if (orden !== undefined) updateData.orden = orden;
+    if (carreraId !== undefined) updateData.carreraId = carreraId;
 
     const semester = await prisma.semester.update({
       where: { 
@@ -34,6 +52,9 @@ export async function PUT(request, { params }) {
         userId: session.user.id,
       },
       data: updateData,
+      include: {
+        carrera: true,
+      },
     });
 
     return NextResponse.json({ semester });

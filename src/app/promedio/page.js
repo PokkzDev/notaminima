@@ -14,7 +14,8 @@ import {
   faCalculator,
   faGraduationCap,
   faFolder,
-  faGripVertical
+  faGripVertical,
+  faBriefcase
 } from '@fortawesome/free-solid-svg-icons';
 import {
   DndContext,
@@ -34,6 +35,139 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import styles from './Promedio.module.css';
+
+// Sortable carrera tab component
+function SortableCarreraTab({ carrera, isSelected, isEditing, nombreEditado, setNombreCarreraEditado, guardarEdicionCarrera, cancelarEdicionCarrera, setSelectedCarreraId, iniciarEdicionCarrera, confirmarEliminarCarrera, setConfirmarEliminarCarrera, eliminarCarrera }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: carrera.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={styles.carreraTabWrapper}>
+      {isEditing ? (
+        <div className={styles.editarCarreraForm}>
+          <input
+            type="text"
+            value={nombreEditado}
+            onChange={(e) => setNombreCarreraEditado(e.target.value)}
+            className={styles.editarCarreraInput}
+            autoFocus
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') guardarEdicionCarrera(carrera.id);
+            }}
+          />
+          <button
+            onClick={() => guardarEdicionCarrera(carrera.id)}
+            className={styles.carreraActionButton}
+            title="Guardar"
+          >
+            <FontAwesomeIcon icon={faCheck} />
+          </button>
+          <button
+            onClick={cancelarEdicionCarrera}
+            className={styles.carreraActionButton}
+            title="Cancelar"
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+      ) : (
+        <>
+          <button
+            className={`${styles.carreraTab} ${isSelected ? styles.carreraTabActive : ''}`}
+            onClick={() => setSelectedCarreraId(carrera.id)}
+          >
+            <span
+              {...attributes}
+              {...listeners}
+              className={styles.dragHandle}
+              title="Arrastra para reordenar"
+            >
+              <FontAwesomeIcon icon={faGripVertical} />
+            </span>
+            <FontAwesomeIcon icon={faBriefcase} />
+            <span>{carrera.nombre}</span>
+          </button>
+          {isSelected && (
+            <div className={styles.carreraActions}>
+              <button
+                onClick={() => iniciarEdicionCarrera(carrera)}
+                className={styles.carreraActionButton}
+                title="Editar nombre"
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </button>
+              {confirmarEliminarCarrera === carrera.id ? (
+                <div className={styles.confirmDeleteCarrera}>
+                  <span className={styles.confirmCarreraText}>¿Eliminar?</span>
+                  <button
+                    onClick={() => eliminarCarrera(carrera.id, false)}
+                    className={styles.confirmCarreraButton}
+                    title="Mantener semestres"
+                  >
+                    Mantener semestres
+                  </button>
+                  <button
+                    onClick={() => eliminarCarrera(carrera.id, true)}
+                    className={styles.deleteCarreraButton}
+                    title="Eliminar todo"
+                  >
+                    Eliminar todo
+                  </button>
+                  <button
+                    onClick={() => setConfirmarEliminarCarrera(null)}
+                    className={styles.cancelCarreraButton}
+                    title="Cancelar"
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setConfirmarEliminarCarrera(carrera.id)}
+                  className={styles.carreraDeleteButton}
+                  title="Eliminar carrera"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+SortableCarreraTab.propTypes = {
+  carrera: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    nombre: PropTypes.string.isRequired
+  }).isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  isEditing: PropTypes.bool.isRequired,
+  nombreEditado: PropTypes.string.isRequired,
+  setNombreCarreraEditado: PropTypes.func.isRequired,
+  guardarEdicionCarrera: PropTypes.func.isRequired,
+  cancelarEdicionCarrera: PropTypes.func.isRequired,
+  setSelectedCarreraId: PropTypes.func.isRequired,
+  iniciarEdicionCarrera: PropTypes.func.isRequired,
+  confirmarEliminarCarrera: PropTypes.string,
+  setConfirmarEliminarCarrera: PropTypes.func.isRequired,
+  eliminarCarrera: PropTypes.func.isRequired
+};
 
 // Sortable semester tab component
 function SortableSemesterTab({ semester, isSelected, isEditing, nombreEditado, setNombreSemestreEditado, guardarEdicionSemestre, cancelarEdicionSemestre, setSelectedSemesterId, iniciarEdicionSemestre, confirmarEliminarSemestre, setConfirmarEliminarSemestre, eliminarSemestre }) {
@@ -216,8 +350,20 @@ export default function Promedio() {
   const [confirmarEliminarNota, setConfirmarEliminarNota] = useState(null);
   const [confirmarEliminarExamenFinal, setConfirmarEliminarExamenFinal] = useState(null);
   
+  // Carrera state
+  const [carreras, setCarreras] = useState([]);
+  const [selectedCarreraId, setSelectedCarreraId] = useState(null); // null = "Sin Carrera"
+  const [hasOrphanSemesters, setHasOrphanSemesters] = useState(false);
+  const [nuevoCarreraNombre, setNuevoCarreraNombre] = useState('');
+  const [mostrarFormCarrera, setMostrarFormCarrera] = useState(false);
+  const [editandoCarrera, setEditandoCarrera] = useState(null);
+  const [nombreCarreraEditado, setNombreCarreraEditado] = useState('');
+  const [confirmarEliminarCarrera, setConfirmarEliminarCarrera] = useState(null);
+  const [loadingCarreras, setLoadingCarreras] = useState(true);
+
   // Semester state
   const [semesters, setSemesters] = useState([]);
+  const [allSemesters, setAllSemesters] = useState([]); // All semesters across all carreras (for move dropdown)
   const [selectedSemesterId, setSelectedSemesterId] = useState(null); // null = "Sin Semestre"
   const [hasOrphanCursos, setHasOrphanCursos] = useState(false);
   const [nuevoSemestreNombre, setNuevoSemestreNombre] = useState('');
@@ -243,6 +389,23 @@ export default function Promedio() {
     })
   );
 
+  // Helper to determine initial carrera selection
+  const determineInitialCarrera = useCallback((carreras, orphanSemesters) => {
+    const lastSelectedId = localStorage.getItem('lastSelectedCarreraId');
+    const hasOrphans = orphanSemesters.length > 0;
+    
+    if (lastSelectedId) {
+      const carreraExists = carreras.some(c => c.id === lastSelectedId);
+      if (carreraExists) return lastSelectedId;
+      if (lastSelectedId === 'null' && hasOrphans) return null;
+    }
+    
+    // Fallback: orphans exist -> null, otherwise first carrera
+    if (hasOrphans) return null;
+    if (carreras.length > 0) return carreras[0].id;
+    return null;
+  }, []);
+
   // Helper to determine initial semester selection
   const determineInitialSemester = useCallback((semesters, orphanPromedios) => {
     const lastSelectedId = localStorage.getItem('lastSelectedSemesterId');
@@ -260,10 +423,54 @@ export default function Promedio() {
     return null;
   }, []);
 
-  const loadSemesters = useCallback(async () => {
+  const loadAllSemesters = useCallback(async () => {
+    try {
+      // Fetch ALL semesters (no carrera filter) for the move dropdown
+      const response = await fetch('/api/semesters');
+      if (!response.ok) return;
+      
+      const data = await response.json();
+      setAllSemesters(data.semesters);
+    } catch (error) {
+      console.error('Error loading all semesters:', error);
+    }
+  }, []);
+
+  const loadCarreras = useCallback(async () => {
+    try {
+      setLoadingCarreras(true);
+      const response = await fetch('/api/carreras');
+      if (!response.ok) return;
+      
+      const data = await response.json();
+      setCarreras(data.carreras);
+      
+      // Check if there are orphan semesters (without carrera)
+      const orphanResponse = await fetch('/api/semesters?carreraId=null');
+      if (!orphanResponse.ok) return;
+      
+      const orphanData = await orphanResponse.json();
+      setHasOrphanSemesters(orphanData.semesters.length > 0);
+      
+      // Load all semesters for move dropdown
+      await loadAllSemesters();
+      
+      const selectedId = determineInitialCarrera(data.carreras, orphanData.semesters);
+      setSelectedCarreraId(selectedId);
+    } catch (error) {
+      console.error('Error loading carreras:', error);
+    } finally {
+      setLoadingCarreras(false);
+    }
+  }, [determineInitialCarrera, loadAllSemesters]);
+
+  const loadSemesters = useCallback(async (carreraId) => {
     try {
       setLoadingSemesters(true);
-      const response = await fetch('/api/semesters');
+      const url = carreraId 
+        ? `/api/semesters?carreraId=${carreraId}`
+        : '/api/semesters?carreraId=null';
+      const response = await fetch(url);
       if (!response.ok) return;
       
       const data = await response.json();
@@ -292,12 +499,25 @@ export default function Promedio() {
     }
   }, [status]);
 
-  // Load semesters and cursos from API
+  // Load carreras from API
   useEffect(() => {
     if (status === 'authenticated') {
-      loadSemesters();
+      loadCarreras();
     }
-  }, [status, loadSemesters]);
+  }, [status, loadCarreras]);
+
+  // Load semesters when carrera selection changes
+  useEffect(() => {
+    if (status === 'authenticated' && loadingCarreras === false) {
+      loadSemesters(selectedCarreraId);
+      // Save the selected carrera to localStorage
+      if (selectedCarreraId === null) {
+        localStorage.setItem('lastSelectedCarreraId', 'null');
+      } else {
+        localStorage.setItem('lastSelectedCarreraId', selectedCarreraId);
+      }
+    }
+  }, [selectedCarreraId, status, loadingCarreras, loadSemesters]);
 
   // Load cursos when semester selection changes
   useEffect(() => {
@@ -432,6 +652,207 @@ export default function Promedio() {
     }
   };
 
+  // Carrera CRUD functions
+  const agregarCarrera = async () => {
+    if (nuevoCarreraNombre.trim() === '') return;
+
+    try {
+      setSaving(true);
+      const response = await fetch('/api/carreras', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: nuevoCarreraNombre.trim()
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCarreras([...carreras, data.carrera]);
+        setNuevoCarreraNombre('');
+        setMostrarFormCarrera(false);
+        // Don't auto-select - let user stay in current view and move semesters manually
+      } else {
+        const errorData = await response.json();
+        alert('Error al crear carrera: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error creating carrera:', error);
+      alert('Error al crear carrera');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const eliminarCarrera = async (carreraId, deleteAll = false) => {
+    try {
+      setSaving(true);
+      const url = deleteAll 
+        ? `/api/carreras/${carreraId}?deleteAll=true`
+        : `/api/carreras/${carreraId}`;
+      
+      const response = await fetch(url, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCarreras(carreras.filter(c => c.id !== carreraId));
+        setConfirmarEliminarCarrera(null);
+        
+        // If we deleted the selected carrera, go to "Sin Carrera" or first available
+        if (selectedCarreraId === carreraId) {
+          const remainingCarreras = carreras.filter(c => c.id !== carreraId);
+          if (!deleteAll) {
+            // Semesters became orphans, show "Sin Carrera"
+            setHasOrphanSemesters(true);
+            setSelectedCarreraId(null);
+          } else if (remainingCarreras.length > 0) {
+            setSelectedCarreraId(remainingCarreras[0].id);
+          } else {
+            setSelectedCarreraId(null);
+          }
+        }
+      } else {
+        const errorData = await response.json();
+        alert('Error al eliminar carrera: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error deleting carrera:', error);
+      alert('Error al eliminar carrera');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const iniciarEdicionCarrera = (carrera) => {
+    setEditandoCarrera(carrera.id);
+    setNombreCarreraEditado(carrera.nombre);
+  };
+
+  const guardarEdicionCarrera = async (carreraId) => {
+    if (nombreCarreraEditado.trim() === '') {
+      cancelarEdicionCarrera();
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const response = await fetch(`/api/carreras/${carreraId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: nombreCarreraEditado.trim()
+        }),
+      });
+
+      if (response.ok) {
+        setCarreras(carreras.map(c => 
+          c.id === carreraId 
+            ? { ...c, nombre: nombreCarreraEditado.trim() }
+            : c
+        ));
+        setEditandoCarrera(null);
+        setNombreCarreraEditado('');
+      } else {
+        const errorData = await response.json();
+        alert('Error al actualizar carrera: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error updating carrera:', error);
+      alert('Error al actualizar carrera');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const cancelarEdicionCarrera = () => {
+    setEditandoCarrera(null);
+    setNombreCarreraEditado('');
+  };
+
+  const handleCarreraDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = carreras.findIndex((c) => c.id === active.id);
+      const newIndex = carreras.findIndex((c) => c.id === over.id);
+
+      const newCarreras = arrayMove(carreras, oldIndex, newIndex);
+      const previousCarreras = [...carreras];
+      setCarreras(newCarreras);
+
+      // Save the new order to the backend
+      try {
+        const response = await fetch('/api/carreras/reorder', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            carreras: newCarreras.map((c) => ({ id: c.id })),
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('Error saving carrera order');
+          // Revert on error
+          setCarreras(previousCarreras);
+        }
+      } catch (error) {
+        console.error('Error saving carrera order:', error);
+        // Revert on error
+        setCarreras(previousCarreras);
+      }
+    }
+  };
+
+  const moverSemestreACarrera = async (semesterId, nuevaCarreraId) => {
+    try {
+      setSaving(true);
+      const response = await fetch(`/api/semesters/${semesterId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          carreraId: nuevaCarreraId
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Remove from current view
+        setSemesters(semesters.filter(s => s.id !== semesterId));
+        
+        // Update allSemesters with new carrera info
+        setAllSemesters(allSemesters.map(s => 
+          s.id === semesterId ? { ...s, carreraId: nuevaCarreraId, carrera: data.semester.carrera } : s
+        ));
+        
+        // Update orphan status if moving from "Sin Carrera"
+        if (!selectedCarreraId) {
+          const remainingSemesters = semesters.filter(s => s.id !== semesterId);
+          if (remainingSemesters.length === 0) {
+            setHasOrphanSemesters(false);
+          }
+        }
+      } else {
+        const errorData = await response.json();
+        alert('Error al mover semestre: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      console.error('Error moving semestre:', error);
+      alert('Error al mover semestre');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // Semester CRUD functions
   const agregarSemestre = async () => {
     if (nuevoSemestreNombre.trim() === '') return;
@@ -444,13 +865,15 @@ export default function Promedio() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nombre: nuevoSemestreNombre.trim()
+          nombre: nuevoSemestreNombre.trim(),
+          carreraId: selectedCarreraId
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
         setSemesters([...semesters, data.semester]);
+        setAllSemesters([...allSemesters, data.semester]); // Update all semesters list
         setNuevoSemestreNombre('');
         setMostrarFormSemestre(false);
         // Auto-select the new semester
@@ -480,6 +903,7 @@ export default function Promedio() {
 
       if (response.ok) {
         setSemesters(semesters.filter(s => s.id !== semesterId));
+        setAllSemesters(allSemesters.filter(s => s.id !== semesterId)); // Update all semesters list
         setConfirmarEliminarSemestre(null);
         
         // If we deleted the selected semester, go to "Sin Semestre" or first available
@@ -531,9 +955,15 @@ export default function Promedio() {
       });
 
       if (response.ok) {
+        const updatedName = nombreSemestreEditado.trim();
         setSemesters(semesters.map(s => 
           s.id === semesterId 
-            ? { ...s, nombre: nombreSemestreEditado.trim() }
+            ? { ...s, nombre: updatedName }
+            : s
+        ));
+        setAllSemesters(allSemesters.map(s => 
+          s.id === semesterId 
+            ? { ...s, nombre: updatedName }
             : s
         ));
         setEditandoSemestre(null);
@@ -1021,7 +1451,7 @@ export default function Promedio() {
       />
       <main className={styles.main}>
       <div className={styles.container}>
-        {(loading || loadingSemesters) ? (
+        {(loading || loadingCarreras || loadingSemesters) ? (
           <div className={styles.loadingContainer}>
             <div className={styles.loadingContent}>
               <div className={styles.loadingIconWrapper}>
@@ -1044,12 +1474,102 @@ export default function Promedio() {
           </p>
         </header>
 
+        {/* Carrera Selector */}
+        {!loadingCarreras && (
+          <div className={styles.carreraSection}>
+            <div className={styles.carreraHeader}>
+              <FontAwesomeIcon icon={faBriefcase} className={styles.carreraIcon} />
+              <h2 className={styles.carreraTitle}>Carreras</h2>
+            </div>
+            
+            <div className={styles.carreraTabs}>
+              {/* Sin Carrera tab - only show if there are orphan semesters */}
+              {hasOrphanSemesters && (
+                <button
+                  className={`${styles.carreraTab} ${selectedCarreraId === null ? styles.carreraTabActive : ''}`}
+                  onClick={() => setSelectedCarreraId(null)}
+                >
+                  <FontAwesomeIcon icon={faFolder} />
+                  <span>Sin Carrera</span>
+                </button>
+              )}
+              
+              {/* Carrera tabs with drag and drop */}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleCarreraDragEnd}
+              >
+                <SortableContext
+                  items={carreras.map(c => c.id)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  {carreras.map(carrera => (
+                    <SortableCarreraTab
+                      key={carrera.id}
+                      carrera={carrera}
+                      isSelected={selectedCarreraId === carrera.id}
+                      isEditing={editandoCarrera === carrera.id}
+                      nombreEditado={nombreCarreraEditado}
+                      setNombreCarreraEditado={setNombreCarreraEditado}
+                      guardarEdicionCarrera={guardarEdicionCarrera}
+                      cancelarEdicionCarrera={cancelarEdicionCarrera}
+                      setSelectedCarreraId={setSelectedCarreraId}
+                      iniciarEdicionCarrera={iniciarEdicionCarrera}
+                      confirmarEliminarCarrera={confirmarEliminarCarrera}
+                      setConfirmarEliminarCarrera={setConfirmarEliminarCarrera}
+                      eliminarCarrera={eliminarCarrera}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+              
+              {/* Add carrera button/form */}
+              {mostrarFormCarrera ? (
+                <div className={styles.agregarCarreraForm}>
+                  <input
+                    type="text"
+                    value={nuevoCarreraNombre}
+                    onChange={(e) => setNuevoCarreraNombre(e.target.value)}
+                    placeholder="Ej: Ingeniería Civil"
+                    className={styles.carreraInput}
+                    autoFocus
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') agregarCarrera();
+                    }}
+                  />
+                  <button onClick={agregarCarrera} className={styles.confirmarCarreraButton}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMostrarFormCarrera(false);
+                      setNuevoCarreraNombre('');
+                    }}
+                    className={styles.cancelarCarreraButton}
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setMostrarFormCarrera(true)}
+                  className={styles.nuevaCarreraButton}
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                  <span>Nueva Carrera</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Semester Selector */}
-        {!loadingSemesters && (
+        {!loadingSemesters && !loadingCarreras && (
           <div className={styles.semesterSection}>
             <div className={styles.semesterHeader}>
               <FontAwesomeIcon icon={faGraduationCap} className={styles.semesterIcon} />
-              <h2 className={styles.semesterTitle}>Semestres</h2>
+              <h2 className={styles.semesterTitle}>Semestres{selectedCarreraId && carreras.find(c => c.id === selectedCarreraId) ? ` - ${carreras.find(c => c.id === selectedCarreraId).nombre}` : ''}</h2>
             </div>
             
             <div className={styles.semesterTabs}>
@@ -1093,42 +1613,69 @@ export default function Promedio() {
                   ))}
                 </SortableContext>
               </DndContext>
-              
-              {/* Add semester button/form */}
-              {mostrarFormSemestre ? (
-                <div className={styles.agregarSemestreForm}>
-                  <input
-                    type="text"
-                    value={nuevoSemestreNombre}
-                    onChange={(e) => setNuevoSemestreNombre(e.target.value)}
-                    placeholder="Ej: 2024-1"
-                    className={styles.semestreInput}
-                    autoFocus
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') agregarSemestre();
-                    }}
-                  />
-                  <button onClick={agregarSemestre} className={styles.confirmarSemestreButton}>
-                    <FontAwesomeIcon icon={faCheck} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setMostrarFormSemestre(false);
-                      setNuevoSemestreNombre('');
-                    }}
-                    className={styles.cancelarSemestreButton}
-                  >
-                    <FontAwesomeIcon icon={faTimes} />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setMostrarFormSemestre(true)}
-                  className={styles.nuevoSemestreButton}
+
+              {/* Move semester to carrera select */}
+              {carreras.length > 0 && selectedSemesterId && (
+                <select
+                  className={styles.moverCarreraSelectCompact}
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      moverSemestreACarrera(selectedSemesterId, e.target.value === 'null' ? null : e.target.value);
+                    }
+                  }}
+                  title="Mover a otra carrera"
                 >
-                  <FontAwesomeIcon icon={faPlus} />
-                  <span>Nuevo Semestre</span>
-                </button>
+                  <option value="">Mover a...</option>
+                  {selectedCarreraId !== null && (
+                    <option value="null">Sin Carrera</option>
+                  )}
+                  {carreras
+                    .filter(c => c.id !== selectedCarreraId)
+                    .map(c => (
+                      <option key={c.id} value={c.id}>{c.nombre}</option>
+                    ))
+                  }
+                </select>
+              )}
+              
+              {/* Add semester button/form - only show if a carrera is selected */}
+              {(selectedCarreraId || carreras.length === 0) && (
+                mostrarFormSemestre ? (
+                  <div className={styles.agregarSemestreForm}>
+                    <input
+                      type="text"
+                      value={nuevoSemestreNombre}
+                      onChange={(e) => setNuevoSemestreNombre(e.target.value)}
+                      placeholder="Ej: 2024-1"
+                      className={styles.semestreInput}
+                      autoFocus
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') agregarSemestre();
+                      }}
+                    />
+                    <button onClick={agregarSemestre} className={styles.confirmarSemestreButton}>
+                      <FontAwesomeIcon icon={faCheck} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setMostrarFormSemestre(false);
+                        setNuevoSemestreNombre('');
+                      }}
+                      className={styles.cancelarSemestreButton}
+                    >
+                      <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setMostrarFormSemestre(true)}
+                    className={styles.nuevoSemestreButton}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                    <span>Nuevo Semestre</span>
+                  </button>
+                )
               )}
             </div>
           </div>
@@ -1279,26 +1826,25 @@ export default function Promedio() {
                               {ponderacionTotal}% evaluado
                             </span>
                           </div>
-                          {/* Move to semester select */}
-                          {semesters.length > 0 && (
+                          {/* Move to semester select - show all semesters from all carreras */}
+                          {allSemesters.filter(s => s.id !== selectedSemesterId).length > 0 && (
                             <select
                               className={styles.moverSemestreSelectCompact}
                               value=""
                               onChange={(e) => {
                                 if (e.target.value) {
-                                  moverCursoASemestre(curso.id, e.target.value === 'null' ? null : e.target.value);
+                                  moverCursoASemestre(curso.id, e.target.value);
                                 }
                               }}
                               title="Mover a otro semestre"
                             >
                               <option value="">Mover a...</option>
-                              {selectedSemesterId !== null && (
-                                <option value="null">Sin Semestre</option>
-                              )}
-                              {semesters
+                              {allSemesters
                                 .filter(s => s.id !== selectedSemesterId)
                                 .map(s => (
-                                  <option key={s.id} value={s.id}>{s.nombre}</option>
+                                  <option key={s.id} value={s.id}>
+                                    {s.carrera ? `${s.carrera.nombre} - ${s.nombre}` : s.nombre}
+                                  </option>
                                 ))
                               }
                             </select>

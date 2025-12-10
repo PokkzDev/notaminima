@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faLock, faUser, faEye, faEyeSlash, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faUser, faEye, faEyeSlash, faCheck, faClock } from '@fortawesome/free-solid-svg-icons';
 import { signIn } from 'next-auth/react';
 import PasswordComplexity from '@/app/components/PasswordComplexity';
 import { isValidPassword, isValidEmail } from '@/lib/validation';
@@ -22,6 +22,8 @@ function RegisterContent() {
   // Email step state
   const [email, setEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const timerRef = useRef(null);
   
   // Registration step state
   const [username, setUsername] = useState('');
@@ -33,6 +35,33 @@ function RegisterContent() {
   // Common state
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+  
+  // Start the 60 second countdown
+  const startResendTimer = () => {
+    setResendTimer(60);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    timerRef.current = setInterval(() => {
+      setResendTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   // Check for token in URL on mount
   useEffect(() => {
@@ -110,9 +139,47 @@ function RegisterContent() {
       // Email sent successfully
       setEmailSent(true);
       setLoading(false);
+      startResendTimer();
     } catch (err) {
       console.error('Email verification error:', err);
       setError('Error al enviar el email de verificación');
+      setLoading(false);
+    }
+  };
+  
+  const handleResendEmail = async () => {
+    if (resendTimer > 0 || loading) return;
+    
+    setError('');
+    setLoading(true);
+    
+    const trimmedEmail = email.trim().toLowerCase();
+    
+    try {
+      const response = await fetch('/api/auth/verify-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Error al reenviar el email de verificación');
+        setLoading(false);
+        return;
+      }
+
+      // Email resent successfully
+      setLoading(false);
+      startResendTimer();
+    } catch (err) {
+      console.error('Email resend error:', err);
+      setError('Error al reenviar el email de verificación');
       setLoading(false);
     }
   };
@@ -212,13 +279,32 @@ function RegisterContent() {
             )}
 
             {emailSent ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>
-                <p style={{ color: 'var(--text-primary)', marginBottom: '1rem' }}>
+              <div className={styles.emailSentContainer}>
+                <p className={styles.emailSentSuccess}>
                   ✓ Email de verificación enviado
                 </p>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                <p className={styles.emailSentDescription}>
                   Por favor revisa tu bandeja de entrada y haz clic en el enlace de verificación para continuar con el registro.
                 </p>
+                <div className={styles.resendContainer}>
+                  <button
+                    type="button"
+                    onClick={handleResendEmail}
+                    className={`${styles.resendButton} ${resendTimer > 0 ? styles.resendButtonDisabled : ''}`}
+                    disabled={resendTimer > 0 || loading}
+                  >
+                    {loading ? (
+                      'Enviando...'
+                    ) : resendTimer > 0 ? (
+                      <>
+                        <FontAwesomeIcon icon={faClock} className={styles.timerIcon} />
+                        Reenviar en {resendTimer}s
+                      </>
+                    ) : (
+                      'Reenviar código'
+                    )}
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleEmailSubmit} className={styles.form}>

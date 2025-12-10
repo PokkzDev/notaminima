@@ -69,7 +69,7 @@
 .navTabs {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   padding: 0.5rem;
   background: var(--bg-primary);
   border-radius: 12px;
@@ -109,17 +109,135 @@
   color: white;
 }
 
+/* Period Selector */
+.periodSelector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.periodLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.periodButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.periodButton {
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.periodButton:hover {
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+}
+
+.periodButtonActive {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.periodButtonActive:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+/* Quick Stats Row */
+.quickStatsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.quickStatCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.2s ease;
+}
+
+.quickStatCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--shadow-color-hover);
+}
+
+.quickStatIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.quickStatContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.quickStatValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  transition: color 0.3s ease;
+}
+
+.quickStatLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s ease;
+}
+
 /* Stats Grid */
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .statCard {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.25rem;
   padding: 1.5rem;
   background: var(--bg-primary);
@@ -173,131 +291,155 @@
   transition: color 0.3s ease;
 }
 
-/* Section Title */
-.sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 1.25rem;
-  transition: color 0.3s ease;
+.statGrowth {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
 }
 
-/* Activity Section */
-.activitySection {
-  margin-bottom: 2rem;
-}
-
-.activityGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.activityCard {
-  padding: 1.25rem;
-  background: var(--bg-primary);
-  border-radius: 12px;
-  border: 2px solid var(--border-color);
-  box-shadow: 0 2px 8px var(--shadow-color);
-  text-align: center;
-  transition: box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.activityCard:hover {
-  box-shadow: 0 4px 12px var(--shadow-color-hover);
-}
-
-.activityValue {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-  transition: color 0.3s ease;
-}
-
-.activityLabel {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.activityPeriod {
+.statPeriod {
   font-size: 0.75rem;
   color: var(--text-tertiary);
-  margin-top: 0.25rem;
+}
+
+/* Growth Indicator */
+.growthIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.growthPositive {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.growthNegative {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Section Title */
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
   transition: color 0.3s ease;
 }
 
-/* Chart Section */
-.chartSection {
-  margin-bottom: 2rem;
+.trophyIcon {
+  color: #f59e0b;
 }
 
-.chartContainer {
+/* Charts */
+.chartsRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.chartsRowThree {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.chartCard {
   background: var(--bg-primary);
   border-radius: 12px;
   border: 2px solid var(--border-color);
   box-shadow: 0 2px 8px var(--shadow-color);
-  padding: 1.5rem;
+  padding: 1.25rem;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 200px;
-  padding: 1rem 0;
-}
-
-.chartBar {
-  flex: 1;
-  background: linear-gradient(to top, var(--accent-color), #60a5fa);
-  border-radius: 4px 4px 0 0;
-  min-height: 4px;
-  transition: opacity 0.2s ease;
-  position: relative;
-  cursor: pointer;
-}
-
-.chartBar:hover {
-  opacity: 0.8;
-}
-
-.chartBar:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+.chartCardSmall {
   background: var(--bg-primary);
-  color: var(--text-primary);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  white-space: nowrap;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
   box-shadow: 0 2px 8px var(--shadow-color);
-  border: 1px solid var(--border-color);
-  z-index: 10;
+  padding: 1rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.chartLabels {
+.chartCardWide {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.chartHeader {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  margin-top: 0.5rem;
-  padding: 0 0.25rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.chartLabel {
-  font-size: 0.7rem;
-  color: var(--text-tertiary);
+.chartTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
   transition: color 0.3s ease;
+}
+
+.chartTitle svg {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+}
+
+.chartPeriod {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  background: var(--bg-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+}
+
+.chartSubtitle {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.chartWrapper {
+  height: 240px;
+  position: relative;
+}
+
+.chartWrapperSmall {
+  height: 200px;
+  position: relative;
+}
+
+.chartWrapperWide {
+  height: 180px;
+  position: relative;
 }
 
 /* Role Distribution */
 .roleSection {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .roleGrid {
@@ -351,6 +493,177 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Top Users */
+.topUsersSection {
+  margin-bottom: 1.5rem;
+}
+
+.topUsersGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.topUserCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.2s ease;
+}
+
+.topUserCard:hover {
+  transform: translateX(4px);
+  border-color: var(--accent-color);
+}
+
+.topUserRank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: background-color 0.3s ease;
+}
+
+.topUserRank[data-rank="1"] {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.topUserRank[data-rank="2"] {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: white;
+}
+
+.topUserRank[data-rank="3"] {
+  background: linear-gradient(135deg, #cd7c32, #b45309);
+  color: white;
+}
+
+.topUserInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.topUserName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.topUserEmail {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s ease;
+}
+
+.topUserStats {
+  display: flex;
+  gap: 1rem;
+}
+
+.topUserStat {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.topUserStat svg {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+}
+
+/* Engagement Section */
+.engagementSection {
+  margin-bottom: 1.5rem;
+}
+
+.engagementGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.engagementCard {
+  padding: 1.25rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.engagementCard:hover {
+  box-shadow: 0 4px 12px var(--shadow-color-hover);
+}
+
+.engagementValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.engagementLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.engagementBar {
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 50px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.engagementProgress {
+  height: 100%;
+  border-radius: 50px;
+  transition: width 0.5s ease;
+}
+
+.engagementPercent {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.engagementSubtext {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
   transition: color 0.3s ease;
 }
 
@@ -571,6 +884,26 @@
   border-color: #ef4444;
 }
 
+.actionButtonSuccess {
+  color: #10b981;
+}
+
+.actionButtonSuccess:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.actionButtonWarning {
+  color: #f59e0b;
+}
+
+.actionButtonWarning:hover {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: white;
+}
+
 /* Pagination */
 .pagination {
   display: flex;
@@ -647,6 +980,18 @@
   box-shadow: 0 4px 24px var(--shadow-color);
   width: 100%;
   max-width: 400px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.userModal {
+  background: var(--bg-primary);
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 8px 32px var(--shadow-color);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -771,34 +1116,6 @@
   opacity: 0.9;
 }
 
-/* Quick Actions */
-.quickActions {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.quickActionLink {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--bg-primary);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-primary);
-  text-decoration: none;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.3s ease;
-}
-
-.quickActionLink:hover {
-  border-color: var(--accent-color);
-  background: var(--bg-secondary);
-}
-
 /* Empty State */
 .emptyState {
   text-align: center;
@@ -824,10 +1141,492 @@
   transition: color 0.3s ease;
 }
 
+/* User Modal Styles */
+.modalLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.modalSpinner {
+  font-size: 2rem;
+  color: var(--accent-color);
+}
+
+.userModalContent {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.userModalHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.userAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.userAvatarADMIN {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+}
+
+.userAvatarTEACHER {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.userAvatarSTUDENT {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.userHeaderInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.userModalName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.userModalEmail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.75rem;
+  word-break: break-all;
+  transition: color 0.3s ease;
+}
+
+.userModalEmail svg {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+
+.userModalBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.userIdSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  transition: background-color 0.3s ease;
+}
+
+.userIdSection svg {
+  font-size: 0.85rem;
+}
+
+.userId {
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.userStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.userStatCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.userStatIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.userStatInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userStatValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  transition: color 0.3s ease;
+}
+
+.userStatLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.userDatesSection {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.userSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.userSectionTitle svg {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+}
+
+.userDatesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.userDateItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.userDateItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.userDateLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.userDateValue {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  transition: color 0.3s ease;
+}
+
+.userDateRelative {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  transition: color 0.3s ease;
+}
+
+.userVerifySection {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.verifyStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.verifyStatusBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease;
+}
+
+.verifyStatusIconSuccess {
+  color: #10b981;
+  font-size: 1.1rem;
+}
+
+.verifyStatusIconWarning {
+  color: #f59e0b;
+  font-size: 1.1rem;
+}
+
+.verifyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.verifyButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.verifyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.unverifyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  color: #f59e0b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unverifyButton:hover:not(:disabled) {
+  background: #f59e0b;
+  color: white;
+}
+
+.unverifyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.userRoleSection {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.roleSelector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.roleOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 0.5rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.roleOption svg {
+  font-size: 1.25rem;
+}
+
+.roleOption:hover:not(:disabled) {
+  border-color: var(--text-tertiary);
+  color: var(--text-primary);
+}
+
+.roleOption:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.roleOptionActive {
+  color: white !important;
+}
+
+.roleOptionStudent.roleOptionActive {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-color: #3b82f6;
+}
+
+.roleOptionTeacher.roleOptionActive {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #10b981;
+}
+
+.roleOptionAdmin.roleOptionActive {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  border-color: #7c3aed;
+}
+
+.saveRoleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--accent-color);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.saveRoleButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.saveRoleButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.selfUserWarning {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  color: #d97706;
+  font-size: 0.85rem;
+}
+
+.selfUserWarning svg {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.userModalActions {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.deleteUserButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 2px solid #ef4444;
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteUserButton:hover:not(:disabled) {
+  background: #ef4444;
+  color: white;
+}
+
+.deleteUserButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Responsive */
+@media (max-width: 1200px) {
+  .chartsRowThree {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .chartsRowThree .chartCardSmall:last-child {
+    grid-column: span 2;
+  }
+}
+
 @media (max-width: 1024px) {
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quickStatsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .chartsRowThree {
+    grid-template-columns: 1fr;
+  }
+  
+  .chartsRowThree .chartCardSmall:last-child {
+    grid-column: span 1;
   }
 
   .table th:nth-child(5),
@@ -863,6 +1662,19 @@
     flex: 1;
     justify-content: center;
     min-width: 120px;
+  }
+
+  .periodSelector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .periodButtons {
+    justify-content: center;
+  }
+
+  .quickStatsRow {
+    grid-template-columns: 1fr 1fr;
   }
 
   .statsGrid {
@@ -910,12 +1722,13 @@
     gap: 1rem;
   }
 
-  .quickActions {
-    flex-direction: column;
+  .engagementGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .quickActionLink {
-    justify-content: center;
+  .topUserStats {
+    flex-direction: column;
+    gap: 0.25rem;
   }
 }
 
@@ -935,6 +1748,18 @@
   }
 
   .sectionTitle {
+    font-size: 1.125rem;
+  }
+
+  .quickStatsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .quickStatCard {
+    padding: 0.875rem 1rem;
+  }
+
+  .quickStatValue {
     font-size: 1.25rem;
   }
 
@@ -958,11 +1783,23 @@
     font-size: 0.85rem;
   }
 
-  .activityGrid {
-    grid-template-columns: 1fr;
+  .chartWrapper {
+    height: 200px;
+  }
+
+  .chartWrapperSmall {
+    height: 180px;
+  }
+
+  .chartWrapperWide {
+    height: 150px;
   }
 
   .roleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .engagementGrid {
     grid-template-columns: 1fr;
   }
 
@@ -977,11 +1814,78 @@
     display: none;
   }
 
-  .chart {
-    height: 150px;
-  }
-
   .modal {
     margin: 0.5rem;
+  }
+
+  .userModal {
+    margin: 0.5rem;
+    max-height: 95vh;
+  }
+
+  .userModalContent {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .userModalHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .userHeaderInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .userModalBadges {
+    justify-content: center;
+  }
+
+  .userStatsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .roleSelector {
+    grid-template-columns: 1fr;
+    gap: 0.375rem;
+  }
+
+  .roleOption {
+    flex-direction: row;
+    justify-content: center;
+    padding: 0.625rem 0.75rem;
+  }
+
+  .roleOption svg {
+    font-size: 1rem;
+  }
+
+  .userDateItem {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .userDateValue {
+    text-align: left;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .topUserCard {
+    flex-wrap: wrap;
+  }
+
+  .topUserInfo {
+    flex: 1 1 calc(100% - 50px);
+  }
+
+  .topUserStats {
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 46px;
   }
 }

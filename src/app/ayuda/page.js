@@ -1,36 +1,131 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestionCircle, faCalculator, faList, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faQuestionCircle, 
+  faCalculator, 
+  faChevronDown,
+  faChevronUp,
+  faUserPlus,
+  faCloud,
+  faFolderOpen,
+  faChartLine,
+  faBullseye,
+  faLightbulb,
+  faGraduationCap,
+  faRocket,
+  faShieldAlt,
+  faTrophy,
+  faArrowRight,
+  faBook,
+  faPercent,
+  faLayerGroup
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './Ayuda.module.css';
 
+const faqs = [
+  {
+    category: 'cuenta',
+    question: '¿Necesito crear una cuenta para usar NotaMinima?',
+    answer: 'No es obligatorio. Puedes usar todas las herramientas de cálculo sin registrarte. Sin embargo, al crear una cuenta gratuita, tus datos se guardan en la nube y puedes acceder desde cualquier dispositivo, organizar por semestres y carreras, y desbloquear logros en tu dashboard.'
+  },
+  {
+    category: 'cuenta',
+    question: '¿Cómo sincronizo mis datos entre dispositivos?',
+    answer: 'Simplemente crea una cuenta gratuita e inicia sesión en cada dispositivo. Todos tus cursos, notas, semestres y carreras se sincronizarán automáticamente en la nube.'
+  },
+  {
+    category: 'promedio',
+    question: '¿Qué es la ponderación y cómo la uso?',
+    answer: 'La ponderación es el porcentaje que representa cada evaluación dentro del curso. Por ejemplo, si un examen vale 40% y las tareas 60%, ingresa esos valores al agregar cada nota. Las ponderaciones deben sumar 100% para un cálculo preciso.'
+  },
+  {
+    category: 'promedio',
+    question: '¿Cómo organizo mis cursos en semestres y carreras?',
+    answer: 'Con una cuenta, puedes crear carreras (ej: Ingeniería Civil) y dentro de cada carrera, crear semestres. Luego asigna tus cursos al semestre correspondiente. Esto te permite ver estadísticas por período y carrera en tu dashboard.'
+  },
+  {
+    category: 'promedio',
+    question: '¿Cómo agrego un examen final con ponderación especial?',
+    answer: 'En cada curso, puedes habilitar el "Examen Final" que tiene su propia ponderación separada. Por ejemplo, si tu examen final vale 30% del curso, actívalo e ingresa la ponderación. El sistema calculará automáticamente considerando el examen y las notas regulares.'
+  },
+  {
+    category: 'promedio',
+    question: '¿Qué pasa si las ponderaciones no suman 100%?',
+    answer: 'El sistema te mostrará una advertencia indicando el porcentaje faltante o excedente. Si suman menos de 100%, significa que faltan evaluaciones. Si suman más, revisa los valores ingresados. Puedes usar el simulador para calcular notas faltantes.'
+  },
+  {
+    category: 'puntaje',
+    question: '¿Cómo funciona la conversión de puntaje a nota?',
+    answer: 'Ingresa el puntaje obtenido, el puntaje total de la evaluación y el porcentaje de exigencia (típicamente 60%). Si obtienes el puntaje de exigencia o más, tu nota estará entre 4.0 y 7.0. Si obtienes menos, estará entre 1.0 y 3.9.'
+  },
+  {
+    category: 'puntaje',
+    question: '¿Qué porcentaje de exigencia debo usar?',
+    answer: 'El porcentaje de exigencia varía según la institución y tipo de evaluación. En Chile, comúnmente es 60%, pero puede variar entre 50% y 70%. Consulta con tu profesor o revisa el reglamento de tu institución.'
+  },
+  {
+    category: 'sistema',
+    question: '¿Cómo funciona la escala de notas chilena?',
+    answer: 'Chile usa una escala del 1.0 al 7.0. La nota 4.0 es la mínima para aprobar. Las notas 6.0-7.0 son excelentes, 5.0-5.9 muy buenas, 4.0-4.9 suficientes para aprobar, y bajo 4.0 son reprobatorias.'
+  },
+  {
+    category: 'dashboard',
+    question: '¿Qué son los logros en el dashboard?',
+    answer: 'Los logros son medallas que desbloqueas según tu progreso académico. Hay logros por cantidad de cursos, promedio general, tasa de aprobación, consistencia entre semestres, y más. ¡Es una forma divertida de celebrar tu avance!'
+  },
+  {
+    category: 'dashboard',
+    question: '¿Cómo se calcula la tendencia de mi promedio?',
+    answer: 'La tendencia compara tu promedio del semestre actual con el anterior. Una flecha hacia arriba indica mejora, hacia abajo indica descenso, y el guión indica estabilidad (variación menor a 0.1).'
+  },
+  {
+    category: 'datos',
+    question: '¿Cómo exporto e importo mis datos?',
+    answer: 'En la página de Promedio, usa los botones "Exportar" e "Importar" en la barra de herramientas. Exportar descarga un archivo JSON con todos tus datos. Importar te permite cargar ese archivo en otro navegador o restaurar una copia de seguridad.'
+  },
+  {
+    category: 'datos',
+    question: '¿Mis datos están seguros?',
+    answer: 'Sí. Si no tienes cuenta, los datos se guardan localmente en tu navegador y nunca salen de tu dispositivo. Si tienes cuenta, se almacenan de forma segura en nuestros servidores con cifrado. Nunca compartimos información con terceros.'
+  }
+];
+
+const categories = [
+  { id: 'todos', label: 'Todas', icon: faQuestionCircle },
+  { id: 'cuenta', label: 'Cuenta y Sync', icon: faCloud },
+  { id: 'promedio', label: 'Calculadora', icon: faCalculator },
+  { id: 'puntaje', label: 'Puntaje a Nota', icon: faBullseye },
+  { id: 'sistema', label: 'Sistema Chileno', icon: faGraduationCap },
+  { id: 'dashboard', label: 'Dashboard', icon: faChartLine },
+  { id: 'datos', label: 'Datos', icon: faShieldAlt }
+];
+
 export default function Ayuda() {
+  const [activeCategory, setActiveCategory] = useState('todos');
+  const [expandedFaq, setExpandedFaq] = useState(null);
+
+  const filteredFaqs = activeCategory === 'todos' 
+    ? faqs 
+    : faqs.filter(faq => faq.category === activeCategory);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    name: 'Ayuda y Preguntas Frecuentes - NotaMinima',
-    description: 'Guía completa sobre cómo usar NotaMinima',
+    name: 'Centro de Ayuda - NotaMinima',
+    description: 'Preguntas frecuentes y guías de uso de NotaMinima',
     url: 'https://notaminima.cl/ayuda',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: '¿Cómo calculo mi promedio ponderado?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Para calcular tu promedio ponderado, agrega un curso, ingresa cada nota con su respectiva ponderación porcentual, y la calculadora calculará automáticamente tu promedio.',
-        },
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
       },
-      {
-        '@type': 'Question',
-        name: '¿Cómo convierto un puntaje a nota?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Ingresa el puntaje obtenido, el puntaje total de la evaluación, y el porcentaje de exigencia. La herramienta calculará automáticamente la nota correspondiente en escala 1.0-7.0.',
-        },
-      },
-    ],
+    })),
   };
 
   return (
@@ -41,244 +136,204 @@ export default function Ayuda() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className={styles.main}>
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <div className={styles.headerIcon}>
-              <FontAwesomeIcon icon={faQuestionCircle} />
-            </div>
-            <h1 className={styles.title}>Ayuda y Preguntas Frecuentes</h1>
-            <p className={styles.subtitle}>
-              Guía completa para usar NotaMinima y entender el sistema de evaluación chileno
-            </p>
-          </header>
-
-          <div className={styles.content}>
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faCalculator} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>Cómo Usar la Calculadora de Promedio</h2>
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <div className={styles.heroBackground}>
+            <div className={styles.heroPattern}></div>
+          </div>
+          <div className={styles.container}>
+            <div className={styles.heroContent}>
+              <div className={styles.heroIcon}>
+                <FontAwesomeIcon icon={faQuestionCircle} />
               </div>
-              <div className={styles.sectionCard}>
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Paso 1: Agregar un Curso</h3>
-                <p className={styles.paragraph}>
-                  Haz clic en el botón {'"'}Nuevo Curso{'"'} y escribe el nombre del curso que deseas agregar. 
-                  Puedes agregar múltiples cursos para gestionar todas tus materias desde un solo lugar.
-                </p>
-              </div>
-
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Paso 2: Agregar Notas</h3>
-                <p className={styles.paragraph}>
-                  Una vez que hayas creado un curso, haz clic en {'"'}Agregar Nota{'"'}. Ingresa la nota obtenida 
-                  (en escala 1.0-7.0) y su ponderación porcentual. Por ejemplo, si un examen vale 40% del curso, 
-                  ingresa {'"'}40{'"'} en el campo de ponderación.
-                </p>
-              </div>
-
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Paso 3: Calcular el Promedio</h3>
-                <p className={styles.paragraph}>
-                  El promedio se calcula automáticamente mientras agregas notas. Puedes ver el promedio acumulado 
-                  en la parte superior de cada curso, junto con el porcentaje total evaluado hasta el momento.
-                </p>
-              </div>
-
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Simulador de Notas</h3>
-                <p className={styles.paragraph}>
-                  Si aún tienes evaluaciones pendientes, puedes usar el simulador para calcular qué nota necesitas 
-                  obtener para alcanzar un promedio objetivo, o simular qué promedio final tendrías si obtienes 
-                  una nota específica.
-                </p>
-              </div>
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faCalculator} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>Cómo Usar el Conversor de Puntaje a Nota</h2>
-              </div>
-              <div className={styles.sectionCard}>
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Paso 1: Ingresar Puntaje Obtenido</h3>
-                <p className={styles.paragraph}>
-                  Ingresa el puntaje que obtuviste en la evaluación. Por ejemplo, si obtuviste 75 puntos de 100, 
-                  ingresa {'"'}75{'"'} en el campo {'"'}Puntaje Obtenido{'"'}.
-                </p>
-              </div>
-
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Paso 2: Ingresar Puntaje Total</h3>
-                <p className={styles.paragraph}>
-                  Ingresa el puntaje máximo posible de la evaluación. Siguiendo el ejemplo anterior, ingresa {'"'}100{'"'} 
-                  en el campo {'"'}Puntaje Total{'"'}.
-                </p>
-              </div>
-
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Paso 3: Ingresar Porcentaje de Exigencia</h3>
-                <p className={styles.paragraph}>
-                  El porcentaje de exigencia es el porcentaje mínimo necesario para aprobar. En Chile, este valor 
-                  típicamente varía entre 50% y 70%. Si tu institución requiere 60% para aprobar, ingresa {'"'}60{'"'} 
-                  en el campo {'"'}Exigencia (%){'"'}.
-                </p>
-              </div>
-
-              <div className={styles.subsection}>
-                <h3 className={styles.subsectionTitle}>Resultado</h3>
-                <p className={styles.paragraph}>
-                  La herramienta calculará automáticamente tu nota en escala 1.0-7.0, junto con el porcentaje 
-                  obtenido y el estado (Aprobado o Reprobado).
-                </p>
-              </div>
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faList} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>Preguntas Frecuentes</h2>
-              </div>
-              <div className={styles.sectionCard}>
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Qué es la ponderación?</h3>
-                <p className={styles.faqAnswer}>
-                  La ponderación es el porcentaje que representa cada evaluación dentro del total del curso. 
-                  Por ejemplo, si un examen final vale 40% y tres tareas valen 20% cada una, la suma de todas 
-                  las ponderaciones debe ser 100%. Es importante que las ponderaciones sumen exactamente 100% 
-                  para obtener un promedio preciso.
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Qué pasa si las ponderaciones no suman 100%?</h3>
-                <p className={styles.faqAnswer}>
-                  La calculadora te mostrará una advertencia indicando cuánto falta o cuánto excede. Si las 
-                  ponderaciones suman menos de 100%, significa que aún faltan evaluaciones por agregar. Si suman 
-                  más de 100%, deberás revisar y corregir las ponderaciones ingresadas.
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Cómo funciona la fórmula de conversión de puntaje a nota?</h3>
-                <p className={styles.faqAnswer}>
-                  Si obtuviste un puntaje igual o mayor al mínimo requerido (exigencia), la nota se calcula entre 
-                  4.0 y 7.0 usando la fórmula: Nota = 4.0 + 3.0 × ((puntaje_obtenido - puntaje_mínimo) / (puntaje_total - puntaje_mínimo)). 
-                  Si obtuviste menos del mínimo, la nota se calcula entre 1.0 y 3.9 usando: Nota = 1.0 + 3.0 × (puntaje_obtenido / puntaje_mínimo).
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Mis datos se guardan automáticamente?</h3>
-                <p className={styles.faqAnswer}>
-                  Sí, todos tus cursos y notas se guardan automáticamente en el almacenamiento local de tu navegador. 
-                  Sin embargo, recomendamos hacer copias de seguridad periódicas usando la función de exportación, 
-                  especialmente si cambias de dispositivo o navegador.
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Puedo usar esta herramienta sin conexión a internet?</h3>
-                <p className={styles.faqAnswer}>
-                  Una vez que la página esté cargada, puedes usar todas las funciones de cálculo sin conexión a internet. 
-                  Sin embargo, necesitarás conexión para cargar la página inicialmente y para exportar/importar datos.
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Qué significa el porcentaje de exigencia?</h3>
-                <p className={styles.faqAnswer}>
-                  El porcentaje de exigencia es el puntaje mínimo que necesitas obtener para aprobar la evaluación. 
-                  Por ejemplo, si una evaluación tiene 100 puntos y la exigencia es 60%, necesitas obtener al menos 
-                  60 puntos para conseguir un 4.0 (nota mínima de aprobación).
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Cómo puedo exportar mis datos?</h3>
-                <p className={styles.faqAnswer}>
-                  En la página de Promedio, haz clic en el botón {'"'}Exportar Datos{'"'}. Esto descargará un archivo JSON 
-                  con todos tus cursos y notas. Puedes guardar este archivo para hacer respaldos o transferirlo a 
-                  otro dispositivo.
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Cómo puedo importar datos?</h3>
-                <p className={styles.faqAnswer}>
-                  En la página de Promedio, haz clic en {'"'}Importar Datos{'"'} y selecciona un archivo JSON previamente 
-                  exportado. El sistema validará el archivo antes de importarlo. Ten en cuenta que importar datos 
-                  reemplazará todos tus cursos y notas actuales.
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Por qué mi nota muestra decimales?</h3>
-                <p className={styles.faqAnswer}>
-                  Las notas se muestran con decimales para mayor precisión. El sistema educativo chileno permite notas 
-                  con un decimal (por ejemplo, 5.7, 6.3). Nuestra calculadora muestra hasta dos decimales para cálculos 
-                  intermedios, pero típicamente las notas finales se redondean a un decimal.
-                </p>
-              </div>
-
-              <div className={styles.faqItem}>
-                <h3 className={styles.faqQuestion}>¿Qué pasa si ingreso una nota inválida?</h3>
-                <p className={styles.faqAnswer}>
-                  El sistema valida automáticamente que las notas estén en el rango válido de 1.0 a 7.0. Si ingresas 
-                  un valor fuera de este rango, el campo se marcará con un error y se ajustará automáticamente al 
-                  salir del campo. Si ingresas un número mayor a 10 sin punto decimal, el sistema asumirá que olvidaste 
-                  el punto y lo dividirá por 10 (por ejemplo, 65 se convierte en 6.5).
-                </p>
-              </div>
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faLightbulb} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>Tips y Consejos</h2>
-              </div>
-              <div className={styles.sectionCard}>
-              <ul className={styles.tipsList}>
-                <li>
-                  <strong>Revisa las ponderaciones:</strong> Antes de calcular tu promedio, verifica que todas las 
-                  ponderaciones sumen exactamente 100%. Esto asegura que tu promedio sea preciso.
-                </li>
-                <li>
-                  <strong>Usa el simulador:</strong> Si tienes evaluaciones pendientes, usa el simulador para planificar 
-                  qué notas necesitas obtener para alcanzar tus objetivos académicos.
-                </li>
-                <li>
-                  <strong>Exporta regularmente:</strong> Haz copias de seguridad periódicas de tus datos usando la 
-                  función de exportación para evitar perder información.
-                </li>
-                <li>
-                  <strong>Verifica la exigencia:</strong> Cada institución puede tener diferentes porcentajes de 
-                  exigencia. Asegúrate de usar el valor correcto al convertir puntajes a notas.
-                </li>
-                <li>
-                  <strong>Gestiona múltiples cursos:</strong> Puedes agregar todos tus cursos y gestionarlos desde 
-                  un solo lugar, facilitando el seguimiento de tu rendimiento académico general.
-                </li>
-              </ul>
-              </div>
-            </section>
-
-            <div className={styles.highlight}>
-              <h3 className={styles.highlightTitle}>¿Necesitas más ayuda?</h3>
-              <p className={styles.highlightText}>
-                Si tienes más preguntas o encuentras algún problema al usar NotaMinima, puedes revisar nuestra página 
-                de información general en <Link href="/acerca" className={styles.link}>Acerca de NotaMinima</Link> 
-                o contactarnos a través de nuestro sitio web.
+              <h1 className={styles.heroTitle}>Centro de Ayuda</h1>
+              <p className={styles.heroSubtitle}>
+                Todo lo que necesitas saber para sacarle el máximo provecho a NotaMinima
               </p>
             </div>
           </div>
+        </section>
 
+        <div className={styles.container}>
+          {/* Quick Start Section */}
+          <section className={styles.quickStart}>
+            <h2 className={styles.sectionTitle}>
+              <FontAwesomeIcon icon={faRocket} className={styles.sectionIcon} />
+              Guía Rápida
+            </h2>
+            <div className={styles.stepsGrid}>
+              <div className={styles.stepCard}>
+                <div className={styles.stepNumber}>1</div>
+                <div className={styles.stepIcon}>
+                  <FontAwesomeIcon icon={faUserPlus} />
+                </div>
+                <h3>Crea tu cuenta</h3>
+                <p>Regístrate gratis para guardar tus notas en la nube y acceder desde cualquier dispositivo.</p>
+              </div>
+              <div className={styles.stepCard}>
+                <div className={styles.stepNumber}>2</div>
+                <div className={styles.stepIcon}>
+                  <FontAwesomeIcon icon={faFolderOpen} />
+                </div>
+                <h3>Organiza tu carrera</h3>
+                <p>Crea tu carrera y semestres para mantener todo organizado y ver estadísticas por período.</p>
+              </div>
+              <div className={styles.stepCard}>
+                <div className={styles.stepNumber}>3</div>
+                <div className={styles.stepIcon}>
+                  <FontAwesomeIcon icon={faBook} />
+                </div>
+                <h3>Agrega tus cursos</h3>
+                <p>Crea cursos e ingresa tus notas con sus ponderaciones. El promedio se calcula automáticamente.</p>
+              </div>
+              <div className={styles.stepCard}>
+                <div className={styles.stepNumber}>4</div>
+                <div className={styles.stepIcon}>
+                  <FontAwesomeIcon icon={faTrophy} />
+                </div>
+                <h3>Revisa tu dashboard</h3>
+                <p>Visualiza tu progreso, desbloquea logros y analiza tu rendimiento académico.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Tools Overview */}
+          <section className={styles.toolsSection}>
+            <h2 className={styles.sectionTitle}>
+              <FontAwesomeIcon icon={faCalculator} className={styles.sectionIcon} />
+              Nuestras Herramientas
+            </h2>
+            <div className={styles.toolsGrid}>
+              <div className={styles.toolCard}>
+                <div className={styles.toolHeader}>
+                  <div className={styles.toolIcon} style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
+                    <FontAwesomeIcon icon={faCalculator} />
+                  </div>
+                  <h3>Calculadora de Promedio</h3>
+                </div>
+                <p>Calcula tu promedio ponderado considerando el peso de cada evaluación. Organiza por semestres y carreras.</p>
+                <ul className={styles.toolFeatures}>
+                  <li><FontAwesomeIcon icon={faLayerGroup} /> Múltiples cursos y semestres</li>
+                  <li><FontAwesomeIcon icon={faPercent} /> Ponderación personalizada</li>
+                  <li><FontAwesomeIcon icon={faLightbulb} /> Simulador de notas</li>
+                </ul>
+                <Link href="/promedio" className={styles.toolLink}>
+                  Ir a la calculadora <FontAwesomeIcon icon={faArrowRight} />
+                </Link>
+              </div>
+
+              <div className={styles.toolCard}>
+                <div className={styles.toolHeader}>
+                  <div className={styles.toolIcon} style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                    <FontAwesomeIcon icon={faBullseye} />
+                  </div>
+                  <h3>Puntaje a Nota</h3>
+                </div>
+                <p>Convierte cualquier puntaje a nota usando la fórmula oficial chilena con exigencia personalizable.</p>
+                <ul className={styles.toolFeatures}>
+                  <li><FontAwesomeIcon icon={faPercent} /> Exigencia ajustable (50-70%)</li>
+                  <li><FontAwesomeIcon icon={faGraduationCap} /> Escala 1.0 - 7.0</li>
+                  <li><FontAwesomeIcon icon={faLightbulb} /> Cálculo instantáneo</li>
+                </ul>
+                <Link href="/puntaje-a-nota" className={styles.toolLink}>
+                  Ir al conversor <FontAwesomeIcon icon={faArrowRight} />
+                </Link>
+              </div>
+
+              <div className={styles.toolCard}>
+                <div className={styles.toolHeader}>
+                  <div className={styles.toolIcon} style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
+                    <FontAwesomeIcon icon={faChartLine} />
+                  </div>
+                  <h3>Dashboard Académico</h3>
+                </div>
+                <p>Visualiza tu rendimiento con estadísticas detalladas, distribución de notas y logros desbloqueables.</p>
+                <ul className={styles.toolFeatures}>
+                  <li><FontAwesomeIcon icon={faTrophy} /> Sistema de logros</li>
+                  <li><FontAwesomeIcon icon={faChartLine} /> Tendencia de notas</li>
+                  <li><FontAwesomeIcon icon={faGraduationCap} /> Análisis por carrera</li>
+                </ul>
+                <Link href="/cuenta/dashboard" className={styles.toolLink}>
+                  Ver dashboard <FontAwesomeIcon icon={faArrowRight} />
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section className={styles.faqSection}>
+            <h2 className={styles.sectionTitle}>
+              <FontAwesomeIcon icon={faQuestionCircle} className={styles.sectionIcon} />
+              Preguntas Frecuentes
+            </h2>
+
+            {/* Category Filter */}
+            <div className={styles.categoryFilter}>
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`${styles.categoryButton} ${activeCategory === cat.id ? styles.categoryActive : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  <FontAwesomeIcon icon={cat.icon} />
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* FAQ List */}
+            <div className={styles.faqList}>
+              {filteredFaqs.map((faq, index) => (
+                <div 
+                  key={index} 
+                  className={`${styles.faqItem} ${expandedFaq === index ? styles.faqExpanded : ''}`}
+                >
+                  <button 
+                    className={styles.faqQuestion}
+                    onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                  >
+                    <span>{faq.question}</span>
+                    <FontAwesomeIcon 
+                      icon={expandedFaq === index ? faChevronUp : faChevronDown} 
+                      className={styles.faqChevron}
+                    />
+                  </button>
+                  <div className={styles.faqAnswer}>
+                    <p>{faq.answer}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* CTA Section */}
+          <section className={styles.ctaSection}>
+            <div className={styles.ctaCard}>
+              <h3>¿Listo para comenzar?</h3>
+              <p>Empieza a calcular tus notas ahora. Es gratis y tus datos están seguros.</p>
+              <div className={styles.ctaButtons}>
+                <Link href="/register" className={styles.ctaPrimary}>
+                  <FontAwesomeIcon icon={faUserPlus} />
+                  Crear cuenta gratis
+                </Link>
+                <Link href="/promedio" className={styles.ctaSecondary}>
+                  Usar sin cuenta
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* Contact Section */}
+          <section className={styles.contactSection}>
+            <p>
+              ¿No encontraste lo que buscabas? Visita nuestra página{' '}
+              <Link href="/acerca" className={styles.link}>Acerca de NotaMinima</Link>{' '}
+              o envíanos tus sugerencias en la sección de{' '}
+              <Link href="/sugerencias" className={styles.link}>Sugerencias</Link>.
+            </p>
+          </section>
         </div>
       </main>
     </>
   );
 }
-

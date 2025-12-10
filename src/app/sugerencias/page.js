@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLightbulb, faPaperPlane, faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faPaperPlane, faCheckCircle, faExclamationTriangle, faBug, faQuestion, faPenToSquare, faStar } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sugerencias.module.css';
 
 export default function Sugerencias() {
@@ -17,10 +17,10 @@ export default function Sugerencias() {
   const [error, setError] = useState('');
 
   const tiposSugerencia = [
-    { value: 'sugerencia', label: 'Sugerencia', icon: '💡' },
-    { value: 'error', label: 'Reportar Error', icon: '🐛' },
-    { value: 'pregunta', label: 'Pregunta', icon: '❓' },
-    { value: 'otro', label: 'Otro', icon: '📝' },
+    { value: 'sugerencia', label: 'Sugerencia', icon: faLightbulb },
+    { value: 'error', label: 'Reportar Error', icon: faBug },
+    { value: 'pregunta', label: 'Pregunta', icon: faQuestion },
+    { value: 'otro', label: 'Otro', icon: faPenToSquare },
   ];
 
   const handleChange = (e) => {
@@ -150,7 +150,7 @@ export default function Sugerencias() {
                   onClick={() => setFormData(prev => ({ ...prev, tipo: tipo.value }))}
                   className={`${styles.tipoButton} ${formData.tipo === tipo.value ? styles.tipoButtonActive : ''}`}
                 >
-                  <span className={styles.tipoIcon}>{tipo.icon}</span>
+                  <span className={styles.tipoIcon}><FontAwesomeIcon icon={tipo.icon} /></span>
                   <span>{tipo.label}</span>
                 </button>
               ))}
@@ -209,10 +209,10 @@ export default function Sugerencias() {
         <div className={styles.infoCard}>
           <h3 className={styles.infoTitle}>¿Qué puedes compartir?</h3>
           <ul className={styles.infoList}>
-            <li><span className={styles.infoBullet}>💡</span> Ideas para nuevas funcionalidades</li>
-            <li><span className={styles.infoBullet}>🐛</span> Errores o problemas que hayas encontrado</li>
-            <li><span className={styles.infoBullet}>❓</span> Preguntas sobre cómo usar la plataforma</li>
-            <li><span className={styles.infoBullet}>⭐</span> Feedback general sobre tu experiencia</li>
+            <li><span className={styles.infoBullet}><FontAwesomeIcon icon={faLightbulb} /></span> Ideas para nuevas funcionalidades</li>
+            <li><span className={styles.infoBullet}><FontAwesomeIcon icon={faBug} /></span> Errores o problemas que hayas encontrado</li>
+            <li><span className={styles.infoBullet}><FontAwesomeIcon icon={faQuestion} /></span> Preguntas sobre cómo usar la plataforma</li>
+            <li><span className={styles.infoBullet}><FontAwesomeIcon icon={faStar} /></span> Feedback general sobre tu experiencia</li>
           </ul>
         </div>
       </div>

@@ -14,15 +14,28 @@ export async function GET(request) {
       );
     }
 
+    const { searchParams } = new URL(request.url);
+    const carreraId = searchParams.get('carreraId');
+
+    const whereClause = {
+      userId: session.user.id,
+    };
+
+    // Filter by carrera if specified
+    if (carreraId === 'null') {
+      whereClause.carreraId = null;
+    } else if (carreraId) {
+      whereClause.carreraId = carreraId;
+    }
+
     const semesters = await prisma.semester.findMany({
-      where: {
-        userId: session.user.id,
-      },
+      where: whereClause,
       orderBy: {
         orden: 'asc',
       },
       include: {
         promedios: true,
+        carrera: true,
       },
     });
 
@@ -47,7 +60,7 @@ export async function POST(request) {
       );
     }
 
-    const { nombre } = await request.json();
+    const { nombre, carreraId } = await request.json();
 
     if (!nombre) {
       return NextResponse.json(
@@ -56,9 +69,29 @@ export async function POST(request) {
       );
     }
 
-    // Get the highest orden value for this user
+    // If carreraId is provided, verify ownership
+    if (carreraId) {
+      const carrera = await prisma.carrera.findFirst({
+        where: {
+          id: carreraId,
+          userId: session.user.id,
+        },
+      });
+
+      if (!carrera) {
+        return NextResponse.json(
+          { error: 'Carrera no encontrada' },
+          { status: 404 }
+        );
+      }
+    }
+
+    // Get the highest orden value for this user (within the carrera if specified)
     const lastSemester = await prisma.semester.findFirst({
-      where: { userId: session.user.id },
+      where: { 
+        userId: session.user.id,
+        carreraId: carreraId || null,
+      },
       orderBy: { orden: 'desc' },
     });
 
@@ -69,6 +102,10 @@ export async function POST(request) {
         userId: session.user.id,
         nombre,
         orden: newOrden,
+        carreraId: carreraId || null,
+      },
+      include: {
+        carrera: true,
       },
     });
 

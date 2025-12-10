@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Ayuda y Preguntas Frecuentes | NotaMinima",
-  description: "Guía completa para usar NotaMinima. Aprende a calcular promedios ponderados, convertir puntajes a notas y gestionar tus cursos en el sistema educativo chileno.",
+  title: "Centro de Ayuda | NotaMinima",
+  description: "Guía completa de NotaMinima: calcula promedios ponderados, convierte puntajes a notas, sincroniza entre dispositivos y desbloquea logros. Preguntas frecuentes sobre el sistema de notas chileno.",
   keywords: [
     "ayuda notaminima",
     "preguntas frecuentes notas",
@@ -9,10 +9,13 @@ export const metadata = {
     "guía puntaje a nota",
     "faq notaminima",
     "ayuda estudiantes chile",
+    "sincronizar notas dispositivos",
+    "dashboard académico",
+    "logros académicos",
   ],
   openGraph: {
-    title: "Ayuda y Preguntas Frecuentes | NotaMinima",
-    description: "Guía completa para usar NotaMinima. Aprende a calcular promedios ponderados, convertir puntajes a notas y gestionar tus cursos.",
+    title: "Centro de Ayuda | NotaMinima",
+    description: "Guía completa de NotaMinima: calcula promedios, convierte puntajes, sincroniza datos y desbloquea logros académicos.",
     url: "https://notaminima.cl/ayuda",
     siteName: "NotaMinima",
     images: [
@@ -20,7 +23,7 @@ export const metadata = {
         url: "/logo-256.png",
         width: 256,
         height: 256,
-        alt: "NotaMinima - Ayuda",
+        alt: "NotaMinima - Centro de Ayuda",
       },
     ],
     locale: "es_CL",
@@ -28,8 +31,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Ayuda y Preguntas Frecuentes | NotaMinima",
-    description: "Guía completa para usar NotaMinima. Aprende a calcular promedios ponderados y convertir puntajes a notas.",
+    title: "Centro de Ayuda | NotaMinima",
+    description: "Guía completa de NotaMinima: calcula promedios, convierte puntajes y gestiona tu rendimiento académico.",
     images: ["/logo-256.png"],
   },
   alternates: {

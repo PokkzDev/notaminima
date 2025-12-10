@@ -22,7 +22,16 @@ import {
   faTimesCircle,
   faGraduationCap,
   faChalkboardTeacher,
-  faLightbulb
+  faLightbulb,
+  faEnvelope,
+  faIdCard,
+  faFolderOpen,
+  faStickyNote,
+  faClock,
+  faUserEdit,
+  faExclamationTriangle,
+  faUserCheck,
+  faUserTimes
 } from '@fortawesome/free-solid-svg-icons';
 import styles from '../Admin.module.css';
 
@@ -42,9 +51,10 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState('');
 
   // Modal states
-  const [roleModal, setRoleModal] = useState({ open: false, user: null, newRole: '' });
+  const [userModal, setUserModal] = useState({ open: false, user: null, loading: false });
   const [deleteModal, setDeleteModal] = useState({ open: false, user: null });
   const [actionLoading, setActionLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -101,27 +111,95 @@ export default function AdminUsersPage() {
     }
   };
 
+  const openUserModal = async (user) => {
+    setUserModal({ open: true, user: null, loading: true });
+    setSelectedRole(user.role);
+    
+    try {
+      const response = await fetch(`/api/admin/users/${user.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUserModal({ open: true, user: data.user, loading: false });
+        setSelectedRole(data.user.role);
+      } else {
+        setUserModal({ open: false, user: null, loading: false });
+        alert('Error al cargar los datos del usuario');
+      }
+    } catch (error) {
+      console.error('Error loading user:', error);
+      setUserModal({ open: false, user: null, loading: false });
+      alert('Error al cargar los datos del usuario');
+    }
+  };
+
+  const closeUserModal = () => {
+    if (!actionLoading) {
+      setUserModal({ open: false, user: null, loading: false });
+      setSelectedRole('');
+    }
+  };
+
   const handleRoleChange = async () => {
-    if (!roleModal.user || !roleModal.newRole) return;
+    if (!userModal.user || !selectedRole || selectedRole === userModal.user.role) return;
 
     try {
       setActionLoading(true);
-      const response = await fetch(`/api/admin/users/${roleModal.user.id}`, {
+      const response = await fetch(`/api/admin/users/${userModal.user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: roleModal.newRole })
+        body: JSON.stringify({ role: selectedRole })
       });
 
       if (response.ok) {
-        setRoleModal({ open: false, user: null, newRole: '' });
+        // Update local user data
+        setUserModal(prev => ({
+          ...prev,
+          user: { ...prev.user, role: selectedRole }
+        }));
         loadUsers(pagination.page);
       } else {
         const data = await response.json();
         alert(data.error || 'Error al cambiar rol');
+        setSelectedRole(userModal.user.role);
       }
     } catch (error) {
       console.error('Error changing role:', error);
       alert('Error al cambiar rol');
+      setSelectedRole(userModal.user.role);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleVerifyToggle = async (user, isVerified) => {
+    try {
+      setActionLoading(true);
+      const response = await fetch(`/api/admin/users/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: isVerified ? 'unverify' : 'verify' })
+      });
+
+      if (response.ok) {
+        // Update modal user data if open
+        if (userModal.open && userModal.user?.id === user.id) {
+          setUserModal(prev => ({
+            ...prev,
+            user: { 
+              ...prev.user, 
+              emailVerified: !isVerified,
+              emailVerifiedAt: !isVerified ? new Date().toISOString() : null
+            }
+          }));
+        }
+        loadUsers(pagination.page);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Error al cambiar estado de verificación');
+      }
+    } catch (error) {
+      console.error('Error toggling verification:', error);
+      alert('Error al cambiar estado de verificación');
     } finally {
       setActionLoading(false);
     }
@@ -152,12 +230,51 @@ export default function AdminUsersPage() {
   };
 
   const formatDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
     const date = new Date(dateStr);
     return date.toLocaleDateString('es-CL', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
     });
+  };
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-CL', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getRelativeTime = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Hoy';
+    if (diffDays === 1) return 'Ayer';
+    if (diffDays < 7) return `Hace ${diffDays} días`;
+    if (diffDays < 30) return `Hace ${Math.floor(diffDays / 7)} semanas`;
+    if (diffDays < 365) return `Hace ${Math.floor(diffDays / 30)} meses`;
+    return `Hace ${Math.floor(diffDays / 365)} años`;
+  };
+
+  const getUserInitials = (user) => {
+    if (!user) return '?';
+    if (user.username) {
+      return user.username.substring(0, 2).toUpperCase();
+    }
+    if (user.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+    return '?';
   };
 
   const getRoleBadgeClass = (role) => {
@@ -329,9 +446,8 @@ export default function AdminUsersPage() {
                           <div className={styles.actionsCell}>
                             <button
                               className={styles.actionButton}
-                              onClick={() => setRoleModal({ open: true, user, newRole: user.role })}
-                              title="Cambiar rol"
-                              disabled={user.id === session.user.id}
+                              onClick={() => openUserModal(user)}
+                              title="Ver detalles"
                             >
                               <FontAwesomeIcon icon={faEdit} />
                             </button>
@@ -398,52 +514,261 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        {/* Role Change Modal */}
-        {roleModal.open && (
-          <div className={styles.modalBackdrop} onClick={() => !actionLoading && setRoleModal({ open: false, user: null, newRole: '' })}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        {/* User Detail Modal */}
+        {userModal.open && (
+          <div className={styles.modalBackdrop} onClick={closeUserModal}>
+            <div className={styles.userModal} onClick={(e) => e.stopPropagation()}>
               <div className={styles.modalHeader}>
-                <h3 className={styles.modalTitle}>Cambiar Rol</h3>
+                <h3 className={styles.modalTitle}>
+                  <FontAwesomeIcon icon={faUserEdit} style={{ marginRight: '0.5rem' }} />
+                  Detalles del Usuario
+                </h3>
                 <button
                   className={styles.modalClose}
-                  onClick={() => setRoleModal({ open: false, user: null, newRole: '' })}
+                  onClick={closeUserModal}
                   disabled={actionLoading}
                 >
                   <FontAwesomeIcon icon={faTimes} />
                 </button>
               </div>
-              <div className={styles.modalBody}>
-                <p className={styles.modalText}>
-                  Cambiar el rol de <strong>{roleModal.user?.username}</strong> ({roleModal.user?.email})
-                </p>
-                <label className={styles.modalLabel}>Nuevo rol</label>
-                <select
-                  className={styles.modalSelect}
-                  value={roleModal.newRole}
-                  onChange={(e) => setRoleModal({ ...roleModal, newRole: e.target.value })}
-                  disabled={actionLoading}
-                >
-                  <option value="STUDENT">Estudiante</option>
-                  <option value="TEACHER">Profesor</option>
-                  <option value="ADMIN">Administrador</option>
-                </select>
-              </div>
-              <div className={styles.modalFooter}>
-                <button
-                  className={`${styles.modalButton} ${styles.modalButtonSecondary}`}
-                  onClick={() => setRoleModal({ open: false, user: null, newRole: '' })}
-                  disabled={actionLoading}
-                >
-                  Cancelar
-                </button>
-                <button
-                  className={`${styles.modalButton} ${styles.modalButtonPrimary}`}
-                  onClick={handleRoleChange}
-                  disabled={actionLoading || roleModal.newRole === roleModal.user?.role}
-                >
-                  {actionLoading ? <FontAwesomeIcon icon={faSpinner} spin /> : 'Guardar'}
-                </button>
-              </div>
+              
+              {userModal.loading ? (
+                <div className={styles.modalLoading}>
+                  <FontAwesomeIcon icon={faSpinner} spin className={styles.modalSpinner} />
+                  <p>Cargando datos del usuario...</p>
+                </div>
+              ) : userModal.user && (
+                <div className={styles.userModalContent}>
+                  {/* User Header */}
+                  <div className={styles.userModalHeader}>
+                    <div className={`${styles.userAvatar} ${styles[`userAvatar${userModal.user.role}`]}`}>
+                      {getUserInitials(userModal.user)}
+                    </div>
+                    <div className={styles.userHeaderInfo}>
+                      <h4 className={styles.userModalName}>{userModal.user.username}</h4>
+                      <p className={styles.userModalEmail}>
+                        <FontAwesomeIcon icon={faEnvelope} />
+                        {userModal.user.email}
+                      </p>
+                      <div className={styles.userModalBadges}>
+                        <span className={`${styles.badge} ${getRoleBadgeClass(userModal.user.role)}`}>
+                          <FontAwesomeIcon icon={getRoleIcon(userModal.user.role)} />
+                          {getRoleLabel(userModal.user.role)}
+                        </span>
+                        {userModal.user.emailVerified ? (
+                          <span className={`${styles.badge} ${styles.badgeVerified}`}>
+                            <FontAwesomeIcon icon={faCheckCircle} />
+                            Verificado
+                          </span>
+                        ) : (
+                          <span className={`${styles.badge} ${styles.badgeUnverified}`}>
+                            <FontAwesomeIcon icon={faTimesCircle} />
+                            Pendiente
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* User ID */}
+                  <div className={styles.userIdSection}>
+                    <FontAwesomeIcon icon={faIdCard} />
+                    <span className={styles.userId}>{userModal.user.id}</span>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className={styles.userStatsGrid}>
+                    <div className={styles.userStatCard}>
+                      <div className={styles.userStatIcon} style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' }}>
+                        <FontAwesomeIcon icon={faBook} />
+                      </div>
+                      <div className={styles.userStatInfo}>
+                        <span className={styles.userStatValue}>{userModal.user.promediosCount}</span>
+                        <span className={styles.userStatLabel}>Promedios</span>
+                      </div>
+                    </div>
+                    <div className={styles.userStatCard}>
+                      <div className={styles.userStatIcon} style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                        <FontAwesomeIcon icon={faCalendarAlt} />
+                      </div>
+                      <div className={styles.userStatInfo}>
+                        <span className={styles.userStatValue}>{userModal.user.semestersCount}</span>
+                        <span className={styles.userStatLabel}>Semestres</span>
+                      </div>
+                    </div>
+                    <div className={styles.userStatCard}>
+                      <div className={styles.userStatIcon} style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                        <FontAwesomeIcon icon={faFolderOpen} />
+                      </div>
+                      <div className={styles.userStatInfo}>
+                        <span className={styles.userStatValue}>{userModal.user.carrerasCount}</span>
+                        <span className={styles.userStatLabel}>Carreras</span>
+                      </div>
+                    </div>
+                    <div className={styles.userStatCard}>
+                      <div className={styles.userStatIcon} style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
+                        <FontAwesomeIcon icon={faStickyNote} />
+                      </div>
+                      <div className={styles.userStatInfo}>
+                        <span className={styles.userStatValue}>{userModal.user.totalNotas}</span>
+                        <span className={styles.userStatLabel}>Notas</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dates Section */}
+                  <div className={styles.userDatesSection}>
+                    <h5 className={styles.userSectionTitle}>
+                      <FontAwesomeIcon icon={faClock} />
+                      Información de Cuenta
+                    </h5>
+                    <div className={styles.userDatesList}>
+                      <div className={styles.userDateItem}>
+                        <span className={styles.userDateLabel}>Registro</span>
+                        <span className={styles.userDateValue}>
+                          {formatDateTime(userModal.user.createdAt)}
+                          <span className={styles.userDateRelative}>{getRelativeTime(userModal.user.createdAt)}</span>
+                        </span>
+                      </div>
+                      <div className={styles.userDateItem}>
+                        <span className={styles.userDateLabel}>Última actualización</span>
+                        <span className={styles.userDateValue}>
+                          {formatDateTime(userModal.user.updatedAt)}
+                          <span className={styles.userDateRelative}>{getRelativeTime(userModal.user.updatedAt)}</span>
+                        </span>
+                      </div>
+                      {userModal.user.emailVerified && userModal.user.emailVerifiedAt && (
+                        <div className={styles.userDateItem}>
+                          <span className={styles.userDateLabel}>Email verificado</span>
+                          <span className={styles.userDateValue}>
+                            {formatDateTime(userModal.user.emailVerifiedAt)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Verification Management Section */}
+                  <div className={styles.userVerifySection}>
+                    <h5 className={styles.userSectionTitle}>
+                      <FontAwesomeIcon icon={faUserCheck} />
+                      Estado de Verificación
+                    </h5>
+                    <div className={styles.verifyStatus}>
+                      {userModal.user.emailVerified ? (
+                        <div className={styles.verifyStatusBadge}>
+                          <FontAwesomeIcon icon={faCheckCircle} className={styles.verifyStatusIconSuccess} />
+                          <span>Email verificado</span>
+                        </div>
+                      ) : (
+                        <div className={styles.verifyStatusBadge}>
+                          <FontAwesomeIcon icon={faTimesCircle} className={styles.verifyStatusIconWarning} />
+                          <span>Email pendiente de verificación</span>
+                        </div>
+                      )}
+                      <button
+                        className={userModal.user.emailVerified ? styles.unverifyButton : styles.verifyButton}
+                        onClick={() => handleVerifyToggle(userModal.user, userModal.user.emailVerified)}
+                        disabled={actionLoading}
+                      >
+                        {actionLoading ? (
+                          <FontAwesomeIcon icon={faSpinner} spin />
+                        ) : userModal.user.emailVerified ? (
+                          <>
+                            <FontAwesomeIcon icon={faUserTimes} />
+                            Quitar verificación
+                          </>
+                        ) : (
+                          <>
+                            <FontAwesomeIcon icon={faUserCheck} />
+                            Verificar usuario
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Role Management Section */}
+                  {userModal.user.id !== session.user.id && (
+                    <div className={styles.userRoleSection}>
+                      <h5 className={styles.userSectionTitle}>
+                        <FontAwesomeIcon icon={faUserShield} />
+                        Gestión de Rol
+                      </h5>
+                      <div className={styles.roleSelector}>
+                        <button
+                          className={`${styles.roleOption} ${selectedRole === 'STUDENT' ? styles.roleOptionActive : ''} ${styles.roleOptionStudent}`}
+                          onClick={() => setSelectedRole('STUDENT')}
+                          disabled={actionLoading}
+                        >
+                          <FontAwesomeIcon icon={faGraduationCap} />
+                          <span>Estudiante</span>
+                        </button>
+                        <button
+                          className={`${styles.roleOption} ${selectedRole === 'TEACHER' ? styles.roleOptionActive : ''} ${styles.roleOptionTeacher}`}
+                          onClick={() => setSelectedRole('TEACHER')}
+                          disabled={actionLoading}
+                        >
+                          <FontAwesomeIcon icon={faChalkboardTeacher} />
+                          <span>Profesor</span>
+                        </button>
+                        <button
+                          className={`${styles.roleOption} ${selectedRole === 'ADMIN' ? styles.roleOptionActive : ''} ${styles.roleOptionAdmin}`}
+                          onClick={() => setSelectedRole('ADMIN')}
+                          disabled={actionLoading}
+                        >
+                          <FontAwesomeIcon icon={faUserShield} />
+                          <span>Admin</span>
+                        </button>
+                      </div>
+                      {selectedRole !== userModal.user.role && (
+                        <button
+                          className={styles.saveRoleButton}
+                          onClick={handleRoleChange}
+                          disabled={actionLoading}
+                        >
+                          {actionLoading ? (
+                            <>
+                              <FontAwesomeIcon icon={faSpinner} spin />
+                              Guardando...
+                            </>
+                          ) : (
+                            <>
+                              <FontAwesomeIcon icon={faCheckCircle} />
+                              Guardar cambio de rol
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Self user warning */}
+                  {userModal.user.id === session.user.id && (
+                    <div className={styles.selfUserWarning}>
+                      <FontAwesomeIcon icon={faExclamationTriangle} />
+                      <span>No puedes modificar tu propio rol ni eliminarte desde aquí.</span>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  {userModal.user.id !== session.user.id && (
+                    <div className={styles.userModalActions}>
+                      <button
+                        className={styles.deleteUserButton}
+                        onClick={() => {
+                          closeUserModal();
+                          setDeleteModal({ open: true, user: userModal.user });
+                        }}
+                        disabled={actionLoading}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                        Eliminar usuario
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Acerca de NotaMinima | Calculadora de Notas Chile",
-  description: "Conoce NotaMinima, la calculadora gratuita de notas para estudiantes chilenos. Aprende sobre el sistema de evaluación chileno y cómo funcionan nuestras herramientas educativas.",
+  description: "NotaMinima: la plataforma gratuita más completa para estudiantes chilenos. Calcula promedios, convierte puntajes, sincroniza en la nube, desbloquea logros y visualiza tu progreso académico.",
   keywords: [
     "acerca de notaminima",
     "sobre notaminima",
@@ -8,11 +8,14 @@ export const metadata = {
     "sistema evaluación chileno",
     "escala notas 1.0 7.0",
     "herramienta educativa chile",
-    "información notaminima",
+    "plataforma académica gratuita",
+    "dashboard estudiantes",
+    "logros académicos",
+    "sincronización notas nube",
   ],
   openGraph: {
-    title: "Acerca de NotaMinima | Calculadora de Notas Chile",
-    description: "Conoce NotaMinima, la calculadora gratuita de notas para estudiantes chilenos. Aprende sobre el sistema de evaluación chileno.",
+    title: "Acerca de NotaMinima | La Calculadora de Notas más Completa de Chile",
+    description: "Plataforma gratuita para estudiantes chilenos: calcula promedios, convierte puntajes, sincroniza en la nube y desbloquea logros.",
     url: "https://notaminima.cl/acerca",
     siteName: "NotaMinima",
     images: [
@@ -29,7 +32,7 @@ export const metadata = {
   twitter: {
     card: "summary",
     title: "Acerca de NotaMinima | Calculadora de Notas Chile",
-    description: "Conoce NotaMinima, la calculadora gratuita de notas para estudiantes chilenos.",
+    description: "La plataforma gratuita más completa para gestionar tu rendimiento académico en Chile.",
     images: ["/logo-256.png"],
   },
   alternates: {

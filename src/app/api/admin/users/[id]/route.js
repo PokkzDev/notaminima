@@ -35,10 +35,17 @@ export async function GET(request, { params }) {
         role: true,
         emailVerified: true,
         createdAt: true,
+        updatedAt: true,
         _count: {
           select: {
             promedios: true,
-            semesters: true
+            semesters: true,
+            carreras: true
+          }
+        },
+        promedios: {
+          select: {
+            notas: true
           }
         }
       }
@@ -51,6 +58,14 @@ export async function GET(request, { params }) {
       );
     }
 
+    // Calculate total notes across all promedios
+    let totalNotas = 0;
+    user.promedios.forEach(promedio => {
+      if (promedio.notas && Array.isArray(promedio.notas)) {
+        totalNotas += promedio.notas.length;
+      }
+    });
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -58,9 +73,13 @@ export async function GET(request, { params }) {
         username: user.username,
         role: user.role,
         emailVerified: user.emailVerified !== null,
+        emailVerifiedAt: user.emailVerified,
         createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
         promediosCount: user._count.promedios,
-        semestersCount: user._count.semesters
+        semestersCount: user._count.semesters,
+        carrerasCount: user._count.carreras,
+        totalNotas: totalNotas
       }
     });
   } catch (error) {
@@ -91,15 +110,8 @@ export async function PATCH(request, { params }) {
     }
 
     const { id } = await params;
-    const { role } = await request.json();
-
-    // Validate role
-    if (!role || !['ADMIN', 'STUDENT', 'TEACHER'].includes(role)) {
-      return NextResponse.json(
-        { error: 'Rol inválido' },
-        { status: 400 }
-      );
-    }
+    const body = await request.json();
+    const { role, action } = body;
 
     // Check user exists
     const existingUser = await prisma.user.findFirst({
@@ -116,33 +128,101 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // Prevent admin from changing their own role
-    if (id === session.user.id) {
-      return NextResponse.json(
-        { error: 'No puedes cambiar tu propio rol' },
-        { status: 400 }
-      );
+    // Handle verify action
+    if (action === 'verify') {
+      if (existingUser.emailVerified) {
+        return NextResponse.json(
+          { error: 'El usuario ya está verificado' },
+          { status: 400 }
+        );
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data: { emailVerified: new Date() },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          emailVerified: true
+        }
+      });
+
+      return NextResponse.json({
+        user: updatedUser,
+        message: 'Usuario verificado correctamente'
+      });
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: { role },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        role: true
+    // Handle unverify action
+    if (action === 'unverify') {
+      if (!existingUser.emailVerified) {
+        return NextResponse.json(
+          { error: 'El usuario no está verificado' },
+          { status: 400 }
+        );
       }
-    });
 
-    return NextResponse.json({
-      user: updatedUser,
-      message: 'Rol actualizado correctamente'
-    });
-  } catch (error) {
-    console.error('Error updating user role:', error);
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data: { emailVerified: null },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          emailVerified: true
+        }
+      });
+
+      return NextResponse.json({
+        user: updatedUser,
+        message: 'Verificación eliminada correctamente'
+      });
+    }
+
+    // Handle role change
+    if (role) {
+      // Validate role
+      if (!['ADMIN', 'STUDENT', 'TEACHER'].includes(role)) {
+        return NextResponse.json(
+          { error: 'Rol inválido' },
+          { status: 400 }
+        );
+      }
+
+      // Prevent admin from changing their own role
+      if (id === session.user.id) {
+        return NextResponse.json(
+          { error: 'No puedes cambiar tu propio rol' },
+          { status: 400 }
+        );
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data: { role },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          role: true
+        }
+      });
+
+      return NextResponse.json({
+        user: updatedUser,
+        message: 'Rol actualizado correctamente'
+      });
+    }
+
     return NextResponse.json(
-      { error: 'Error al actualizar rol' },
+      { error: 'Acción no válida' },
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return NextResponse.json(
+      { error: 'Error al actualizar usuario' },
       { status: 500 }
     );
   }

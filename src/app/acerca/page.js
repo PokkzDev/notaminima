@@ -1,22 +1,94 @@
 'use client';
 
+import Link from 'next/link';
 import Script from 'next/script';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faGraduationCap, faCalculator, faShieldAlt, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faHeart, 
+  faRocket,
+  faShieldAlt,
+  faCloud,
+  faUsers,
+  faGraduationCap,
+  faCalculator,
+  faBullseye,
+  faChartLine,
+  faTrophy,
+  faCheck,
+  faArrowRight,
+  faMobileScreen,
+  faLock,
+  faCode,
+  faLightbulb,
+  faBook,
+  faUserPlus
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './Acerca.module.css';
+
+const features = [
+  {
+    icon: faCalculator,
+    title: 'Calculadora de Promedio',
+    description: 'Calcula promedios ponderados con múltiples cursos, semestres y carreras. Incluye simulador de notas.',
+    color: '#3b82f6'
+  },
+  {
+    icon: faBullseye,
+    title: 'Puntaje a Nota',
+    description: 'Convierte puntajes a notas usando la fórmula oficial chilena con exigencia personalizable.',
+    color: '#10b981'
+  },
+  {
+    icon: faChartLine,
+    title: 'Dashboard Académico',
+    description: 'Visualiza tu rendimiento con estadísticas, distribución de notas y análisis por período.',
+    color: '#8b5cf6'
+  },
+  {
+    icon: faTrophy,
+    title: 'Sistema de Logros',
+    description: 'Desbloquea más de 50 logros diferentes basados en tu progreso y rendimiento académico.',
+    color: '#f59e0b'
+  },
+  {
+    icon: faCloud,
+    title: 'Sincronización en la Nube',
+    description: 'Crea una cuenta gratuita para acceder a tus datos desde cualquier dispositivo.',
+    color: '#06b6d4'
+  },
+  {
+    icon: faShieldAlt,
+    title: 'Privacidad Total',
+    description: 'Tus datos están protegidos. Sin cuenta, todo se guarda localmente en tu navegador.',
+    color: '#ec4899'
+  }
+];
+
+const stats = [
+  { value: '100%', label: 'Gratis' },
+  { value: '50+', label: 'Logros' },
+  { value: '∞', label: 'Cursos' },
+  { value: '0', label: 'Anuncios molestos' }
+];
 
 export default function Acerca() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
     name: 'Acerca de NotaMinima',
-    description: 'Información sobre NotaMinima y el sistema de evaluación chileno',
+    description: 'NotaMinima es la plataforma gratuita más completa para calcular notas según el sistema educativo chileno',
     url: 'https://notaminima.cl/acerca',
     mainEntity: {
       '@type': 'WebApplication',
       name: 'NotaMinima',
       applicationCategory: 'EducationalApplication',
-      description: 'Calculadora gratuita de notas para estudiantes chilenos',
+      operatingSystem: 'Web',
+      description: 'Calculadora de notas y promedios para estudiantes chilenos',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'CLP'
+      }
     },
   };
 
@@ -28,177 +100,302 @@ export default function Acerca() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className={styles.main}>
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <div className={styles.headerIcon}>
-              <FontAwesomeIcon icon={faInfoCircle} />
-            </div>
-            <h1 className={styles.title}>Acerca de NotaMinima</h1>
-            <p className={styles.subtitle}>
-              Conoce más sobre nuestra plataforma y el sistema de evaluación chileno
-            </p>
-          </header>
-
-          <div className={styles.content}>
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faGraduationCap} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>¿Qué es NotaMinima?</h2>
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <div className={styles.heroBackground}>
+            <div className={styles.heroGradient}></div>
+            <div className={styles.heroPattern}></div>
+          </div>
+          <div className={styles.container}>
+            <div className={styles.heroContent}>
+              <div className={styles.heroBadge}>
+                <FontAwesomeIcon icon={faGraduationCap} />
+                <span>Para estudiantes chilenos</span>
               </div>
-              <div className={styles.sectionCard}>
-                <p className={styles.paragraph}>
-                NotaMinima es un portal web diseñado específicamente para estudiantes chilenos que necesitan 
-                calcular sus promedios académicos y convertir puntajes de evaluaciones a notas según el sistema 
-                educativo chileno. Nuestra plataforma ofrece herramientas gratuitas, intuitivas y completamente 
-                funcionales sin necesidad de registro, permitiendo a los estudiantes gestionar sus notas de manera 
-                eficiente y precisa.
+              <h1 className={styles.heroTitle}>
+                La forma más <span className={styles.highlight}>fácil</span> de calcular tus notas
+              </h1>
+              <p className={styles.heroSubtitle}>
+                NotaMinima es la plataforma gratuita más completa para gestionar tu rendimiento 
+                académico en Chile. Calcula promedios, convierte puntajes y visualiza tu progreso.
               </p>
-              <p className={styles.paragraph}>
-                El proyecto nació de la necesidad de proporcionar una solución simple y accesible para estudiantes 
-                que constantemente deben calcular promedios ponderados y convertir puntajes a notas. Entendemos que 
-                el sistema educativo chileno tiene particularidades que requieren herramientas específicas adaptadas 
-                a su metodología de evaluación.
-              </p>
+              <div className={styles.heroStats}>
+                {stats.map((stat, index) => (
+                  <div key={index} className={styles.heroStatItem}>
+                    <span className={styles.heroStatValue}>{stat.value}</span>
+                    <span className={styles.heroStatLabel}>{stat.label}</span>
+                  </div>
+                ))}
               </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faCalculator} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>El Sistema de Evaluación Chileno</h2>
-              </div>
-              <div className={styles.sectionCard}>
-                <p className={styles.paragraph}>
-                En Chile, el sistema de evaluación académica utiliza una escala numérica del 1.0 al 7.0, donde:
-              </p>
-              <ul className={styles.list}>
-                <li><strong>4.0:</strong> Es la nota mínima para aprobar cualquier evaluación o curso.</li>
-                <li><strong>1.0 a 3.9:</strong> Representan notas reprobatorias.</li>
-                <li><strong>4.0 a 7.0:</strong> Representan notas aprobatorias, siendo 7.0 la calificación máxima.</li>
-              </ul>
-              <p className={styles.paragraph}>
-                Este sistema es utilizado tanto en educación básica, media como superior, y cada institución 
-                educativa puede establecer sus propios porcentajes de exigencia para las evaluaciones. La exigencia 
-                típicamente varía entre 50% y 70%, dependiendo del nivel educativo y el tipo de evaluación.
-              </p>
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faCalculator} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>¿Cómo Funciona la Conversión de Puntajes a Notas?</h2>
-              </div>
-              <div className={styles.sectionCard}>
-                <p className={styles.paragraph}>
-                Cuando un estudiante realiza una evaluación y obtiene un puntaje bruto (por ejemplo, 75 puntos de 100), 
-                este debe convertirse a una nota en la escala 1.0-7.0. La conversión depende del porcentaje de exigencia 
-                establecido por la institución. Si la exigencia es del 60%, significa que se necesitan 60 puntos para 
-                obtener un 4.0 (nota mínima de aprobación).
-              </p>
-              <p className={styles.paragraph}>
-                Nuestra herramienta de conversión utiliza las fórmulas oficiales del sistema educativo chileno:
-              </p>
-              <ul className={styles.list}>
-                <li>Si el puntaje obtenido es igual o mayor al puntaje mínimo (exigencia), la nota se calcula entre 4.0 y 7.0.</li>
-                <li>Si el puntaje obtenido es menor al puntaje mínimo, la nota se calcula entre 1.0 y 3.9.</li>
-              </ul>
-              <p className={styles.paragraph}>
-                Esta conversión asegura que los estudiantes puedan saber exactamente qué nota obtendrán según su desempeño 
-                en las evaluaciones, facilitando la planificación de sus estudios y metas académicas.
-              </p>
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faCalculator} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>Promedio Ponderado</h2>
-              </div>
-              <div className={styles.sectionCard}>
-                <p className={styles.paragraph}>
-                El promedio ponderado es el método más común para calcular la nota final de un curso en Chile. A diferencia 
-                del promedio simple, donde todas las evaluaciones tienen el mismo peso, el promedio ponderado considera que 
-                cada evaluación tiene un porcentaje específico del total. Por ejemplo, un examen final puede valer 40% del curso, 
-                mientras que las tareas pueden valer 20% cada una.
-              </p>
-              <p className={styles.paragraph}>
-                Nuestra calculadora de promedio permite a los estudiantes gestionar múltiples cursos simultáneamente, agregar 
-                y editar notas con sus respectivas ponderaciones, y calcular automáticamente el promedio final. Además, incluye 
-                funciones avanzadas como simuladores que permiten calcular qué nota se necesita para alcanzar un promedio objetivo 
-                o simular el promedio final con una nota específica.
-              </p>
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faShieldAlt} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>Privacidad y Seguridad</h2>
-              </div>
-              <div className={styles.sectionCard}>
-                <p className={styles.paragraph}>
-                En NotaMinima, la privacidad de nuestros usuarios es fundamental. Todos los datos académicos (cursos, notas, 
-                cálculos) se almacenan únicamente en el navegador del usuario mediante tecnologías de almacenamiento local. 
-                Esto significa que nunca enviamos información académica a servidores externos, garantizando que los estudiantes 
-                tengan control total sobre sus datos.
-              </p>
-              <p className={styles.paragraph}>
-                Los usuarios pueden exportar sus datos en formato JSON en cualquier momento para realizar copias de seguridad, 
-                y también pueden importar datos previamente exportados. Esta funcionalidad permite que los estudiantes puedan 
-                transferir sus datos entre dispositivos o hacer respaldos periódicos de su información académica.
-              </p>
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <FontAwesomeIcon icon={faHeart} className={styles.sectionIcon} />
-                <h2 className={styles.sectionTitle}>Nuestro Compromiso</h2>
-              </div>
-              <div className={styles.sectionCard}>
-                <p className={styles.paragraph}>
-                NotaMinima está comprometido con proporcionar herramientas educativas gratuitas y de calidad para estudiantes 
-                chilenos. Buscamos simplificar procesos que pueden ser complejos o tediosos, permitiendo que los estudiantes 
-                se enfoquen en lo que realmente importa: su aprendizaje y desarrollo académico.
-              </p>
-              <p className={styles.paragraph}>
-                Continuamos mejorando nuestras herramientas basándonos en las necesidades reales de los estudiantes y en el 
-                feedback que recibimos de nuestra comunidad de usuarios. Si tienes sugerencias o encuentras algún problema, 
-                no dudes en contactarnos.
-              </p>
-                <div className={styles.supportSection}>
-                  <p className={styles.supportText}>
-                    Si NotaMinima te ha sido útil, considera apoyar el proyecto para mantenerlo gratuito y seguir mejorando.
-                  </p>
-                  <a 
-                    href="https://www.flow.cl/btn.php?token=j40f75b03173c6d0b66ce5756c235f2ccebf1002" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className={styles.donateButton}
-                  >
-                    <FontAwesomeIcon icon={faHeart} />
-                    Apoyar NotaMinima
-                  </a>
-                </div>
-              </div>
-            </section>
-
-            <div className={styles.highlight}>
-              <h3 className={styles.highlightTitle}>En Resumen</h3>
-              <p className={styles.highlightText}>
-                NotaMinima es una plataforma gratuita diseñada para estudiantes chilenos que necesitan calcular promedios 
-                ponderados y convertir puntajes a notas según el sistema educativo chileno. Todas las herramientas son 
-                completamente funcionales sin necesidad de registro, y todos los datos se almacenan localmente en el navegador 
-                del usuario, garantizando privacidad y seguridad total.
-              </p>
             </div>
           </div>
+        </section>
 
-        </div>
+        {/* Mission Section */}
+        <section className={styles.missionSection}>
+          <div className={styles.container}>
+            <div className={styles.missionGrid}>
+              <div className={styles.missionContent}>
+                <h2 className={styles.sectionTitle}>
+                  <FontAwesomeIcon icon={faLightbulb} className={styles.sectionIcon} />
+                  Nuestra Misión
+                </h2>
+                <p className={styles.missionText}>
+                  NotaMinima nació de una necesidad simple: los estudiantes chilenos necesitaban 
+                  una herramienta gratuita, rápida y confiable para calcular sus notas según el 
+                  sistema educativo local.
+                </p>
+                <p className={styles.missionText}>
+                  Hoy, NotaMinima es mucho más que una calculadora. Es una plataforma completa 
+                  que te ayuda a organizar tu vida académica, visualizar tu progreso y mantenerte 
+                  motivado con un sistema de logros único.
+                </p>
+                <div className={styles.missionPoints}>
+                  <div className={styles.missionPoint}>
+                    <FontAwesomeIcon icon={faCheck} className={styles.checkIcon} />
+                    <span>Diseñado específicamente para Chile</span>
+                  </div>
+                  <div className={styles.missionPoint}>
+                    <FontAwesomeIcon icon={faCheck} className={styles.checkIcon} />
+                    <span>100% gratuito, sin funciones premium ocultas</span>
+                  </div>
+                  <div className={styles.missionPoint}>
+                    <FontAwesomeIcon icon={faCheck} className={styles.checkIcon} />
+                    <span>Respetamos tu privacidad y tus datos</span>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.missionVisual}>
+                <div className={styles.scaleCard}>
+                  <div className={styles.scaleHeader}>
+                    <FontAwesomeIcon icon={faGraduationCap} />
+                    <span>Escala Chilena</span>
+                  </div>
+                  <div className={styles.scaleBody}>
+                    <div className={styles.scaleRow}>
+                      <span className={styles.scaleRange}>7.0 - 6.0</span>
+                      <span className={`${styles.scaleLabel} ${styles.excellent}`}>Excelente</span>
+                    </div>
+                    <div className={styles.scaleRow}>
+                      <span className={styles.scaleRange}>5.9 - 5.0</span>
+                      <span className={`${styles.scaleLabel} ${styles.good}`}>Muy Bueno</span>
+                    </div>
+                    <div className={styles.scaleRow}>
+                      <span className={styles.scaleRange}>4.9 - 4.0</span>
+                      <span className={`${styles.scaleLabel} ${styles.pass}`}>Aprobado</span>
+                    </div>
+                    <div className={styles.scaleRow}>
+                      <span className={styles.scaleRange}>3.9 - 1.0</span>
+                      <span className={`${styles.scaleLabel} ${styles.fail}`}>Reprobado</span>
+                    </div>
+                  </div>
+                  <div className={styles.scaleFooter}>
+                    <span>4.0 = Nota mínima de aprobación</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className={styles.featuresSection}>
+          <div className={styles.container}>
+            <div className={styles.featuresHeader}>
+              <h2 className={styles.sectionTitleCentered}>Todo lo que necesitas</h2>
+              <p className={styles.featuresSubtitle}>
+                Herramientas completas para cada aspecto de tu vida académica
+              </p>
+            </div>
+            <div className={styles.featuresGrid}>
+              {features.map((feature, index) => (
+                <div key={index} className={styles.featureCard}>
+                  <div 
+                    className={styles.featureIcon} 
+                    style={{ background: `linear-gradient(135deg, ${feature.color}22, ${feature.color}11)` }}
+                  >
+                    <FontAwesomeIcon icon={feature.icon} style={{ color: feature.color }} />
+                  </div>
+                  <h3 className={styles.featureTitle}>{feature.title}</h3>
+                  <p className={styles.featureDesc}>{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* How it Works Section */}
+        <section className={styles.howSection}>
+          <div className={styles.container}>
+            <div className={styles.howHeader}>
+              <h2 className={styles.sectionTitleCentered}>
+                <FontAwesomeIcon icon={faBook} className={styles.sectionIcon} />
+                El Sistema de Notas en Chile
+              </h2>
+            </div>
+            <div className={styles.howContent}>
+              <div className={styles.howCard}>
+                <h3>Escala de Calificaciones</h3>
+                <p>
+                  Chile utiliza una escala numérica del <strong>1.0 al 7.0</strong> para evaluar 
+                  el desempeño académico. La nota <strong>4.0</strong> es la mínima para aprobar, 
+                  lo que significa que cualquier calificación inferior es reprobatoria. Este sistema 
+                  se utiliza en todos los niveles educativos.
+                </p>
+              </div>
+              <div className={styles.howCard}>
+                <h3>Porcentaje de Exigencia</h3>
+                <p>
+                  El porcentaje de exigencia determina cuántos puntos necesitas para aprobar. 
+                  En Chile típicamente varía entre <strong>50% y 70%</strong>. Si la exigencia 
+                  es 60% y el total es 100 puntos, necesitas 60 puntos para obtener un 4.0.
+                </p>
+              </div>
+              <div className={styles.howCard}>
+                <h3>Promedio Ponderado</h3>
+                <p>
+                  El promedio ponderado considera el peso de cada evaluación. Si un examen vale 
+                  40% y las tareas 60%, el promedio final refleja esa proporción. NotaMinima 
+                  calcula esto automáticamente.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Privacy Section */}
+        <section className={styles.privacySection}>
+          <div className={styles.container}>
+            <div className={styles.privacyGrid}>
+              <div className={styles.privacyContent}>
+                <h2 className={styles.sectionTitle}>
+                  <FontAwesomeIcon icon={faShieldAlt} className={styles.sectionIcon} />
+                  Privacidad y Seguridad
+                </h2>
+                <p className={styles.privacyText}>
+                  En NotaMinima, tu privacidad es prioridad. Tienes control total sobre tus datos 
+                  y cómo se almacenan.
+                </p>
+                <div className={styles.privacyOptions}>
+                  <div className={styles.privacyOption}>
+                    <div className={styles.privacyOptionIcon}>
+                      <FontAwesomeIcon icon={faLock} />
+                    </div>
+                    <div>
+                      <h4>Sin cuenta</h4>
+                      <p>Tus datos se guardan solo en tu navegador. Nunca salen de tu dispositivo.</p>
+                    </div>
+                  </div>
+                  <div className={styles.privacyOption}>
+                    <div className={styles.privacyOptionIcon}>
+                      <FontAwesomeIcon icon={faCloud} />
+                    </div>
+                    <div>
+                      <h4>Con cuenta</h4>
+                      <p>Sincronización segura con cifrado. Accede desde cualquier dispositivo.</p>
+                    </div>
+                  </div>
+                  <div className={styles.privacyOption}>
+                    <div className={styles.privacyOptionIcon}>
+                      <FontAwesomeIcon icon={faCode} />
+                    </div>
+                    <div>
+                      <h4>Sin rastreo</h4>
+                      <p>No vendemos ni compartimos tus datos con terceros. Sin publicidad invasiva.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.privacyVisual}>
+                <div className={styles.deviceStack}>
+                  <div className={styles.deviceCard}>
+                    <FontAwesomeIcon icon={faMobileScreen} />
+                    <span>Celular</span>
+                  </div>
+                  <div className={styles.deviceCard}>
+                    <FontAwesomeIcon icon={faCalculator} />
+                    <span>Tablet</span>
+                  </div>
+                  <div className={styles.deviceCard}>
+                    <FontAwesomeIcon icon={faCode} />
+                    <span>Computador</span>
+                  </div>
+                </div>
+                <p className={styles.deviceText}>Funciona en todos tus dispositivos</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Support Section */}
+        <section className={styles.supportSection}>
+          <div className={styles.container}>
+            <div className={styles.supportCard}>
+              <div className={styles.supportIcon}>
+                <FontAwesomeIcon icon={faHeart} />
+              </div>
+              <h2>¿Te gusta NotaMinima?</h2>
+              <p>
+                NotaMinima es y siempre será gratuito. Si te ha sido útil, considera apoyar 
+                el proyecto para que podamos seguir mejorando y manteniéndolo online.
+              </p>
+              <a 
+                href="https://www.flow.cl/btn.php?token=j40f75b03173c6d0b66ce5756c235f2ccebf1002" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={styles.donateButton}
+              >
+                <FontAwesomeIcon icon={faHeart} />
+                Apoyar NotaMinima
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className={styles.ctaSection}>
+          <div className={styles.container}>
+            <div className={styles.ctaCard}>
+              <h2>Empieza a usar NotaMinima hoy</h2>
+              <p>Es gratis, sin registro obligatorio, y tus datos están seguros.</p>
+              <div className={styles.ctaButtons}>
+                <Link href="/register" className={styles.ctaPrimary}>
+                  <FontAwesomeIcon icon={faUserPlus} />
+                  Crear cuenta gratis
+                </Link>
+                <Link href="/promedio" className={styles.ctaSecondary}>
+                  Calcular promedio
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Links Section */}
+        <section className={styles.linksSection}>
+          <div className={styles.container}>
+            <div className={styles.linksList}>
+              <Link href="/ayuda" className={styles.pageLink}>
+                <FontAwesomeIcon icon={faBook} />
+                Centro de Ayuda
+              </Link>
+              <Link href="/sugerencias" className={styles.pageLink}>
+                <FontAwesomeIcon icon={faLightbulb} />
+                Sugerencias
+              </Link>
+              <Link href="/privacidad" className={styles.pageLink}>
+                <FontAwesomeIcon icon={faShieldAlt} />
+                Privacidad
+              </Link>
+              <Link href="/terminos" className={styles.pageLink}>
+                <FontAwesomeIcon icon={faCode} />
+                Términos
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
     </>
   );
 }
-
-
