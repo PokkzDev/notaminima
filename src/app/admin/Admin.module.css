@@ -437,6 +437,124 @@
   position: relative;
 }
 
+/* Registration Section */
+.registrationSection {
+  margin-bottom: 1.5rem;
+}
+
+.registrationQuickStats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  max-width: 500px;
+}
+
+.registrationStatCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.2s ease;
+}
+
+.registrationStatCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--shadow-color-hover);
+}
+
+.registrationStatIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.registrationStatContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.registrationStatValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  transition: color 0.3s ease;
+}
+
+.registrationStatLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+/* Charts */
+.chartsRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.chartCard {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  padding: 1.25rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chartTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.chartTitle svg {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+}
+
+.chartBadge {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  background: var(--bg-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+}
+
+.chartWrapper {
+  height: 240px;
+  position: relative;
+}
+
 /* Role Distribution */
 .roleSection {
   margin-bottom: 1.5rem;
@@ -1252,6 +1370,134 @@
   word-break: break-all;
 }
 
+/* Carreras Tabs */
+.carrerasTabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.carreraTab {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.carreraTab:hover {
+  border-color: var(--accent-color);
+}
+
+.carreraTabHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.carreraTabHeader:hover {
+  background: var(--bg-secondary);
+}
+
+.carreraTabTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.carreraIcon {
+  font-size: 0.85rem;
+  color: var(--accent-color);
+}
+
+.carreraCount {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  padding: 0.125rem 0.5rem;
+  border-radius: 50px;
+}
+
+.carreraChevron {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+}
+
+.carreraTabContent {
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.semesterGroup {
+  margin-bottom: 0.75rem;
+}
+
+.semesterGroup:last-child {
+  margin-bottom: 0;
+}
+
+.semesterHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.375rem;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.semesterHeader svg {
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.ramosList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ramoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  padding: 0.375rem 0.5rem;
+  background: var(--bg-primary);
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.ramoItem svg {
+  font-size: 0.65rem;
+  color: #8b5cf6;
+}
+
+.noRamos {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
 .userStatsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1606,6 +1852,10 @@
   .chartsRowThree .chartCardSmall:last-child {
     grid-column: span 2;
   }
+
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -1696,6 +1946,18 @@
     font-size: 1.75rem;
   }
 
+  .registrationQuickStats {
+    max-width: 100%;
+  }
+
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .chartWrapper {
+    height: 220px;
+  }
+
   .tableControls {
     flex-direction: column;
   }
@@ -1781,6 +2043,24 @@
 
   .statLabel {
     font-size: 0.85rem;
+  }
+
+  .registrationQuickStats {
+    grid-template-columns: 1fr;
+  }
+
+  .registrationStatCard {
+    padding: 1rem;
+  }
+
+  .registrationStatIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .registrationStatValue {
+    font-size: 1.5rem;
   }
 
   .chartWrapper {

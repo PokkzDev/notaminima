@@ -23,7 +23,9 @@ import {
   faInbox,
   faCheck,
   faEye,
-  faEyeSlash
+  faEyeSlash,
+  faDesktop,
+  faMobileAlt
 } from '@fortawesome/free-solid-svg-icons';
 import styles from '../Admin.module.css';
 import sugerenciasStyles from './Sugerencias.module.css';
@@ -42,6 +44,7 @@ export default function AdminSugerenciasPage() {
   });
   const [search, setSearch] = useState('');
   const [tipoFilter, setTipoFilter] = useState('');
+  const [plataformaFilter, setPlataformaFilter] = useState('');
   const [estadoFilter, setEstadoFilter] = useState('');
 
   // Modal states
@@ -67,6 +70,7 @@ export default function AdminSugerenciasPage() {
 
       if (search) params.append('search', search);
       if (tipoFilter) params.append('tipo', tipoFilter);
+      if (plataformaFilter) params.append('plataforma', plataformaFilter);
       if (estadoFilter) params.append('estado', estadoFilter);
 
       const response = await fetch(`/api/admin/sugerencias?${params}`);
@@ -81,13 +85,13 @@ export default function AdminSugerenciasPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, tipoFilter, estadoFilter, pagination.limit]);
+  }, [search, tipoFilter, plataformaFilter, estadoFilter, pagination.limit]);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
       loadSugerencias(1);
     }
-  }, [status, session, tipoFilter, estadoFilter, loadSugerencias]);
+  }, [status, session, tipoFilter, plataformaFilter, estadoFilter, loadSugerencias]);
 
   // Debounced search
   useEffect(() => {
@@ -211,6 +215,14 @@ export default function AdminSugerenciasPage() {
     }
   };
 
+  const getPlataformaIcon = (plataforma) => {
+    return plataforma === 'mobile' ? faMobileAlt : faDesktop;
+  };
+
+  const getPlataformaLabel = (plataforma) => {
+    return plataforma === 'mobile' ? 'Móvil' : 'Escritorio';
+  };
+
   if (status === 'loading' || (loading && sugerencias.length === 0)) {
     return (
       <main className={styles.main}>
@@ -288,6 +300,15 @@ export default function AdminSugerenciasPage() {
             <option value="otro">Otro</option>
           </select>
           <select
+            value={plataformaFilter}
+            onChange={(e) => setPlataformaFilter(e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="">Todas las plataformas</option>
+            <option value="desktop">Escritorio</option>
+            <option value="mobile">Móvil</option>
+          </select>
+          <select
             value={estadoFilter}
             onChange={(e) => setEstadoFilter(e.target.value)}
             className={styles.filterSelect}
@@ -314,6 +335,7 @@ export default function AdminSugerenciasPage() {
                       <th style={{ width: '40px' }}></th>
                       <th>Remitente</th>
                       <th>Tipo</th>
+                      <th>Plataforma</th>
                       <th>Mensaje</th>
                       <th>Fecha</th>
                       <th>Acciones</th>
@@ -347,6 +369,12 @@ export default function AdminSugerenciasPage() {
                           <span className={`${sugerenciasStyles.tipoBadge} ${getTipoBadgeClass(sugerencia.tipo)}`}>
                             <FontAwesomeIcon icon={getTipoIcon(sugerencia.tipo)} />
                             {getTipoLabel(sugerencia.tipo)}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`${sugerenciasStyles.plataformaBadge} ${sugerencia.plataforma === 'mobile' ? sugerenciasStyles.badgeMobile : sugerenciasStyles.badgeDesktop}`}>
+                            <FontAwesomeIcon icon={getPlataformaIcon(sugerencia.plataforma)} />
+                            {getPlataformaLabel(sugerencia.plataforma)}
                           </span>
                         </td>
                         <td>
@@ -454,6 +482,11 @@ export default function AdminSugerenciasPage() {
                       <a href={`mailto:${viewModal.sugerencia.email}`}>{viewModal.sugerencia.email}</a>
                     </div>
                   )}
+                  <div className={sugerenciasStyles.viewMetaItem}>
+                    <strong>Plataforma:</strong> 
+                    <FontAwesomeIcon icon={getPlataformaIcon(viewModal.sugerencia.plataforma)} style={{ marginLeft: '0.25rem', marginRight: '0.25rem' }} />
+                    {getPlataformaLabel(viewModal.sugerencia.plataforma)}
+                  </div>
                   <div className={sugerenciasStyles.viewMetaItem}>
                     <strong>Fecha:</strong> {formatDate(viewModal.sugerencia.createdAt)}
                   </div>

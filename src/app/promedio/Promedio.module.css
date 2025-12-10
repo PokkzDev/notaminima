@@ -2671,238 +2671,17 @@
 /* Responsive */
 @media (max-width: 768px) {
   .main {
-    padding: 1.5rem 0.75rem;
+    padding: 0.75rem 0.5rem;
   }
 
   .loadingContainer {
     min-height: 50vh;
-    padding: 1.5rem;
-  }
-
-  .loadingContent {
-    padding: 2rem 2.5rem;
-    gap: 1.25rem;
-  }
-
-  .loadingIconWrapper {
-    width: 70px;
-    height: 70px;
-  }
-
-  .loadingMainIcon {
-    font-size: 2rem;
-  }
-
-  .loadingTitle {
-    font-size: 1.25rem;
-  }
-
-  .loadingSubtitle {
-    font-size: 0.9rem;
-  }
-
-  .header {
-    padding: 1.5rem 1.5rem;
-  }
-
-  .headerIcon {
-    width: 55px;
-    height: 55px;
-    font-size: 1.75rem;
-    margin-bottom: 0.875rem;
-  }
-
-  .title {
-    font-size: 1.75rem;
-  }
-
-  .subtitle {
-    font-size: 1.05rem;
-  }
-
-  .infoHeader {
-    padding: 1.25rem 1.5rem;
-  }
-
-  .infoContent {
-    padding: 0 1.5rem 1.5rem 1.5rem;
-  }
-
-  .infoTitle {
-    font-size: 1.5rem;
-  }
-
-  .exampleTitle,
-  .tipsTitle {
-    font-size: 1.25rem;
-  }
-
-  .infoText,
-  .exampleText {
-    font-size: 0.95rem;
-  }
-
-  /* Grid becomes single column on tablets */
-  .cursosContainer {
-    grid-template-columns: 1fr;
-  }
-
-  .addCursoPlaceholder {
-    min-height: 100px;
-  }
-
-  .addCursoCard {
-    min-height: 100px;
-  }
-
-  /* Compact curso responsive */
-  .cursoHeader {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .cursoTitleSection {
-    flex: 1;
-    min-width: 120px;
-  }
-
-  .cursoHeaderRight {
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .promedioCompact {
-    padding: 0.35rem 0.6rem;
-  }
-
-  .promedioCompactValue {
-    font-size: 1.1rem;
-  }
-
-  .promedioCompactLabel {
-    font-size: 0.65rem;
-  }
-
-  .notaRowCompact {
-    padding: 0.3rem 0.4rem;
-  }
-
-  .notaInputCompact {
-    width: 55px;
-    padding: 0.3rem 0.4rem;
-    font-size: 0.85rem;
-  }
-
-  .ponderacionInputCompact {
-    width: 45px;
-    padding: 0.3rem 0.4rem;
-    font-size: 0.85rem;
-  }
-
-  .cursoFooter {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .agregarButtonsCompact {
-    width: 100%;
-  }
-
-  .agregarNotaCompact,
-  .agregarExamenCompact {
-    flex: 1;
-    justify-content: center;
-  }
-
-  /* Legacy styles */
-  .cursoActions {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-
-  .promediosContainer {
-    flex: 1;
-    min-width: 100%;
-    order: -1;
-    margin-bottom: 0.5rem;
-  }
-
-  .promedioDisplay {
-    width: 100%;
-    justify-content: space-between;
-    padding: 0.875rem 1.25rem;
-  }
-
-  .promedioLabel {
-    font-size: 0.75rem;
-  }
-
-  .promedioSubLabel {
-    font-size: 0.7rem;
-  }
-
-  .promedioValue {
-    font-size: 1.75rem;
-  }
-
-  .notasHeader,
-  .notaRow {
-    grid-template-columns: 1fr 1fr 60px;
-    gap: 0.5rem;
-  }
-
-  .notaHeaderItem {
-    font-size: 0.8rem;
-  }
-
-  .notaInput {
-    padding: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .agregarCursoForm {
-    width: 100%;
-  }
-
-  .cursoInput {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .confirmarButton,
-  .cancelarButton {
-    flex: 1;
-  }
-
-  .confirmDeleteGroup {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .confirmText {
-    font-size: 0.8rem;
-  }
-
-  .confirmButton,
-  .cancelButton {
-    font-size: 0.85rem;
-    padding: 0.35rem 0.5rem;
-  }
-
-}
-
-@media (max-width: 480px) {
-  .loadingContainer {
-    min-height: 45vh;
     padding: 1rem;
   }
 
   .loadingContent {
-    padding: 1.75rem 1.5rem;
+    padding: 1.5rem 2rem;
     gap: 1rem;
-    border-radius: 16px;
   }
 
   .loadingIconWrapper {
@@ -2914,10 +2693,6 @@
     font-size: 1.75rem;
   }
 
-  .loadingSpinnerRing {
-    border-width: 2px;
-  }
-
   .loadingTitle {
     font-size: 1.1rem;
   }
@@ -2927,198 +2702,32 @@
   }
 
   .header {
-    padding: 1.25rem 1rem;
+    padding: 0.875rem 1rem;
+    margin-bottom: 0;
+    border-radius: 10px;
   }
 
   .headerIcon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    border-radius: 12px;
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
   }
 
   .subtitle {
-    font-size: 1rem;
-  }
-
-  /* Compact curso responsive - small screens */
-  .cursoCard {
-    padding: 0.75rem 0.85rem;
-  }
-
-  .cursoNombre {
-    font-size: 0.95rem;
-  }
-
-  .cursoHeader {
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .cursoHeaderRight {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .promedioCompact {
-    flex: 1;
-  }
-
-  .moverSemestreSelectCompact {
-    max-width: 75px;
-    font-size: 0.7rem;
-  }
-
-  .notaRowCompact {
-    gap: 0.35rem;
-  }
-
-  .notaIndexLabel {
-    font-size: 0.65rem;
-    min-width: 20px;
-  }
-
-  .notaInputCompact {
-    width: 50px;
-    font-size: 0.8rem;
-  }
-
-  .ponderacionInputCompact {
-    width: 40px;
-    font-size: 0.8rem;
-  }
-
-  .inputSeparator,
-  .percentSign {
-    font-size: 0.7rem;
-  }
-
-  .examenFinalTag {
-    font-size: 0.6rem;
-    padding: 0.1rem 0.3rem;
-  }
-
-  .agregarNotaCompact,
-  .agregarExamenCompact {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.5rem;
-  }
-
-  .ponderacionWarningCompact {
-    font-size: 0.7rem;
-  }
-
-  /* Legacy styles */
-  .notasHeader {
-    font-size: 0.75rem;
-    padding: 0.5rem;
-  }
-
-  .notaRow {
-    gap: 0.25rem;
-  }
-
-  .notaInput {
-    padding: 0.4rem;
     font-size: 0.85rem;
+    line-height: 1.3;
   }
 
-  .promedioDisplay {
-    padding: 0.75rem 1rem;
+  .content {
     gap: 0.75rem;
-  }
-
-  .promedioLabel {
-    font-size: 0.7rem;
-  }
-
-  .promedioSubLabel {
-    font-size: 0.65rem;
-  }
-
-  .promedioValue {
-    font-size: 1.5rem;
-  }
-
-  .ponderacionTotal {
-    font-size: 0.85rem;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
-  }
-
-  .confirmText {
-    font-size: 0.75rem;
-  }
-
-  .confirmNotaButton,
-  .cancelNotaButton {
-    font-size: 0.8rem;
-    padding: 0.3rem 0.4rem;
-  }
-
-  .resumenGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .resumenPromedioValue {
-    font-size: 1.75rem;
-  }
-
-  .resumenInfo {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .actionButtons {
-    gap: 0.75rem;
-  }
-
-  .tooltip {
-    font-size: 0.8rem;
-    white-space: normal;
-    max-width: 200px;
-    text-align: center;
-  }
-
-  .exportButton,
-  .importButton {
-    padding: 0.65rem 1.25rem;
-    font-size: 0.9rem;
-  }
-
-  .modal {
-    margin: 1rem;
-  }
-
-  .modalHeader {
-    padding: 1.25rem;
-  }
-
-  .modalTitle {
-    font-size: 1.25rem;
-  }
-
-  .modalBody {
-    padding: 1.25rem;
-  }
-
-  .modalActions {
-    flex-direction: column;
-  }
-
-  .modalImportButton,
-  .modalCancelButton {
-    width: 100%;
-  }
-
-  .resumenTitle {
-    font-size: 1.5rem;
+    margin-top: 0.5rem;
   }
 
   .infoHeader {
@@ -3138,82 +2747,1126 @@
     font-size: 1.1rem;
   }
 
-  .helpLink {
+  .infoText,
+  .exampleText {
     font-size: 0.9rem;
   }
 
-  /* Semester responsive */
-  .semesterSection {
-    padding: 1rem;
+  /* Carrera section - compact */
+  .carreraSection {
+    padding: 0.65rem 0.75rem;
+    margin-top: 0.75rem;
+    border-radius: 10px;
   }
 
-  .semesterTabs {
+  .carreraHeader {
+    margin-bottom: 0.5rem;
     gap: 0.5rem;
   }
 
-  .semesterTab {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
+  .carreraIcon {
+    font-size: 1rem;
   }
 
-  .semestreInput,
-  .editarSemestreInput {
-    width: 100px;
-    font-size: 0.8rem;
-  }
-
-  .confirmDeleteSemestre {
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  .confirmSemestreText {
-    font-size: 0.75rem;
-  }
-
-  .confirmSemestreButton,
-  .deleteSemestreButton {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.5rem;
-  }
-
-  .moverSemestreSelect {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.5rem;
-  }
-
-  /* Carrera responsive */
-  .carreraSection {
-    padding: 1rem;
+  .carreraTitle {
+    font-size: 0.9rem;
   }
 
   .carreraTabs {
-    gap: 0.5rem;
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .carreraTabs::-webkit-scrollbar {
+    display: none;
   }
 
   .carreraTab {
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 6px;
+  }
+
+  .nuevaCarreraButton {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 6px;
+  }
+
+  /* Semester section - compact */
+  .semesterSection {
+    padding: 0.65rem 0.75rem;
+    margin-top: 0.5rem;
+    border-radius: 10px;
+  }
+
+  .semesterHeader {
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .semesterIcon {
+    font-size: 1rem;
+  }
+
+  .semesterTitle {
+    font-size: 0.9rem;
+  }
+
+  .semesterTabs {
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .semesterTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .semesterTab {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 6px;
+  }
+
+  .nuevoSemestreButton {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 6px;
+  }
+
+  .dragHandle {
+    padding: 0.15rem;
+    margin-right: 0.15rem;
+    font-size: 0.7rem;
+  }
+
+  /* Resumen section - compact 2-column grid */
+  .resumenSection {
+    margin-bottom: 0.75rem;
+  }
+
+  .resumenGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .resumenCard {
+    border-radius: 8px;
+    border-width: 1px;
+  }
+
+  .resumenCardHeader {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .resumenCardNombre {
     font-size: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .resumenCardBody {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .resumenPromedioContainer {
+    margin-bottom: 0.35rem;
+  }
+
+  .resumenPromedioLabel {
+    font-size: 0.65rem;
+  }
+
+  .resumenPromedioValue {
+    font-size: 1.5rem;
+  }
+
+  .resumenInfo {
+    padding-top: 0.35rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .resumenInfoLabel {
+    font-size: 0.65rem;
+  }
+
+  .resumenEstado {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 8px;
+  }
+
+  /* Cursos - 2-column compact grid on mobile */
+  .cursosContainer {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .cursoCard {
+    padding: 0.6rem 0.7rem;
+    border-radius: 8px;
+  }
+
+  .cursoDragHandle {
+    top: 0.3rem;
+    left: 0.3rem;
+    font-size: 0.7rem;
+    padding: 0.15rem;
+  }
+
+  .addCursoPlaceholder {
+    min-height: 80px;
+    padding: 0.75rem;
+    gap: 0.4rem;
+    border-radius: 8px;
+  }
+
+  .addCursoCard {
+    min-height: 80px;
+    padding: 0.6rem 0.7rem;
+    border-radius: 8px;
+  }
+
+  .addCursoIcon {
+    font-size: 1.1rem;
+  }
+
+  .addCursoText {
+    font-size: 0.75rem;
+  }
+
+  /* Compact curso responsive */
+  .cursoHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .cursoTitleSection {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cursoNombre {
+    font-size: 0.85rem;
+    line-height: 1.2;
+    padding-left: 1rem;
+  }
+
+  .cursoHeaderRight {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.3rem;
+  }
+
+  .promedioCompact {
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    flex: 1;
+  }
+
+  .promedioCompactValue {
+    font-size: 1rem;
+  }
+
+  .promedioCompactLabel {
+    font-size: 0.55rem;
+  }
+
+  .moverSemestreSelectCompact {
+    max-width: 60px;
+    padding: 0.25rem 0.35rem;
+    font-size: 0.65rem;
+    border-radius: 4px;
+  }
+
+  .deleteButtonCompact,
+  .iconButtonSmall {
+    padding: 0.2rem;
+    font-size: 0.7rem;
+  }
+
+  /* Notas section - very compact */
+  .notasSectionCompact {
+    gap: 0.3rem;
+  }
+
+  .notasListCompact {
+    gap: 0.25rem;
+  }
+
+  .notaRowCompact {
+    padding: 0.2rem 0.3rem;
+    gap: 0.25rem;
+    border-radius: 4px;
+  }
+
+  .notaIndexLabel {
+    font-size: 0.55rem;
+    min-width: 16px;
+    display: none;
+  }
+
+  .notaInputGroup {
+    gap: 0.15rem;
+  }
+
+  .notaInputCompact {
+    width: 42px;
+    padding: 0.2rem 0.25rem;
+    font-size: 0.75rem;
+    border-radius: 3px;
+  }
+
+  .ponderacionInputCompact {
+    width: 32px;
+    padding: 0.2rem 0.25rem;
+    font-size: 0.75rem;
+    border-radius: 3px;
+  }
+
+  .inputSeparator {
+    font-size: 0.6rem;
+  }
+
+  .percentSign {
+    font-size: 0.6rem;
+  }
+
+  .deleteInlineBtn {
+    font-size: 0.6rem;
+    padding: 0.15rem;
+  }
+
+  .confirmInlineBtn,
+  .cancelInlineBtn {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.25rem;
+    border-radius: 2px;
+  }
+
+  /* Examen final compact */
+  .examenFinalRowCompact {
+    padding: 0.25rem 0.3rem;
+    gap: 0.25rem;
+    border-radius: 4px;
+    margin-top: 0.15rem;
+  }
+
+  .examenFinalTag {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.25rem;
+    border-radius: 2px;
+  }
+
+  .sinNotasCompact {
+    padding: 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .cursoFooter {
+    margin-top: 0.3rem;
+    padding-top: 0.3rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .ponderacionWarningCompact {
+    font-size: 0.6rem;
+  }
+
+  .agregarButtonsCompact {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .agregarNotaCompact,
+  .agregarExamenCompact {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.6rem;
+    border-radius: 4px;
+    gap: 0.2rem;
+  }
+
+  /* Legacy styles */
+  .cursoActions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .promediosContainer {
+    flex: 1;
+    min-width: 100%;
+    order: -1;
+    margin-bottom: 0.5rem;
+  }
+
+  .promedioDisplay {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .promedioLabel {
+    font-size: 0.7rem;
+  }
+
+  .promedioSubLabel {
+    font-size: 0.6rem;
+  }
+
+  .promedioValue {
+    font-size: 1.5rem;
+  }
+
+  .notasHeader,
+  .notaRow {
+    grid-template-columns: 1fr 1fr 50px;
+    gap: 0.35rem;
+  }
+
+  .notaHeaderItem {
+    font-size: 0.7rem;
+  }
+
+  .notaInput {
+    padding: 0.35rem;
+    font-size: 0.8rem;
+  }
+
+  .agregarCursoForm {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .cursoInput {
+    width: 100%;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .confirmarButton,
+  .cancelarButton {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .confirmDeleteGroup {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.35rem;
+  }
+
+  .confirmText {
+    font-size: 0.7rem;
+  }
+
+  .confirmButton,
+  .cancelButton {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.4rem;
+  }
+
+  /* Edit forms compact */
+  .editarCursoForm {
+    gap: 0.25rem;
+  }
+
+  .editarCursoInput {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .addCursoFormContent {
+    gap: 0.5rem;
+  }
+
+  .addCursoInput {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .addCursoActions {
+    gap: 0.35rem;
+  }
+
+  .addCursoConfirm {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+    gap: 0.3rem;
+  }
+
+  .addCursoCancel {
+    padding: 0.35rem 0.5rem;
+  }
+
+  /* Disabled placeholder */
+  .addCursoPlaceholderDisabled {
+    min-height: 80px;
+    padding: 0.75rem;
+    gap: 0.4rem;
+    border-radius: 8px;
+  }
+
+  .addCursoIconDisabled {
+    font-size: 1.1rem;
+  }
+
+  .addCursoTextDisabled {
+    font-size: 0.7rem;
+    line-height: 1.3;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 0.5rem 0.35rem;
+  }
+
+  .loadingContainer {
+    min-height: 40vh;
+    padding: 0.75rem;
+  }
+
+  .loadingContent {
+    padding: 1.25rem 1rem;
+    gap: 0.75rem;
+    border-radius: 12px;
+  }
+
+  .loadingIconWrapper {
+    width: 50px;
+    height: 50px;
+  }
+
+  .loadingMainIcon {
+    font-size: 1.5rem;
+  }
+
+  .loadingSpinnerRing {
+    border-width: 2px;
+  }
+
+  .loadingTitle {
+    font-size: 1rem;
+  }
+
+  .loadingSubtitle {
+    font-size: 0.8rem;
+  }
+
+  .header {
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  .headerIcon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+    border-radius: 10px;
+  }
+
+  .title {
+    font-size: 1.1rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+  }
+
+  .content {
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+  }
+
+  /* Carrera - ultra compact */
+  .carreraSection {
+    padding: 0.5rem 0.6rem;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .carreraHeader {
+    margin-bottom: 0.35rem;
+    gap: 0.35rem;
+  }
+
+  .carreraIcon {
+    font-size: 0.85rem;
+  }
+
+  .carreraTitle {
+    font-size: 0.8rem;
+  }
+
+  .carreraTabs {
+    gap: 0.3rem;
+  }
+
+  .carreraTab {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 5px;
+    gap: 0.3rem;
+  }
+
+  .nuevaCarreraButton {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 5px;
   }
 
   .carreraInput,
   .editarCarreraInput {
-    width: 120px;
-    font-size: 0.8rem;
+    width: 90px;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
   }
 
   .confirmDeleteCarrera {
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.25rem;
+    padding: 0.35rem;
   }
 
   .confirmCarreraText {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
 
   .confirmCarreraButton,
   .deleteCarreraButton {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  /* Semester - ultra compact */
+  .semesterSection {
+    padding: 0.5rem 0.6rem;
+    margin-top: 0.35rem;
+    border-radius: 8px;
+  }
+
+  .semesterHeader {
+    margin-bottom: 0.35rem;
+    gap: 0.35rem;
+  }
+
+  .semesterIcon {
+    font-size: 0.85rem;
+  }
+
+  .semesterTitle {
+    font-size: 0.8rem;
+  }
+
+  .semesterTabs {
+    gap: 0.3rem;
+  }
+
+  .semesterTab {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 5px;
+    gap: 0.3rem;
+  }
+
+  .nuevoSemestreButton {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 5px;
+  }
+
+  .semestreInput,
+  .editarSemestreInput {
+    width: 80px;
     font-size: 0.7rem;
     padding: 0.3rem 0.5rem;
+  }
+
+  .confirmDeleteSemestre {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.35rem;
+  }
+
+  .confirmSemestreText {
+    font-size: 0.65rem;
+  }
+
+  .confirmSemestreButton,
+  .deleteSemestreButton {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .dragHandle {
+    padding: 0.1rem;
+    margin-right: 0.1rem;
+    font-size: 0.6rem;
+  }
+
+  .moverCarreraSelectCompact {
+    max-width: 70px;
+    padding: 0.25rem 0.35rem;
+    font-size: 0.65rem;
+  }
+
+  /* Resumen - 2-column compact grid on small screens */
+  .resumenSection {
+    margin-bottom: 0.5rem;
+  }
+
+  .resumenGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+
+  .resumenCard {
+    border-radius: 6px;
+  }
+
+  .resumenCardHeader {
+    padding: 0.35rem 0.5rem;
+  }
+
+  .resumenCardNombre {
+    font-size: 0.7rem;
+  }
+
+  .resumenCardBody {
+    padding: 0.35rem 0.5rem;
+  }
+
+  .resumenPromedioContainer {
+    margin-bottom: 0.25rem;
+  }
+
+  .resumenPromedioLabel {
+    font-size: 0.55rem;
+  }
+
+  .resumenPromedioValue {
+    font-size: 1.25rem;
+  }
+
+  .resumenInfo {
+    padding-top: 0.25rem;
+  }
+
+  .resumenInfoLabel {
+    font-size: 0.55rem;
+  }
+
+  .resumenEstado {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 6px;
+  }
+
+  /* Cursos grid - 2 columns */
+  .cursosContainer {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+
+  .cursoCard {
+    padding: 0.5rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .cursoDragHandle {
+    top: 0.2rem;
+    left: 0.2rem;
+    font-size: 0.6rem;
+    padding: 0.1rem;
+  }
+
+  .cursoHeader {
+    gap: 0.25rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .cursoNombre {
+    font-size: 0.75rem;
+    padding-left: 0.85rem;
+  }
+
+  .cursoHeaderRight {
+    gap: 0.2rem;
+  }
+
+  .promedioCompact {
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+  }
+
+  .promedioCompactValue {
+    font-size: 0.9rem;
+  }
+
+  .promedioCompactLabel {
+    font-size: 0.5rem;
+  }
+
+  .moverSemestreSelectCompact {
+    max-width: 50px;
+    padding: 0.2rem 0.25rem;
+    font-size: 0.55rem;
+    border-radius: 3px;
+  }
+
+  .deleteButtonCompact,
+  .iconButtonSmall {
+    padding: 0.15rem;
+    font-size: 0.6rem;
+  }
+
+  /* Notas - ultra compact */
+  .notasSectionCompact {
+    gap: 0.2rem;
+  }
+
+  .notasListCompact {
+    gap: 0.2rem;
+  }
+
+  .notaRowCompact {
+    padding: 0.15rem 0.2rem;
+    gap: 0.15rem;
+    border-radius: 3px;
+  }
+
+  .notaInputGroup {
+    gap: 0.1rem;
+  }
+
+  .notaInputCompact {
+    width: 36px;
+    padding: 0.15rem 0.2rem;
+    font-size: 0.7rem;
+    border-radius: 2px;
+  }
+
+  .ponderacionInputCompact {
+    width: 28px;
+    padding: 0.15rem 0.2rem;
+    font-size: 0.7rem;
+    border-radius: 2px;
+  }
+
+  .inputSeparator,
+  .percentSign {
+    font-size: 0.5rem;
+  }
+
+  .deleteInlineBtn {
+    font-size: 0.5rem;
+    padding: 0.1rem;
+  }
+
+  .confirmInlineBtn,
+  .cancelInlineBtn {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.2rem;
+  }
+
+  .examenFinalRowCompact {
+    padding: 0.2rem 0.2rem;
+    gap: 0.15rem;
+    border-radius: 3px;
+  }
+
+  .examenFinalTag {
+    font-size: 0.45rem;
+    padding: 0.05rem 0.2rem;
+    border-radius: 2px;
+  }
+
+  .sinNotasCompact {
+    padding: 0.3rem;
+    font-size: 0.6rem;
+  }
+
+  .cursoFooter {
+    margin-top: 0.2rem;
+    padding-top: 0.2rem;
+    gap: 0.2rem;
+  }
+
+  .ponderacionWarningCompact {
+    font-size: 0.5rem;
+  }
+
+  .agregarButtonsCompact {
+    gap: 0.2rem;
+  }
+
+  .agregarNotaCompact,
+  .agregarExamenCompact {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.5rem;
+    border-radius: 3px;
+    gap: 0.15rem;
+  }
+
+  /* Add curso placeholders */
+  .addCursoPlaceholder {
+    min-height: 60px;
+    padding: 0.5rem;
+    gap: 0.3rem;
+    border-radius: 6px;
+  }
+
+  .addCursoCard {
+    min-height: 60px;
+    padding: 0.5rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .addCursoIcon {
+    font-size: 0.9rem;
+  }
+
+  .addCursoText {
+    font-size: 0.65rem;
+  }
+
+  .addCursoFormContent {
+    gap: 0.35rem;
+  }
+
+  .addCursoInput {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .addCursoActions {
+    gap: 0.25rem;
+  }
+
+  .addCursoConfirm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    gap: 0.2rem;
+  }
+
+  .addCursoCancel {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .addCursoPlaceholderDisabled {
+    min-height: 60px;
+    padding: 0.5rem;
+    gap: 0.3rem;
+    border-radius: 6px;
+  }
+
+  .addCursoIconDisabled {
+    font-size: 0.9rem;
+  }
+
+  .addCursoTextDisabled {
+    font-size: 0.6rem;
+  }
+
+  /* Edit forms */
+  .editarCursoForm {
+    gap: 0.2rem;
+  }
+
+  .editarCursoInput {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  /* Legacy styles */
+  .notasHeader {
+    font-size: 0.65rem;
+    padding: 0.35rem;
+  }
+
+  .notaRow {
+    grid-template-columns: 1fr 1fr 40px;
+    gap: 0.2rem;
+  }
+
+  .notaInput {
+    padding: 0.3rem;
+    font-size: 0.75rem;
+  }
+
+  .promedioDisplay {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .promedioLabel {
+    font-size: 0.6rem;
+  }
+
+  .promedioSubLabel {
+    font-size: 0.55rem;
+  }
+
+  .promedioValue {
+    font-size: 1.25rem;
+  }
+
+  .ponderacionTotal {
+    font-size: 0.75rem;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+  }
+
+  .confirmText {
+    font-size: 0.65rem;
+  }
+
+  .confirmNotaButton,
+  .cancelNotaButton {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.35rem;
+  }
+
+  .actionButtons {
+    gap: 0.5rem;
+  }
+
+  .tooltip {
+    font-size: 0.7rem;
+    white-space: normal;
+    max-width: 160px;
+    text-align: center;
+  }
+
+  .exportButton,
+  .importButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .modal {
+    margin: 0.5rem;
+  }
+
+  .modalHeader {
+    padding: 1rem;
+  }
+
+  .modalTitle {
+    font-size: 1.1rem;
+  }
+
+  .modalBody {
+    padding: 1rem;
+  }
+
+  .modalActions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modalImportButton,
+  .modalCancelButton {
+    width: 100%;
+  }
+
+  .resumenTitle {
+    font-size: 1.25rem;
+  }
+
+  .infoHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .infoContent {
+    padding: 0 1rem 1rem 1rem;
+  }
+
+  .infoTitle {
+    font-size: 1.1rem;
+  }
+
+  .exampleTitle,
+  .tipsTitle {
+    font-size: 1rem;
+  }
+
+  .helpLink {
+    font-size: 0.8rem;
+  }
+
+  .agregarCursoForm {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  .cursoInput {
+    width: 100%;
+    min-width: 0;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .confirmarButton,
+  .cancelarButton {
+    flex: 1;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .confirmDeleteGroup {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.3rem;
+  }
+
+  .confirmButton,
+  .cancelButton {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .moverSemestreSelect {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.4rem;
+  }
+
+  .confirmDeleteCompact {
+    gap: 0.2rem;
+  }
+
+  .confirmButtonCompact,
+  .cancelButtonCompact {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.6rem;
   }
 }

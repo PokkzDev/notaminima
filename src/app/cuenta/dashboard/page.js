@@ -391,6 +391,8 @@ export default function DashboardPage() {
     const tasaAprobacion = cursosFinalizados > 0 ? (cursosAprobados / cursosFinalizados) * 100 : null;
 
     // Calculate achievements - Fun and extensive!
+    // COMMENTED OUT FOR NOW
+    /*
     const achievements = [];
     
     // === MILESTONE ACHIEVEMENTS (Course count) ===
@@ -521,6 +523,8 @@ export default function DashboardPage() {
     const semestersWithGoodGPA = semesterTimeline.filter(s => s.promedio >= 5.0).length;
     if (semestersWithGoodGPA >= 3) achievements.push({ icon: faCube, label: 'Sólido', desc: '3+ semestres con 5.0+' });
     if (semestersWithGoodGPA >= 5) achievements.push({ icon: faCubes, label: 'Irrompible', desc: '5+ semestres con 5.0+' });
+    */
+    const achievements = []; // Empty array for now
 
     setStats({
       totalCursos,
@@ -895,6 +899,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Highlights */}
+            {/* COMMENTED OUT FOR NOW
             <section className={styles.section}>
               <div className={styles.sectionHeader}>
                 <FontAwesomeIcon icon={faStar} className={styles.sectionIcon} />
@@ -923,6 +928,7 @@ export default function DashboardPage() {
                 )}
               </div>
             </section>
+            */}
 
             {/* Courses Needing Attention */}
             {stats.coursesNeedingAttention.length > 0 && (
@@ -971,6 +977,7 @@ export default function DashboardPage() {
             )}
 
             {/* Achievements */}
+            {/* COMMENTED OUT FOR NOW
             {stats.achievements.length > 0 && (
               <section className={styles.section}>
                 <div className={styles.sectionHeader}>
@@ -993,6 +1000,7 @@ export default function DashboardPage() {
                 </div>
               </section>
             )}
+            */}
 
             {/* Quick Actions */}
             <section className={styles.section}>

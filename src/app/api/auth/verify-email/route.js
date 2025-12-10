@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createVerificationToken, getPendingVerificationToken, getUserByEmail, verifyToken } from '@/lib/auth';
+import { createVerificationToken, deleteVerificationTokensByEmail, getUserByEmail, verifyToken } from '@/lib/auth';
 import { sendVerificationEmail } from '@/lib/email';
 import { isValidEmail, normalizeEmail } from '@/lib/validation';
 
@@ -74,14 +74,8 @@ export async function POST(request) {
       );
     }
 
-    // Check if there's already a pending verification token
-    const pendingToken = await getPendingVerificationToken(normalizedEmail);
-    if (pendingToken) {
-      return NextResponse.json(
-        { error: 'Ya se ha enviado un email de verificación. Por favor revisa tu bandeja de entrada.' },
-        { status: 400 }
-      );
-    }
+    // Delete any existing verification tokens for this email (invalidate old codes)
+    await deleteVerificationTokensByEmail(normalizedEmail);
 
     // Create verification token
     const token = await createVerificationToken(normalizedEmail);

@@ -17,7 +17,7 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { nombre, email, tipo, mensaje } = body;
+    const { nombre, email, tipo, plataforma, mensaje } = body;
 
     // Validaciones
     if (!mensaje || mensaje.trim().length === 0) {
@@ -58,12 +58,16 @@ export async function POST(req) {
     const tiposValidos = ['sugerencia', 'error', 'pregunta', 'otro'];
     const tipoFinal = tiposValidos.includes(tipo) ? tipo : 'sugerencia';
 
+    const plataformasValidas = ['desktop', 'mobile'];
+    const plataformaFinal = plataformasValidas.includes(plataforma) ? plataforma : 'desktop';
+
     // Guardar en la base de datos
     const sugerencia = await prisma.sugerencia.create({
       data: {
         nombre: nombre?.trim() || null,
         email: email?.trim() || null,
         tipo: tipoFinal,
+        plataforma: plataformaFinal,
         mensaje: mensaje.trim(),
       },
     });

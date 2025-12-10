@@ -120,13 +120,14 @@ model Semester {
 }
 
 model Sugerencia {
-  id        String   @id @default(uuid())
-  nombre    String?
-  email     String?
-  tipo      String   @default("sugerencia")
-  mensaje   String   @db.Text
-  leido     Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  nombre     String?
+  email      String?
+  tipo       String   @default("sugerencia")
+  plataforma String   @default("desktop")
+  mensaje    String   @db.Text
+  leido      Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
   @@map("sugerencias")
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLightbulb, faPaperPlane, faCheckCircle, faExclamationTriangle, faBug, faQuestion, faPenToSquare, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faPaperPlane, faCheckCircle, faExclamationTriangle, faBug, faQuestion, faPenToSquare, faStar, faDesktop, faMobileAlt } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sugerencias.module.css';
 
 export default function Sugerencias() {
@@ -10,6 +10,7 @@ export default function Sugerencias() {
     nombre: '',
     email: '',
     tipo: 'sugerencia',
+    plataforma: 'desktop',
     mensaje: '',
   });
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,11 @@ export default function Sugerencias() {
     { value: 'error', label: 'Reportar Error', icon: faBug },
     { value: 'pregunta', label: 'Pregunta', icon: faQuestion },
     { value: 'otro', label: 'Otro', icon: faPenToSquare },
+  ];
+
+  const plataformas = [
+    { value: 'desktop', label: 'Escritorio', icon: faDesktop },
+    { value: 'mobile', label: 'Móvil', icon: faMobileAlt },
   ];
 
   const handleChange = (e) => {
@@ -57,6 +63,7 @@ export default function Sugerencias() {
         nombre: '',
         email: '',
         tipo: 'sugerencia',
+        plataforma: 'desktop',
         mensaje: '',
       });
     } catch (err) {
@@ -152,6 +159,23 @@ export default function Sugerencias() {
                 >
                   <span className={styles.tipoIcon}><FontAwesomeIcon icon={tipo.icon} /></span>
                   <span>{tipo.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Plataforma</label>
+            <div className={styles.plataformaButtons}>
+              {plataformas.map(plat => (
+                <button
+                  key={plat.value}
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, plataforma: plat.value }))}
+                  className={`${styles.plataformaButton} ${formData.plataforma === plat.value ? styles.plataformaButtonActive : ''}`}
+                >
+                  <span className={styles.plataformaIcon}><FontAwesomeIcon icon={plat.icon} /></span>
+                  <span>{plat.label}</span>
                 </button>
               ))}
             </div>

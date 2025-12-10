@@ -13,10 +13,12 @@ import {
   faSearch,
   faBook,
   faCalendarAlt,
-  faEdit,
+  faEye,
   faTrash,
   faChevronLeft,
   faChevronRight,
+  faChevronDown,
+  faChevronUp,
   faTimes,
   faCheckCircle,
   faTimesCircle,
@@ -31,7 +33,8 @@ import {
   faUserEdit,
   faExclamationTriangle,
   faUserCheck,
-  faUserTimes
+  faUserTimes,
+  faLayerGroup
 } from '@fortawesome/free-solid-svg-icons';
 import styles from '../Admin.module.css';
 
@@ -55,6 +58,7 @@ export default function AdminUsersPage() {
   const [deleteModal, setDeleteModal] = useState({ open: false, user: null });
   const [actionLoading, setActionLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState('');
+  const [expandedCarreras, setExpandedCarreras] = useState({});
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -136,7 +140,15 @@ export default function AdminUsersPage() {
     if (!actionLoading) {
       setUserModal({ open: false, user: null, loading: false });
       setSelectedRole('');
+      setExpandedCarreras({});
     }
+  };
+
+  const toggleCarrera = (carreraId) => {
+    setExpandedCarreras(prev => ({
+      ...prev,
+      [carreraId]: !prev[carreraId]
+    }));
   };
 
   const handleRoleChange = async () => {
@@ -449,7 +461,7 @@ export default function AdminUsersPage() {
                               onClick={() => openUserModal(user)}
                               title="Ver detalles"
                             >
-                              <FontAwesomeIcon icon={faEdit} />
+                              <FontAwesomeIcon icon={faEye} />
                             </button>
                             <button
                               className={`${styles.actionButton} ${styles.actionButtonDanger}`}
@@ -615,6 +627,111 @@ export default function AdminUsersPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Carreras and Ramos Section */}
+                  {((userModal.user.carrerasWithRamos && userModal.user.carrerasWithRamos.length > 0) || (userModal.user.sinCarreraSemesters && userModal.user.sinCarreraSemesters.length > 0)) && (
+                    <div className={styles.userDatesSection}>
+                      <h5 className={styles.userSectionTitle}>
+                        <FontAwesomeIcon icon={faFolderOpen} />
+                        Carreras y Ramos
+                      </h5>
+                      <div className={styles.carrerasTabs}>
+                        {userModal.user.carrerasWithRamos && userModal.user.carrerasWithRamos.map((carrera) => (
+                          <div key={carrera.id} className={styles.carreraTab}>
+                            <button
+                              className={styles.carreraTabHeader}
+                              onClick={() => toggleCarrera(carrera.id)}
+                            >
+                              <div className={styles.carreraTabTitle}>
+                                <FontAwesomeIcon icon={faGraduationCap} className={styles.carreraIcon} />
+                                <span>{carrera.nombre}</span>
+                                <span className={styles.carreraCount}>
+                                  {carrera.semesters.reduce((acc, s) => acc + s.ramos.length, 0)} ramos
+                                </span>
+                              </div>
+                              <FontAwesomeIcon 
+                                icon={expandedCarreras[carrera.id] ? faChevronUp : faChevronDown} 
+                                className={styles.carreraChevron}
+                              />
+                            </button>
+                            {expandedCarreras[carrera.id] && (
+                              <div className={styles.carreraTabContent}>
+                                {carrera.semesters.length > 0 ? (
+                                  carrera.semesters.map((semester) => (
+                                    <div key={semester.id} className={styles.semesterGroup}>
+                                      <div className={styles.semesterHeader}>
+                                        <FontAwesomeIcon icon={faLayerGroup} />
+                                        <span>{semester.nombre}</span>
+                                      </div>
+                                      {semester.ramos.length > 0 ? (
+                                        <ul className={styles.ramosList}>
+                                          {semester.ramos.map((ramo, idx) => (
+                                            <li key={idx} className={styles.ramoItem}>
+                                              <FontAwesomeIcon icon={faBook} />
+                                              {ramo}
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      ) : (
+                                        <p className={styles.noRamos}>Sin ramos</p>
+                                      )}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <p className={styles.noRamos}>Sin semestres</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        {/* Sin Carrera semesters */}
+                        {userModal.user.sinCarreraSemesters && userModal.user.sinCarreraSemesters.length > 0 && (
+                          <div className={styles.carreraTab}>
+                            <button
+                              className={styles.carreraTabHeader}
+                              onClick={() => toggleCarrera('sin-carrera')}
+                            >
+                              <div className={styles.carreraTabTitle}>
+                                <FontAwesomeIcon icon={faFolderOpen} className={styles.carreraIcon} style={{ color: 'var(--text-tertiary)' }} />
+                                <span style={{ color: 'var(--text-secondary)' }}>Sin Carrera</span>
+                                <span className={styles.carreraCount}>
+                                  {userModal.user.sinCarreraSemesters.reduce((acc, s) => acc + s.ramos.length, 0)} ramos
+                                </span>
+                              </div>
+                              <FontAwesomeIcon 
+                                icon={expandedCarreras['sin-carrera'] ? faChevronUp : faChevronDown} 
+                                className={styles.carreraChevron}
+                              />
+                            </button>
+                            {expandedCarreras['sin-carrera'] && (
+                              <div className={styles.carreraTabContent}>
+                                {userModal.user.sinCarreraSemesters.map((semester) => (
+                                  <div key={semester.id} className={styles.semesterGroup}>
+                                    <div className={styles.semesterHeader}>
+                                      <FontAwesomeIcon icon={faLayerGroup} />
+                                      <span>{semester.nombre}</span>
+                                    </div>
+                                    {semester.ramos.length > 0 ? (
+                                      <ul className={styles.ramosList}>
+                                        {semester.ramos.map((ramo, idx) => (
+                                          <li key={idx} className={styles.ramoItem}>
+                                            <FontAwesomeIcon icon={faBook} />
+                                            {ramo}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    ) : (
+                                      <p className={styles.noRamos}>Sin ramos</p>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Dates Section */}
                   <div className={styles.userDatesSection}>

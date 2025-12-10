@@ -171,6 +171,45 @@
   font-size: 1.25rem;
 }
 
+/* Plataforma Buttons */
+.plataformaButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.plataformaButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.plataformaButton:hover {
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+.plataformaButtonActive {
+  border-color: var(--accent-color);
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-color);
+}
+
+.plataformaIcon {
+  font-size: 1.125rem;
+}
+
 /* Textarea */
 .textarea {
   width: 100%;

@@ -15,6 +15,7 @@ export async function GET(req) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const tipo = searchParams.get('tipo') || '';
+    const plataforma = searchParams.get('plataforma') || '';
     const estado = searchParams.get('estado') || '';
     const search = searchParams.get('search') || '';
 
@@ -22,6 +23,10 @@ export async function GET(req) {
 
     if (tipo) {
       where.tipo = tipo;
+    }
+
+    if (plataforma) {
+      where.plataforma = plataforma;
     }
 
     if (estado === 'leido') {

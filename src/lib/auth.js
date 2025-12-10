@@ -181,6 +181,20 @@ export async function getPendingVerificationToken(email) {
 }
 
 /**
+ * Deletes all verification tokens for an email (used when resending verification)
+ * @param {string} email - Email to delete tokens for
+ */
+export async function deleteVerificationTokensByEmail(email) {
+  const normalizedEmail = normalizeEmail(email);
+  
+  await prisma.verificationToken.deleteMany({
+    where: {
+      identifier: normalizedEmail,
+    },
+  });
+}
+
+/**
  * Creates a verification token for email change
  * @param {string} userId - User ID requesting the change
  * @param {string} newEmail - New email address to verify

@@ -45,8 +45,45 @@ export async function GET(request, { params }) {
         },
         promedios: {
           select: {
-            notas: true
+            id: true,
+            nombre: true,
+            notas: true,
+            semesterId: true
           }
+        },
+        carreras: {
+          select: {
+            id: true,
+            nombre: true,
+            semesters: {
+              select: {
+                id: true,
+                nombre: true,
+                promedios: {
+                  select: {
+                    id: true,
+                    nombre: true
+                  }
+                }
+              },
+              orderBy: { orden: 'asc' }
+            }
+          },
+          orderBy: { orden: 'asc' }
+        },
+        semesters: {
+          where: { carreraId: null },
+          select: {
+            id: true,
+            nombre: true,
+            promedios: {
+              select: {
+                id: true,
+                nombre: true
+              }
+            }
+          },
+          orderBy: { orden: 'asc' }
         }
       }
     });
@@ -66,6 +103,24 @@ export async function GET(request, { params }) {
       }
     });
 
+    // Build carreras structure with semesters and ramos
+    const carrerasWithRamos = user.carreras.map(carrera => ({
+      id: carrera.id,
+      nombre: carrera.nombre,
+      semesters: carrera.semesters.map(semester => ({
+        id: semester.id,
+        nombre: semester.nombre,
+        ramos: semester.promedios.map(p => p.nombre)
+      }))
+    }));
+
+    // Add "Sin Carrera" semesters if any exist
+    const sinCarreraSemesters = user.semesters.map(semester => ({
+      id: semester.id,
+      nombre: semester.nombre,
+      ramos: semester.promedios.map(p => p.nombre)
+    }));
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -79,7 +134,9 @@ export async function GET(request, { params }) {
         promediosCount: user._count.promedios,
         semestersCount: user._count.semesters,
         carrerasCount: user._count.carreras,
-        totalNotas: totalNotas
+        totalNotas: totalNotas,
+        carrerasWithRamos,
+        sinCarreraSemesters
       }
     });
   } catch (error) {
