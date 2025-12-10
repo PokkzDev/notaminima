@@ -34,13 +34,14 @@
 
 html {
   height: 100%;
+  height: 100dvh; /* Dynamic viewport height for mobile */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 html,
 body {
   min-height: 100%;
-  height: 100%;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
   background: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -54,6 +55,8 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
   display: flex;
   flex-direction: column;
+  /* Account for mobile safe areas */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Hide number input spinners across all browsers */

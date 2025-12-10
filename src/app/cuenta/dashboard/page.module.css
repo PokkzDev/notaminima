@@ -367,6 +367,30 @@
   margin: 0;
 }
 
+.timelineOrderSelect {
+  margin-left: auto;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timelineOrderSelect:hover {
+  border-color: var(--accent-color);
+  background: var(--bg-tertiary);
+}
+
+.timelineOrderSelect:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(var(--accent-color-rgb), 0.2);
+}
+
 /* Grade Distribution */
 .gradeDistribution {
   display: flex;
@@ -722,9 +746,9 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .attentionProgress {
@@ -782,9 +806,9 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .bestGrade {
@@ -1154,6 +1178,11 @@
     font-size: 0.9rem;
   }
 
+  .timelineOrderSelect {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
   /* Grade Distribution - Compact Horizontal Bars */
   .gradeDistribution {
     gap: 0.5rem;
@@ -1344,6 +1373,9 @@
 
   .attentionName {
     font-size: 0.8rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .attentionProgress {
@@ -1378,6 +1410,9 @@
 
   .bestName {
     font-size: 0.8rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .bestGrade {
@@ -1560,6 +1595,11 @@
     font-size: 0.85rem;
   }
 
+  .timelineOrderSelect {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
   /* Grade Bars - Super Compact */
   .gradeDistribution {
     gap: 0.4rem;
@@ -1726,6 +1766,9 @@
   .attentionName,
   .bestName {
     font-size: 0.75rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .attentionProgress {

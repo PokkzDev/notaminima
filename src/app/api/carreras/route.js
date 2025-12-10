@@ -27,7 +27,11 @@ export async function GET(request) {
             orden: 'asc',
           },
           include: {
-            promedios: true,
+            promedios: {
+              orderBy: {
+                orden: 'asc',
+              },
+            },
           },
         },
       },
@@ -91,5 +95,6 @@ export async function POST(request) {
     );
   }
 }
+
 
 

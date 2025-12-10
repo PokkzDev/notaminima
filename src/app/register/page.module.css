@@ -1,12 +1,16 @@
 .main {
   flex: 1;
   padding: 2rem 1rem;
+  padding-top: 2rem;
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
   background: var(--bg-tertiary);
   transition: background-color 0.3s ease;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  min-height: calc(100vh - 200px);
+  /* Use dynamic viewport height for mobile browsers with changing UI */
+  min-height: calc(100vh - 140px);
+  min-height: calc(100dvh - 140px);
 }
 
 .container {
@@ -310,8 +314,16 @@
 }
 
 @media (max-width: 640px) {
+  .main {
+    padding: 1.5rem 1rem;
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    /* Smaller min-height estimate for mobile navbar/footer */
+    min-height: calc(100vh - 120px);
+    min-height: calc(100dvh - 120px);
+  }
+
   .card {
-    padding: 2rem 1.5rem;
+    padding: 1.75rem 1.25rem;
   }
 
   .title {
@@ -320,6 +332,27 @@
   
   .resendButton {
     width: 100%;
+  }
+}
+
+/* Extra small screens - phones with navigation buttons */
+@media (max-width: 380px) {
+  .main {
+    padding: 1rem 0.75rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .card {
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .form {
+    gap: 1.25rem;
   }
 }
 

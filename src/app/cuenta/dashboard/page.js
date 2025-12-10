@@ -177,6 +177,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [carreras, setCarreras] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
+  const [timelineOrder, setTimelineOrder] = useState('asc'); // 'asc' or 'desc'
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -342,8 +343,8 @@ export default function DashboardPage() {
       }
     }
 
-    // Sort by orden
-    allSemesters.sort((a, b) => a.orden - b.orden);
+    // Note: semesters are already in order from the API (carreras by orden, semesters within each carrera by orden)
+    // No global sort needed - orden is per-carrera, not global
 
     for (const semester of allSemesters) {
       let semSum = 0;
@@ -842,9 +843,17 @@ export default function DashboardPage() {
                 <div className={styles.sectionHeader}>
                   <FontAwesomeIcon icon={faCalendarAlt} className={styles.sectionIcon} />
                   <h2 className={styles.sectionTitle}>Timeline de Semestres</h2>
+                  <select
+                    className={styles.timelineOrderSelect}
+                    value={timelineOrder}
+                    onChange={(e) => setTimelineOrder(e.target.value)}
+                  >
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                  </select>
                 </div>
                 <div className={styles.timeline}>
-                  {stats.semesterTimeline.map((semester, index) => (
+                  {(timelineOrder === 'desc' ? [...stats.semesterTimeline].reverse() : stats.semesterTimeline).map((semester, index) => (
                     <div key={semester.id} className={styles.timelineItem}>
                       <div className={styles.timelineDot}>
                         <span className={styles.timelineIndex}>{index + 1}</span>
